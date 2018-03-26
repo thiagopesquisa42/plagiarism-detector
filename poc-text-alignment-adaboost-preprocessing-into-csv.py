@@ -49,7 +49,7 @@ database['tokensSuspicious'] = [
     tokenize_by_white_space(
         remove_especial_characters(excerpt))
     for excerpt in database['excerptSuspiciousText']]
-database_length = len(database['isPlagiarism'])
+database_length = len(database['plagiarismClass'])
 database['tokens'] = [
     list(
         set().
@@ -74,7 +74,7 @@ database['tokensSuspicious'] = [
     ]
     for index in range(0, database_length)]
 
-#cauculando distancia do coseno
+#calculando distancia do coseno
 database['cosineDistance'] = [
     distance.cosine(
         database['tokensSource'][index],

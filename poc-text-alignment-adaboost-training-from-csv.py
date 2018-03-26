@@ -52,14 +52,14 @@ ignored_attributes = [
     "tokensSuspicious",
     "excerptSuspiciousLocationOfFile"]
 data = transpose(array([
-            database["isPlagiarism"],
+            database["plagiarismClass"],
             database["excerptSourceLength"],
             database["excerptSuspiciousLength"],
             database["cosineDistance"]
         ])
     )
 
-target = database['isPlagiarism']
+target = database['plagiarismClass']
 features_names = [key for key in database.keys() if(key not in ignored_attributes)]
 
 # Particiona a base de dados
