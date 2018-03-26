@@ -10,8 +10,8 @@ from collections import namedtuple
 import getopt
 import glob
 import math
-from numpy import int8 as npint8
-from numpy.ma import zeros, sum as npsum
+# from numpy import int8 as npint8
+# from numpy.ma import zeros, sum as npsum
 import os
 import sys
 import unittest
@@ -25,6 +25,17 @@ EXT = 'is_external'
 Annotation = namedtuple('Annotation', [TREF, TOFF, TLEN, SREF, SOFF, SLEN, EXT])
 TREF, TOFF, TLEN, SREF, SOFF, SLEN, EXT = range(7)
 
+NO_PLAGIARISM_CLASS = 0
+DIRECT_PLAGIARISM_CLASS = 1
+OBFUSCATED_PLAGIARISM_CLASS = 2
+
+def getPlagiarismClassNameByClassId(classId):
+    switcher = {
+        NO_PLAGIARISM_CLASS: "NoPlagiarism",
+        DIRECT_PLAGIARISM_CLASS: "DirectPlagiarism",
+        OBFUSCATED_PLAGIARISM_CLASS: "ObfuscatedPlagiarism"
+    }
+    return switcher.get(classId, "Unknown")
 
 def index_annotations(annotations, xref=TREF):
     """Returns an inverted index that maps references to annotation lists."""
@@ -126,11 +137,11 @@ class Excerpt():
         self.text = _text
 
 class AnnotationEvidence():
-    isPlagiarism = False
+    plagiarismClass = None
     excerptSuspicious = None
     excerptSource = None
 
-    def ConvertAnnotationToAnnotationEvidence(self, annotation, _isPlagiarism):
+    def ConvertAnnotationToAnnotationEvidence(self, annotation, _plagiarismClass):
         locationSuspicious = annotation[TREF]
         lengthSuspicious = annotation[TLEN]
         offsetSuspicious = annotation[TOFF]
@@ -159,11 +170,14 @@ class AnnotationEvidence():
             _offsetFromBegin = offsetSource,
             _length = lengthSource,
             _text = fileSourceContent)
-        self.isPlagiarism = _isPlagiarism
+        self.plagiarismClass = _plagiarismClass
 
     def toLinearObject(self):
+        plagiarismClassName = getPlagiarismClassNameByClassId(self.plagiarismClass)
+        
         return [
-            self.isPlagiarism,
+            self.plagiarismClass,
+            plagiarismClassName,
             self.excerptSource.offsetFromBegin,
             self.excerptSource.length,
             self.excerptSource.text.replace("\n"," ").replace("\r"," "),
@@ -175,11 +189,11 @@ class AnnotationEvidence():
         ]
         
 
-def ConvertAnnotationsToAnnotationEvidenceList(annotations, isPlagiarism):
+def ConvertAnnotationsToAnnotationEvidenceList(annotations, plagiarismClass):
     annotationEvidenceList = []
     for annotation in annotations:
         annotationEvidence = AnnotationEvidence()
-        annotationEvidence.ConvertAnnotationToAnnotationEvidence(annotation, isPlagiarism)
+        annotationEvidence.ConvertAnnotationToAnnotationEvidence(annotation, plagiarismClass)
         annotationEvidenceList.append(annotationEvidence)
     return annotationEvidenceList
 
@@ -211,6 +225,7 @@ Usage: perfmeasures.py [options]
 Options:
   -p, --plag-path  Path to the XML files with plagiarism annotations
   -n, --no-plag-path  Path to the PAIRS file with no-plagiarism list of files
+  -o, --obfuscated-plag-path  Path to the XML file with obfuscated-plagiarism annotations
   -h, --help       Show this message
 """
 
@@ -218,18 +233,21 @@ Options:
 def parse_options():
     """Parses the command line options."""
     try:
-        long_options = ["plag-path=", "no-plag-path=", "help"]
-        opts, _ = getopt.getopt(sys.argv[1:], "p:n:h", long_options)
+        long_options = ["plag-path=", "no-plag-path=", "obfuscated-plag-path=", "help"]
+        opts, _ = getopt.getopt(sys.argv[1:], "p:n:o:h", long_options)
     except getopt.GetoptError, err:
         print str(err)
         usage()
         sys.exit(2)
-    plag_path, no_plag_path = "undefined", "undefined"
+    plag_path, no_plag_path, obfuscated_plag_path = "undefined", "undefined", "undefined"
+    anyError = False
     for opt, arg in opts:
         if opt in ("-p", "--plag-path"):
             plag_path = arg
         elif opt in ("-n", "--no-plag-path"):
             no_plag_path = arg
+        elif opt in ("-o", "--obfuscated-plag-path"):
+            obfuscated_plag_path = arg
         elif opt in ("-h", "--help"):
             usage()
             sys.exit()
@@ -237,28 +255,42 @@ def parse_options():
             assert False, "Unknown option."
     if plag_path == "undefined":
         print "Plagiarism path undefined. Use option -p or --plag-path."
-        sys.exit()
+        anyError = True
     if no_plag_path == "undefined":
         print "No-Plagiarism path is undefined. Use option -n or --no-plag-path."
-        sys.exit()
-    return (plag_path, no_plag_path)
+        anyError = True
+    if obfuscated_plag_path == "undefined":
+        print "Obfuscated-Plagiarism path is undefined. Use option -o or --obfuscated-plag-path."
+        anyError = True
+    if anyError:
+        sys.exit()        
+    return (plag_path, no_plag_path, obfuscated_plag_path)
 
-
-def main(plag_path, no_plag_path):
+def main(plag_path, no_plag_path, obfuscated_plag_path):
     """Main method of this module."""        
-    print 'Reading reference pairs with plagiarism', plag_path
-    plagiarism_cases_annotations = extract_annotations_from_files(
+    print 'Reading reference pairs with direct plagiarism', plag_path
+    direct_plagiarism_cases_annotations = extract_annotations_from_files(
         plag_path, tagname='plagiarism')
     print 'Recovering texts referenced'
     cases_with_the_evidences = ConvertAnnotationsToAnnotationEvidenceList(
-        annotations = plagiarism_cases_annotations, isPlagiarism = True)
+        annotations = direct_plagiarism_cases_annotations, 
+        plagiarismClass = DIRECT_PLAGIARISM_CLASS)
     
+    print 'Reading reference pairs with obfuscated plagiarism', obfuscated_plag_path
+    obfuscated_plagiarism_cases_annotations = extract_annotations_from_files(
+        obfuscated_plag_path, tagname='plagiarism')
+    print 'Recovering texts referenced'
+    cases_with_the_evidences += ConvertAnnotationsToAnnotationEvidenceList(
+        annotations = obfuscated_plagiarism_cases_annotations, 
+        plagiarismClass = OBFUSCATED_PLAGIARISM_CLASS)
+
     print 'Reading reference pairs without plagiarism', no_plag_path
     no_plagiarism_cases_annotations = extract_random_excerpts_from_pair_files(
         no_plag_path)
     print 'Recovering texts referenced'
     cases_with_the_evidences += ConvertAnnotationsToAnnotationEvidenceList(
-        annotations = no_plagiarism_cases_annotations, isPlagiarism = False)
+        annotations = no_plagiarism_cases_annotations, 
+        plagiarismClass = NO_PLAGIARISM_CLASS)
     
     csv_object = [ 
         annotationEvidence.toLinearObject() 
@@ -269,7 +301,8 @@ def main(plag_path, no_plag_path):
         spamwriter = csv.writer(csvfile, delimiter=';',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
         fieldnames=[
-            "isPlagiarism",
+            "plagiarismClass",
+            "plagiarismClassName",
             "excerptSourceOffsetFromBegin",
             "excerptSourceLength",
             "excerptSourceText",
