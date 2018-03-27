@@ -42,9 +42,13 @@
             ],
             "args": [
                 "--plag-path",
-                "C:/plagiarism_detector_files_base/texts/01-no-plagiarism/",
+                "C:/plagiarism_detector_files_base/texts/plagiarisms/",
+                "--plag-tag",
+                "plagiarism",
                 "--det-path",
-                "C:/plagiarism_detector_files_base/detections/baseline_output/"
+                "C:/plagiarism_detector_files_base/detections/poc/",
+                "--det-tag",
+                "detected-plagiarism"
             ]
         },
         {
