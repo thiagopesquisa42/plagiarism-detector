@@ -128,7 +128,7 @@ def ConvertEvidenceLinearRegisterListIntoFeatureList(evidenceList):
 
 # Carregando dados
 database = read_csv(
-    'C:/plagiarism_detector_files_base/'+'linearRegisters/annotations_features_original.csv',
+    'C:/plagiarism_detector_files_base/'+'linearRegisters/annotations_features.csv',
     sep = ";", encoding = "ISO-8859-1")
 
 groupedEvidenceList = database.groupby([excerptSuspiciousLocationOfFileHeader, excerptSourceLocationOfFileHeader])

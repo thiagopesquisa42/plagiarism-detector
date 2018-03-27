@@ -20,11 +20,11 @@
             ],
             "args": [
                 "--plag-path",
-                "C:/plagiarism_detector_files_base/texts/02-no-obfuscation",
+                "C:/plagiarism_detector_files_base/texts/plagiarisms/02-no-obfuscation",
                 "--no-plag-path",
-                "C:/plagiarism_detector_files_base/texts/01-no-plagiarism",
+                "C:/plagiarism_detector_files_base/texts/plagiarisms/01-no-plagiarism",
                 "--obfuscated-plag-path",
-                "C:/plagiarism_detector_files_base/texts/03-random-obfuscation"
+                "C:/plagiarism_detector_files_base/texts/plagiarisms/03-random-obfuscation"
             ]
         },
         {
