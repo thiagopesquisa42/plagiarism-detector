@@ -1,3 +1,3 @@
 
-def hello():
+def Hello():
     print ('Hello, I\'m the SetupView')
