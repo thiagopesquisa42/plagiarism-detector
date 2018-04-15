@@ -7,7 +7,7 @@ class ValidationView(object):
         print ('And I shows the output of these managers:')
         self._testManager.Hello()
 
-    _testManager = Manager.TestManager
+    _testManager = Manager.TestManager.TestManager()
 
     def __init__(self):
         pass

@@ -7,7 +7,7 @@ class ExecuteView(object):
         print ('And I shows the output of these managers:')
         self._trainManager.Hello()
 
-    _trainManager = Manager.TrainManager
+    _trainManager = Manager.TrainManager.TrainManager()
 
     def __init__(self):
         pass

@@ -3,11 +3,14 @@ import Process.LogProcess
 
 class SetupManager(object):
 
-    def __init__(self):
-        pass
-
     def Hello(self):
         print ('Hello, I\'m the SetupManager')
         print ('And I manage these processes:')
-        Process.SetupProcess.Hello()
-        Process.LogProcess.Hello()
+        self._setupProcess.Hello()
+        self._logProcess.Hello()
+
+    _setupProcess = Process.SetupProcess
+    _logProcess = Process.LogProcess
+
+    def __init__(self):
+        pass

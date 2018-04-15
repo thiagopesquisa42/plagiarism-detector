@@ -9,8 +9,8 @@ class CrossValidationView(object):
         self._trainManager.Hello()
         self._testManager.Hello()
 
-    _testManager = Manager.TestManager
-    _trainManager = Manager.TrainManager
+    _testManager = Manager.TestManager.TestManager()
+    _trainManager = Manager.TrainManager.TrainManager()
 
     def __init__(self):
         pass
