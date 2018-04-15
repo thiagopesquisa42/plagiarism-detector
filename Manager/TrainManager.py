@@ -15,11 +15,11 @@ class TrainManager(object):
         self._plagiarismTypeProcess.Hello()
         self._seedClassifierProcess.Hello()
 
-    _logProcess = Process.LogProcess
-    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess
-    _seedAttributesProcess = Process.SeedAttributesProcess
-    _plagiarismTypeProcess = Process.PlagiarismTypeProcess
-    _seedClassifierProcess = Process.SeedClassifierProcess
+    _logProcess = Process.LogProcess.LogProcess()
+    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess.PreProcessingRawTextProcess()
+    _seedAttributesProcess = Process.SeedAttributesProcess.SeedAttributesProcess()
+    _plagiarismTypeProcess = Process.PlagiarismTypeProcess.PlagiarismTypeProcess()
+    _seedClassifierProcess = Process.SeedClassifierProcess.SeedClassifierProcess()
 
     def __init__(self):
         pass

@@ -1,4 +1,10 @@
+from Process.AttributesProcessAbstract import AttributesProcessAbstract
 
-def Hello():
-    print ('Hello, I\'m the SeedAttributesProcess')
-    
+class SeedAttributesProcess(AttributesProcessAbstract):
+
+    def Hello(self):
+        print ('Hello, I\'m the SeedAttributesProcess')
+        print ('And I use these repositories:')
+
+    def __init__(self):
+        pass

@@ -9,8 +9,8 @@ class SetupManager(object):
         self._setupProcess.Hello()
         self._logProcess.Hello()
 
-    _setupProcess = Process.SetupProcess
-    _logProcess = Process.LogProcess
+    _setupProcess = Process.SetupProcess.SetupProcess()
+    _logProcess = Process.LogProcess.LogProcess()
 
     def __init__(self):
         pass

@@ -13,10 +13,10 @@ class TestManager(object):
         self._seedAttributesProcess.Hello()
         self._seedEvaluationProcess.Hello()
 
-    _logProcess = Process.LogProcess
-    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess
-    _seedAttributesProcess = Process.SeedAttributesProcess
-    _seedEvaluationProcess = Process.SeedEvaluationProcess
+    _logProcess = Process.LogProcess.LogProcess()
+    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess.PreProcessingRawTextProcess()
+    _seedAttributesProcess = Process.SeedAttributesProcess.SeedAttributesProcess()
+    _seedEvaluationProcess = Process.SeedEvaluationProcess.SeedEvaluationProcess()
 
     def __init__(self):
         pass

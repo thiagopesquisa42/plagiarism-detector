@@ -1,4 +1,10 @@
 
-def Hello():
-    print ('Hello, I\'m the LogProcess')
-    
+class LogProcess(object):
+
+    def Hello(self):
+        print ('Hello, I\'m the LogProcess')
+        print ('And I use these repositories:')
+
+    def __init__(self):
+        pass
+
