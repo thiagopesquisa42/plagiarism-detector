@@ -1,16 +1,26 @@
-import View.SetupView as SetupView
-import View.ExecuteView as ExecuteView
-import View.ValidationView as ValidationView
-import View.CrossValidationView as CrossValidationView
+import View.SetupView
+import View.ExecuteView
+import View.ValidationView
+import View.CrossValidationView
 
-def Hello():
-    print('Hello, I\'m StartUp and I\'m the top guy, who sets up everbody!')
+class StartUp(object):
 
-def LayersComunnicationTest():
-    Hello()
-    SetupView.Hello()
-    ExecuteView.Hello()
-    ValidationView.Hello()
-    CrossValidationView.Hello()
+    def Hello(self):
+        print('Hello, I\'m StartUp and I\'m the top guy, who sets up everbody!')
 
-LayersComunnicationTest()
+    def LayersComunnicationTest(self):
+        self.Hello()
+        self._setupView.Hello()
+        self._executeView.Hello()
+        self._validationView.Hello()
+        self._crossValidationView.Hello()
+
+    _setupView = View.SetupView.SetupView()
+    _executeView = View.ExecuteView.ExecuteView()
+    _validationView = View.ValidationView.ValidationView()
+    _crossValidationView = View.CrossValidationView.CrossValidationView()
+
+    def __init__(self):
+        pass
+
+StartUp().LayersComunnicationTest()

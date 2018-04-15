@@ -1,6 +1,13 @@
 import Manager.TrainManager
 
-def Hello():
-    print ('Hello, I\'m the ExecuteView')
-    print ('And I shows the output of these managers:')
-    Manager.TrainManager.Hello()
+class ExecuteView(object):
+
+    def Hello(self):
+        print ('Hello, I\'m the ExecuteView')
+        print ('And I shows the output of these managers:')
+        self._trainManager.Hello()
+
+    _trainManager = Manager.TrainManager
+
+    def __init__(self):
+        pass
