@@ -1,5 +1,5 @@
 from Repository.DataBaseConnection import DataBaseConnection
-from Entity.Token import Token
+from Entity import _Token as Token
 
 class TokenRepository(DataBaseConnection):
 

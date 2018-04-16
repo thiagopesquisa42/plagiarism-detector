@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from Entity.EntityBase import EntityBase
+from Entity import _EntityBase as EntityBase
 
 class Token(EntityBase):
     __tablename__ = 'token'

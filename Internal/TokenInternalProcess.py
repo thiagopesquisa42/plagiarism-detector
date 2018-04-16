@@ -9,7 +9,7 @@ class TokenInternalProcess(object):
         self._tokenRepository.Hello()
         
         token = Token()
-        token.text = 'Teste 2 testando... Ç^Ç`^Ç^#$@#$@R$¨&¨ÀÀ`\'`^^`^`^``'
+        token.text = 'Teste 3 testando... oioioioioi 20180416'
         token.occurence = 1
         self._tokenRepository.Insert(token)
         token = self._tokenRepository.Get(id = 345645)
