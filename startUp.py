@@ -1,4 +1,3 @@
-import Configuration
 import View.SetupView
 import View.ExecuteView
 import View.ValidationView
@@ -11,7 +10,6 @@ class StartUp(object):
 
     def LayersComunnicationTest(self):
         self.Hello()
-        Configuration.Hello()
         self._setupView.Hello()
         self._executeView.Hello()
         self._validationView.Hello()
