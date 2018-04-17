@@ -10,9 +10,12 @@ _EntityBase = EntityBase.EntityBase
 # import Entity.Log.Log as Log
 # import Entity.PlagiarismDetection.PlagiarismDetection as PlagiarismDetection
 # import Entity.PlagiarismType.PlagiarismType as PlagiarismType
-# import Entity.RawText.RawText as RawText
+
 # import Entity.Seed.Seed as Seed
 # import Entity.SeedAttributes.SeedAttributes as SeedAttributes
 # import Entity.Setup.Setup as Setup
 from Entity import Token
 _Token = Token.Token
+from Entity import RawText
+_RawText = RawText.RawText
+_RawTextType = RawText.RawTextType
