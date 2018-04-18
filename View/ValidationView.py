@@ -1,4 +1,4 @@
-import Manager.TestManager
+from Manager import _TestManager as TestManager
 
 class ValidationView(object):
 
@@ -7,7 +7,7 @@ class ValidationView(object):
         print ('And I shows the output of these managers:')
         self._testManager.Hello()
 
-    _testManager = Manager.TestManager.TestManager()
+    _testManager = TestManager()
 
     def __init__(self):
         pass

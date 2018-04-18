@@ -1,4 +1,4 @@
-import Manager.TrainManager
+from Manager import _TrainManager as TrainManager
 
 class ExecuteView(object):
 
@@ -7,7 +7,7 @@ class ExecuteView(object):
         print ('And I shows the output of these managers:')
         self._trainManager.Hello()
 
-    _trainManager = Manager.TrainManager.TrainManager()
+    _trainManager = TrainManager()
 
     def __init__(self):
         pass

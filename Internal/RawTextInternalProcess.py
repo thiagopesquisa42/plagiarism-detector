@@ -1,6 +1,6 @@
 from Entity import _RawText as RawText
 from Entity import _RawTextType as RawTextType
-import Repository.RawTextRepository
+from Repository import _RawTextRepository as RawTextRepository
 
 class RawTextInternalProcess(object):
     def TestInsertARawText(self):
@@ -14,7 +14,7 @@ class RawTextInternalProcess(object):
         print ('Hello, I\'m the RawTextInternalProcess')
         print ('And I use these repositories:')
 
-    _rawTextRepository = Repository.RawTextRepository.RawTextRepository()
+    _rawTextRepository = RawTextRepository()
 
     def __init__(self):
         pass

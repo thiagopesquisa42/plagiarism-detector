@@ -1,5 +1,5 @@
-import Repository.TokenRepository
-from Entity.Token import Token
+from Entity import _Token as Token
+from Repository import _TokenRepository as TokenRepository
 
 class TokenInternalProcess(object):
 
@@ -15,7 +15,7 @@ class TokenInternalProcess(object):
         token = self._tokenRepository.Get(id = 345645)
         self._tokenRepository.Update(token)
 
-    _tokenRepository = Repository.TokenRepository.TokenRepository()
+    _tokenRepository = TokenRepository()
 
     def __init__(self):
         pass

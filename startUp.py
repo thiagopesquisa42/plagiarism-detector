@@ -1,7 +1,7 @@
-import View.SetupView
-import View.ExecuteView
-import View.ValidationView
-import View.CrossValidationView
+from View import _SetupView as SetupView
+from View import _ExecuteView as ExecuteView
+from View import _ValidationView as ValidationView
+from View import _CrossValidationView as CrossValidationView
 
 class StartUp(object):
 
@@ -15,10 +15,10 @@ class StartUp(object):
         self._validationView.Hello()
         self._crossValidationView.Hello()
 
-    _setupView = View.SetupView.SetupView()
-    _executeView = View.ExecuteView.ExecuteView()
-    _validationView = View.ValidationView.ValidationView()
-    _crossValidationView = View.CrossValidationView.CrossValidationView()
+    _setupView = SetupView()
+    _executeView = ExecuteView()
+    _validationView = ValidationView()
+    _crossValidationView = CrossValidationView()
 
     def __init__(self):
         pass

@@ -1,5 +1,5 @@
-import Internal.TokenInternalProcess
-import Internal.RawTextInternalProcess
+from Internal import _TokenInternalProcess as TokenInternalProcess
+from Internal import _RawTextInternalProcess as RawTextInternalProcess
 
 class PreProcessingRawTextProcess(object):
 
@@ -11,8 +11,8 @@ class PreProcessingRawTextProcess(object):
         self._rawTextInternalProcess.Hello()
         self._rawTextInternalProcess.TestInsertARawText()
 
-    _tokenInternalProcess = Internal.TokenInternalProcess.TokenInternalProcess()
-    _rawTextInternalProcess = Internal.RawTextInternalProcess.RawTextInternalProcess()
+    _tokenInternalProcess = TokenInternalProcess()
+    _rawTextInternalProcess = RawTextInternalProcess()
 
     def __init__(self):
         pass

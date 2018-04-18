@@ -1,4 +1,4 @@
-from Repository.DataBaseConnection import DataBaseConnection
+from Repository import _DataBaseConnection as DataBaseConnection
 from Entity import _Token as Token
 
 class TokenRepository(DataBaseConnection):

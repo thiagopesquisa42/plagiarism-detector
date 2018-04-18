@@ -1,8 +1,8 @@
-import Process.LogProcess
-import Process.PreProcessingRawTextProcess
-import Process.SeedAttributesProcess
-import Process.PlagiarismTypeProcess
-import Process.SeedClassifierProcess
+from Process import _LogProcess as LogProcess
+from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
+from Process import _SeedAttributesProcess as SeedAttributesProcess
+from Process import _PlagiarismTypeProcess as PlagiarismTypeProcess
+from Process import _SeedClassifierProcess as SeedClassifierProcess
 
 class TrainManager(object):
 
@@ -15,11 +15,11 @@ class TrainManager(object):
         self._plagiarismTypeProcess.Hello()
         self._seedClassifierProcess.Hello()
 
-    _logProcess = Process.LogProcess.LogProcess()
-    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess.PreProcessingRawTextProcess()
-    _seedAttributesProcess = Process.SeedAttributesProcess.SeedAttributesProcess()
-    _plagiarismTypeProcess = Process.PlagiarismTypeProcess.PlagiarismTypeProcess()
-    _seedClassifierProcess = Process.SeedClassifierProcess.SeedClassifierProcess()
+    _logProcess = LogProcess()
+    _preProcessingRawTextProcess = PreProcessingRawTextProcess()
+    _seedAttributesProcess = SeedAttributesProcess()
+    _plagiarismTypeProcess = PlagiarismTypeProcess()
+    _seedClassifierProcess = SeedClassifierProcess()
 
     def __init__(self):
         pass

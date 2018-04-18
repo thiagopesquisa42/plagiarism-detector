@@ -1,4 +1,4 @@
-import Manager.SetupManager
+from Manager import _SetupManager as SetupManager
 
 class SetupView(object):
 
@@ -7,7 +7,7 @@ class SetupView(object):
         print ('And I shows the output of these managers:')
         self._setupManager.Hello()
 
-    _setupManager = Manager.SetupManager.SetupManager()
+    _setupManager = SetupManager()
 
     def __init__(self):
         pass

@@ -1,7 +1,7 @@
-import Process.LogProcess
-import Process.PreProcessingRawTextProcess
-import Process.SeedAttributesProcess
-import Process.SeedEvaluationProcess
+from Process import _LogProcess as LogProcess
+from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
+from Process import _SeedAttributesProcess as SeedAttributesProcess
+from Process import _SeedEvaluationProcess as SeedEvaluationProcess
 
 class TestManager(object):
 
@@ -13,10 +13,10 @@ class TestManager(object):
         self._seedAttributesProcess.Hello()
         self._seedEvaluationProcess.Hello()
 
-    _logProcess = Process.LogProcess.LogProcess()
-    _preProcessingRawTextProcess = Process.PreProcessingRawTextProcess.PreProcessingRawTextProcess()
-    _seedAttributesProcess = Process.SeedAttributesProcess.SeedAttributesProcess()
-    _seedEvaluationProcess = Process.SeedEvaluationProcess.SeedEvaluationProcess()
+    _logProcess = LogProcess()
+    _preProcessingRawTextProcess = PreProcessingRawTextProcess()
+    _seedAttributesProcess = SeedAttributesProcess()
+    _seedEvaluationProcess = SeedEvaluationProcess()
 
     def __init__(self):
         pass

@@ -1,5 +1,5 @@
-import Manager.TrainManager
-import Manager.TestManager
+from Manager import _TrainManager as TrainManager
+from Manager import _TestManager as TestManager
 
 class CrossValidationView(object):
 
@@ -9,8 +9,8 @@ class CrossValidationView(object):
         self._trainManager.Hello()
         self._testManager.Hello()
 
-    _testManager = Manager.TestManager.TestManager()
-    _trainManager = Manager.TrainManager.TrainManager()
+    _testManager = TestManager()
+    _trainManager = TrainManager()
 
     def __init__(self):
         pass
