@@ -24,4 +24,4 @@ class TokenRepository(DataBaseConnection):
         print ('Hello, I\'m a repository')
 
     def __init__(self):
-        pass
+        super().__init__()

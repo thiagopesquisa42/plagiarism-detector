@@ -3,13 +3,33 @@ import Repository.DataBaseConfiguration as DataBaseConfiguration
 from sqlalchemy import create_engine
 # the Session class 
 from sqlalchemy.orm import sessionmaker
+import logging
 
 class DataBaseConnection(object):
-    # Create an engine to the census database
-    engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
-    SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
-    session = sessionmaker(bind=engine)()
+    session = None
+    
+    def setLogger(self):
+        init = "\n"
+        ascTime = "%(asctime)s ";
+        levelName = "%(levelname)s ";
+        pathName = "%(pathname)s \n";
+        module = "%(module)s ";
+        functionName = "%(funcName)s ";
+        lineNumber = "%(lineno)d \n";
+        message = "%(message)s \n";
+
+        logFormat = init + ascTime + levelName + pathName + module + functionName + lineNumber + message
+        logging.basicConfig(filename = 'logging.sqlalchemy.log', format = logFormat)
+        logger = logging.getLogger(name = 'sqlalchemy.engine')
+        logger.setLevel(logging.INFO)
+                
+        infoLogStruct = "\n ascTime levelName pathName \n module funcName lineNumber \n message \n"
+        logger.info("This log has the struct: " + infoLogStruct)
 
     def __init__(self):
-        pass
+        self.setLogger()
+        # Create an engine to the census database
+        engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
+            SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
+        self.session = sessionmaker(bind=engine)()
 
