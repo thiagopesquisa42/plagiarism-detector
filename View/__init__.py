@@ -6,3 +6,5 @@ from View import SetupView
 _SetupView = SetupView.SetupView
 from View import ValidationView
 _ValidationView = ValidationView.ValidationView
+from View import DataView
+_DataView = DataView.DataView

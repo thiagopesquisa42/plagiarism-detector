@@ -1,11 +1,13 @@
 from Entity import EntityBase
 _EntityBase = EntityBase.EntityBase
 
-from Entity import Token
-_Token = Token.Token
+from Entity import TextCollectionMeta
+_TextCollectionMeta = TextCollectionMeta.TextCollectionMeta
 from Entity import RawText
 _RawText = RawText.RawText
 _RawTextType = RawText.RawTextType
+from Entity import Token
+_Token = Token.Token
 # from Entity import BagOfTokens
 # _BagOfTokens = BagOfTokens.BagOfTokens
 # from Entity import Classifier

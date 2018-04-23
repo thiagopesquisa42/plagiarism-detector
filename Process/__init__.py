@@ -12,3 +12,5 @@ from Process import SeedEvaluationProcess
 _SeedEvaluationProcess = SeedEvaluationProcess.SeedEvaluationProcess
 from Process import SetupProcess
 _SetupProcess = SetupProcess.SetupProcess
+from Process import DataImportationProcess
+_DataImportationProcess = DataImportationProcess.DataImportationProcess

@@ -27,3 +27,5 @@ _RawTextRepository = RawTextRepository.RawTextRepository
 # _SetupRepository = SetupRepository.SetupRepository
 from Repository import TokenRepository
 _TokenRepository = TokenRepository.TokenRepository
+from Repository import TextCollectionMetaRepository
+_TextCollectionMetaRepository = TextCollectionMetaRepository.TextCollectionMetaRepository

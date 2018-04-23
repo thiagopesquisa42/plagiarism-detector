@@ -23,7 +23,7 @@ USE `plagiarism_detection` ;
 CREATE TABLE IF NOT EXISTS `plagiarism_detection`.`text_collection_meta` (
   `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `creationDate` DATETIME NOT NULL,
-  `fileName` TEXT NOT NULL,
+  `name` TEXT NOT NULL,
   `sourceUrl` TEXT NULL,
   `description` TEXT NOT NULL,
   PRIMARY KEY (`id`))

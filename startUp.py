@@ -2,6 +2,7 @@ from View import _SetupView as SetupView
 from View import _ExecuteView as ExecuteView
 from View import _ValidationView as ValidationView
 from View import _CrossValidationView as CrossValidationView
+from View import _DataView as DataView
 
 class StartUp(object):
 
@@ -14,13 +15,18 @@ class StartUp(object):
         self._executeView.Hello()
         self._validationView.Hello()
         self._crossValidationView.Hello()
+    
+    def ImportPanDataBase(self):
+        self._dataView.Import()
 
     _setupView = SetupView()
     _executeView = ExecuteView()
     _validationView = ValidationView()
     _crossValidationView = CrossValidationView()
+    _dataView = DataView()
 
     def __init__(self):
         pass
 
-StartUp().LayersComunnicationTest()
+# StartUp().LayersComunnicationTest()
+StartUp().ImportPanDataBase()

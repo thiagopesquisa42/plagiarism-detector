@@ -4,3 +4,5 @@ from Manager import TestManager
 _TestManager = TestManager.TestManager
 from Manager import TrainManager
 _TrainManager = TrainManager.TrainManager
+from Manager import DataManager
+_DataManager = DataManager.DataManager
