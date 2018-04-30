@@ -8,6 +8,7 @@ class TextCollectionMetaRepository(DataBaseConnection):
             return
         self.session.add(textCollectionMeta)
         self.session.commit()
+        return textCollectionMeta.id
 
     def Get(self, id):
         return self.session.query(TextCollectionMeta).filter(TextCollectionMeta.id == id).first()

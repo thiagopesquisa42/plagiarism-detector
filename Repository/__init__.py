@@ -15,4 +15,6 @@ from Repository import RawTextExcerptLocationRepository
 _RawTextExcerptLocationRepository = RawTextExcerptLocationRepository.RawTextExcerptLocationRepository
 from Repository import RawTextPairRepository
 _RawTextPairRepository = RawTextPairRepository.RawTextPairRepository
+from Repository import PanRepository
+_PanRepository = PanRepository.PanRepository
 

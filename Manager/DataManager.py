@@ -1,4 +1,5 @@
 from Process import _DataImportationProcess as DataImportationProcess
+from Entity import _TextCollectionMeta as TextCollectionMeta
 
 class DataManager(object):
 
@@ -8,7 +9,14 @@ class DataManager(object):
         self._dataImportationProcess.Hello()
 
     def ImportPanDataBase(self):
-        self._dataImportationProcess.ImportFromPanFiles(1,2)
+        textCollectionMeta = TextCollectionMeta(
+            sourceUrl = None,
+            name = 'pan14-text-alignment-test-corpus3-2014-05-14',
+            description = 'teste',
+            creationDate = '2014-05-14')
+        self._dataImportationProcess.ImportFromPanFiles(
+            textCollectionMeta = textCollectionMeta, 
+            folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
 
     _dataImportationProcess = DataImportationProcess()
 

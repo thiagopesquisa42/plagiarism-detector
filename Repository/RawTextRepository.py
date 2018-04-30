@@ -8,6 +8,13 @@ class RawTextRepository(DataBaseConnection):
             return
         self.session.add(rawText)
         self.session.commit()
+    
+    def InsertList(self, rawTextList):
+        if(rawTextList == None or len(rawTextList) == 0):
+            return
+        for rawText in rawTextList:
+            self.session.add(rawText)
+        self.session.commit()
 
     def Get(self, id):
         return self.session.query(RawText).filter(RawText.id == id).first()
