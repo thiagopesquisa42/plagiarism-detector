@@ -19,6 +19,19 @@ class RawTextRepository(DataBaseConnection):
     def Get(self, id):
         return self.session.query(RawText).filter(RawText.id == id).first()
 
+    def GetTupleRawTextIdsSuspiciousSource(self, tupleFileNameSuspiciousSource, textCollectionMetaId):
+        rawTextSuspiciousId = self.session.query(RawText.id).filter(
+            (RawText.fileName == tupleFileNameSuspiciousSource[0]) & 
+            (RawText.textCollectionMetaId == textCollectionMetaId)).scalar()
+        rawTextSourceId = self.session.query(RawText.id).filter(
+            (RawText.fileName == tupleFileNameSuspiciousSource[1]) & 
+            (RawText.textCollectionMetaId == textCollectionMetaId)).scalar()
+        if((rawTextSuspiciousId is not None)
+            and (rawTextSourceId is not None)):
+            return (rawTextSuspiciousId, rawTextSourceId)
+        else:
+            return None
+
     # def Update(self, rawText):
     #     if(rawText == None):
     #         return

@@ -25,5 +25,13 @@ class PanRepository():
             rawTextList.append(rawText)
         return rawTextList
 
+    def GetTupleFileNameSuspiciousSourceList(self, pairsFilePath):
+        tupleFileNameList = []
+        with open(pairsFilePath, 'r') as pairsFile:
+            for pairsFileLine in pairsFile:
+                suspiciousFileName, sourceFileName = pairsFileLine.split()
+                tupleFileNameList.append((suspiciousFileName, sourceFileName))
+        return tupleFileNameList
+
     def Hello(self):
         print ('Hello, I\'m a repository')

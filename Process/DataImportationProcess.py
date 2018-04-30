@@ -30,8 +30,14 @@ class DataImportationProcess(object):
         #  import pairs relationships,
         #  import detections relationships.
         textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
-        rawTextList = self.GetRawTexts(folderCompletePath = folderCompletePath, textCollectionMetaId = textCollectionMetaId )
-        self.SaveRawTexts(rawTextList = rawTextList)
+        rawTextList = self.GetRawTexts(
+            folderCompletePath = folderCompletePath, 
+            textCollectionMetaId = textCollectionMetaId)
+        self.SaveRawTextList(rawTextList = rawTextList)
+        rawTextPairList = self.GetRawTextPairs(
+            folderCompletePath = folderCompletePath, 
+            textCollectionMetaId = textCollectionMetaId)
+        self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
 
     def SaveTextCollection(self, textCollectionMeta):
         return self._textCollectionMetaRepository.Insert(textCollectionMeta = textCollectionMeta)
@@ -50,9 +56,29 @@ class DataImportationProcess(object):
         rawTextList = suspiciousRawTextList + sourceRawTextList
         return rawTextList
         
-    def SaveRawTexts(self, rawTextList):
-        self._rawTextRepository.InsertList(rawTextList)
-        
+    def SaveRawTextList(self, rawTextList):
+        self._rawTextRepository.InsertList(rawTextList = rawTextList)
+
+    def GetRawTextPairs(self, folderCompletePath, textCollectionMetaId):
+        pairsFilePath = os.path.join(folderCompletePath, PanConstant.PAIRS_FILE_NAME)
+        tupleFileNameSuspiciousSourceList = self._panRepository.GetTupleFileNameSuspiciousSourceList(
+            pairsFilePath = pairsFilePath)
+        rawTextPairList = []
+        for tupleFileNameSuspiciousSource in tupleFileNameSuspiciousSourceList:
+            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
+                tupleFileNameSuspiciousSource = tupleFileNameSuspiciousSource,
+                textCollectionMetaId = textCollectionMetaId)
+            if(tupleRawTextIdsSuspiciousSource is None):
+                continue
+            rawTextPair = RawTextPair(
+                suspiciousRawTextId = tupleRawTextIdsSuspiciousSource[0], 
+                sourceRawTextId = tupleRawTextIdsSuspiciousSource[1])
+            rawTextPairList.append(rawTextPair)
+        return rawTextPairList
+    
+    def SaveRawTextPairList(self, rawTextPairList):
+        self._rawTextPairRepository.InsertList(rawTextPairList = rawTextPairList)        
+
     _textCollectionMetaRepository = TextCollectionMetaRepository()
     _rawTextRepository = RawTextRepository()
     _rawTextPairRepository = RawTextPairRepository()

@@ -9,6 +9,13 @@ class RawTextPairRepository(DataBaseConnection):
         self.session.add(rawTextPair)
         self.session.commit()
 
+    def InsertList(self, rawTextPairList):
+        if(rawTextPairList == None or len(rawTextPairList) == 0):
+            return
+        for rawTextPair in rawTextPairList:
+            self.session.add(rawTextPair)
+        self.session.commit()
+
     def Get(self, id):
         return self.session.query(RawTextPair).filter(RawTextPair.id == id).first()
 
