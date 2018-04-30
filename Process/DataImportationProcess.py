@@ -7,6 +7,7 @@ from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
 from Entity import _EnumYesNo as EnumYesNo
 from Entity import _PlagiarismObfuscation as PlagiarismObfuscation
 from Entity import _PlagiarismType as PlagiarismType
+from Entity import _DetectionPanXmlPlain as DetectionPanXmlPlain
 from Repository import _TextCollectionMetaRepository as TextCollectionMetaRepository
 from Repository import _RawTextRepository as RawTextRepository
 from Repository import _RawTextPairRepository as RawTextPairRepository
@@ -29,15 +30,21 @@ class DataImportationProcess(object):
         #  save rawTexts, 
         #  import pairs relationships,
         #  import detections relationships.
-        textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
-        rawTextList = self.GetRawTexts(
-            folderCompletePath = folderCompletePath, 
+
+        # textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+        # rawTextList = self.GetRawTexts(
+        #     folderCompletePath = folderCompletePath, 
+        #     textCollectionMetaId = textCollectionMetaId)
+        # self.SaveRawTextList(rawTextList = rawTextList)
+        # rawTextPairList = self.GetRawTextPairList(
+        #     folderCompletePath = folderCompletePath, 
+        #     textCollectionMetaId = textCollectionMetaId)
+        # self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
+        textCollectionMetaId = 22
+        detectionList= self.ExtractDetectionList(
+            folderCompletePath = folderCompletePath,
             textCollectionMetaId = textCollectionMetaId)
-        self.SaveRawTextList(rawTextList = rawTextList)
-        rawTextPairList = self.GetRawTextPairs(
-            folderCompletePath = folderCompletePath, 
-            textCollectionMetaId = textCollectionMetaId)
-        self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
+        self.SaveDetectionList(detectionList = detectionList)
 
     def SaveTextCollection(self, textCollectionMeta):
         return self._textCollectionMetaRepository.Insert(textCollectionMeta = textCollectionMeta)
@@ -59,7 +66,7 @@ class DataImportationProcess(object):
     def SaveRawTextList(self, rawTextList):
         self._rawTextRepository.InsertList(rawTextList = rawTextList)
 
-    def GetRawTextPairs(self, folderCompletePath, textCollectionMetaId):
+    def GetRawTextPairList(self, folderCompletePath, textCollectionMetaId):
         pairsFilePath = os.path.join(folderCompletePath, PanConstant.PAIRS_FILE_NAME)
         tupleFileNameSuspiciousSourceList = self._panRepository.GetTupleFileNameSuspiciousSourceList(
             pairsFilePath = pairsFilePath)
@@ -78,6 +85,94 @@ class DataImportationProcess(object):
     
     def SaveRawTextPairList(self, rawTextPairList):
         self._rawTextPairRepository.InsertList(rawTextPairList = rawTextPairList)        
+
+    def GetDetectionPanXmlPlainList(self, folderCompletePath):
+        detectionFolderPathList = [
+            os.path.join(folderCompletePath, PanConstant.NO_OBFUSCATION_DETECTION_FOLDER),
+            os.path.join(folderCompletePath, PanConstant.RANDOM_OBFUSCATION_DETECTION_FOLDER)]
+        detectionFolderPathList = list(filter(lambda folderPath: os.path.isdir(folderPath), detectionFolderPathList))
+        detectionPanXmlPlainList = []
+        for detectionFolderPath in detectionFolderPathList:
+            detectionPanXmlPlainList = detectionPanXmlPlainList + self._panRepository.GetDetectionPanXmlPlainListFromDiretory(
+                filesFolderPath = detectionFolderPath)
+        return detectionPanXmlPlainList
+
+    def ExtractRawTextExcerptLocationDistinctList(self, detectionPanXmlPlainList, textCollectionMetaId):
+        rawTextExcerptLocationList = []
+        for detectionPanXmlPlain in detectionPanXmlPlainList:
+            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
+                tupleFileNameSuspiciousSource = (detectionPanXmlPlain.suspiciousFileName, detectionPanXmlPlain.sourceFileName), 
+                textCollectionMetaId = textCollectionMetaId)
+            suspiciousRawTextExcerptLocation = RawTextExcerptLocation(
+                stringLength = detectionPanXmlPlain.suspiciousLength,
+                firstCharacterPosition = detectionPanXmlPlain.suspiciousOffset,
+                preProcessedDataId = None,
+                rawTextId = tupleRawTextIdsSuspiciousSource[0])
+            sourceRawTextExcerptLocation = RawTextExcerptLocation(
+                stringLength = detectionPanXmlPlain.sourceLength,
+                firstCharacterPosition = detectionPanXmlPlain.sourceOffset,
+                preProcessedDataId = None,
+                rawTextId = tupleRawTextIdsSuspiciousSource[1])
+            rawTextExcerptLocationList.append(suspiciousRawTextExcerptLocation)
+            rawTextExcerptLocationList.append(sourceRawTextExcerptLocation)
+        rawTextExcerptLocationDistinctList = list(set(rawTextExcerptLocationList))
+        return rawTextExcerptLocationDistinctList
+
+    def FillIdsRawTextExcerptLocationList(self, rawTextExcerptLocationList):
+        self._rawTextExcerptLocationRepository.InsertList(
+            rawTextExcerptLocationList = rawTextExcerptLocationList)
+        return rawTextExcerptLocationList
+
+    def GetDetectionList(self, detectionPanXmlPlainList, rawTextExcerptLocationList,
+        textCollectionMetaId):
+        detectionList = []
+        for detectionPanXmlPlain in detectionPanXmlPlainList:
+            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
+                tupleFileNameSuspiciousSource = (detectionPanXmlPlain.suspiciousFileName, detectionPanXmlPlain.sourceFileName), 
+                textCollectionMetaId = textCollectionMetaId)
+            #TODO: try to assigment rawTextId values by the bind in rawTextExcerptLocation objects instead to search at the database
+            #   tried, very lazy
+            #TODO: the next statment is raising an error 'StopIteration'. See why it's doing this.
+            def findSuspiciousRawTextExcerptLocation(rawTextExcerptLocation):
+                return (rawTextExcerptLocation.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
+                    rawTextExcerptLocation.firstCharacterPosition == detectionPanXmlPlain.suspiciousOffset and
+                    rawTextExcerptLocation.stringLength == detectionPanXmlPlain.suspiciousLength)
+            def findSourceRawTextExcerptLocation(rawTextExcerptLocation):
+                return (rawTextExcerptLocation.rawTextId == tupleRawTextIdsSuspiciousSource[1] and
+                    rawTextExcerptLocation.firstCharacterPosition == detectionPanXmlPlain.sourceOffset and
+                    rawTextExcerptLocation.stringLength == detectionPanXmlPlain.sourceLength)
+            _rawTextSuspiciousLocationId = next(
+                item.id for item in rawTextExcerptLocationList if findSuspiciousRawTextExcerptLocation(item))
+            _rawTextSourceLocationId = next(
+                item.id for item in rawTextExcerptLocationList if findSourceRawTextExcerptLocation(item))
+            detection = Detection(
+                textCollectionMetaId = textCollectionMetaId,
+                rawTextSuspiciousLocationId = _rawTextSuspiciousLocationId, 
+                rawTextSourceLocationId = _rawTextSourceLocationId,
+                _type = detectionPanXmlPlain._type,
+                obfuscationDegree = detectionPanXmlPlain.obfuscationDegree,
+                obfuscation = detectionPanXmlPlain.obfuscation,
+                name = detectionPanXmlPlain.name,
+                isGiven = EnumYesNo.yes,
+                isDetected = EnumYesNo.no)
+            detectionList.append(detection)
+        return detectionList
+
+    def ExtractDetectionList(self, folderCompletePath, textCollectionMetaId):
+        detectionPanXmlPlainList = self.GetDetectionPanXmlPlainList(folderCompletePath = folderCompletePath)
+        rawTextExcerptLocationList = self.ExtractRawTextExcerptLocationDistinctList(
+            detectionPanXmlPlainList = detectionPanXmlPlainList, 
+            textCollectionMetaId = textCollectionMetaId)
+        rawTextExcerptLocationList = self.FillIdsRawTextExcerptLocationList(
+            rawTextExcerptLocationList = rawTextExcerptLocationList)
+        detectionList = self.GetDetectionList(
+            detectionPanXmlPlainList = detectionPanXmlPlainList, 
+            rawTextExcerptLocationList = rawTextExcerptLocationList,
+            textCollectionMetaId = textCollectionMetaId)
+        return detectionList
+
+    def SaveDetectionList(self, detectionList):
+        self._detectionRepository.InsertList(detectionList = detectionList) 
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
     _rawTextRepository = RawTextRepository()

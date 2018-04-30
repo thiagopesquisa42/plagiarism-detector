@@ -9,6 +9,13 @@ class DetectionRepository(DataBaseConnection):
         self.session.add(detection)
         self.session.commit()
 
+    def InsertList(self, detectionList):
+        if(detectionList == None or len(detectionList) == 0):
+            return
+        for detection in detectionList:
+            self.session.add(detection)
+        self.session.commit()
+
     def Get(self, id):
         return self.session.query(Detection).filter(Detection.id == id).first()
 

@@ -8,10 +8,25 @@ class RawTextExcerptLocationRepository(DataBaseConnection):
             return
         self.session.add(rawTextExcerptLocation)
         self.session.commit()
+        return rawTextExcerptLocation.id
+
+    def InsertList(self, rawTextExcerptLocationList):
+        if(rawTextExcerptLocationList == None or len(rawTextExcerptLocationList) == 0):
+            return
+        for rawTextExcerptLocation in rawTextExcerptLocationList:
+            self.session.add(rawTextExcerptLocation)
+        self.session.commit()
 
     def Get(self, id):
         return self.session.query(RawTextExcerptLocation).filter(RawTextExcerptLocation.id == id).first()
 
+    def GetIdByRawTextIdLengthFirstCharacter(self, rawTextId, stringLength, firstCharacterPosition):
+        rawTextExcerptLocationId = self.session.query(RawTextExcerptLocation.id).filter(
+            (RawTextExcerptLocation.rawTextId == rawTextId) & 
+            (RawTextExcerptLocation.stringLength == stringLength) &
+            (RawTextExcerptLocation.firstCharacterPosition == firstCharacterPosition)).one_or_none()
+        return rawTextExcerptLocationId
+    
     def Hello(self):
         print ('Hello, I\'m a repository')
 
