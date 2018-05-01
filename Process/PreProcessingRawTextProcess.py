@@ -9,7 +9,6 @@ class PreProcessingRawTextProcess(object):
         print ('And I use these internals:')
         self._tokenInternalProcess.Hello()
         self._rawTextInternalProcess.Hello()
-        self._rawTextInternalProcess.TestInsertARawText()
 
     _tokenInternalProcess = TokenInternalProcess()
     _rawTextInternalProcess = RawTextInternalProcess()

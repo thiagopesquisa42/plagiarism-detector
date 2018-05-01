@@ -15,11 +15,13 @@ from Repository import _RawTextExcerptLocationRepository as RawTextExcerptLocati
 from Repository import _DetectionRepository as DetectionRepository
 from Repository import _PanRepository as PanRepository
 from Constant import _Pan as PanConstant
+from Process import _BaseProcess as BaseProcess
 import os
 
-class DataImportationProcess(object):
+class DataImportationProcess(BaseProcess):
 
     def Hello(self):
+        self.logger.info('Testing')
         print ('Hello, I\'m the DataImportationProcess')
         print ('And I use these repositories:')
         print ('And I use these internals:')
@@ -170,4 +172,4 @@ class DataImportationProcess(object):
     _panRepository = PanRepository()
 
     def __init__(self):
-        pass
+        super().__init__()

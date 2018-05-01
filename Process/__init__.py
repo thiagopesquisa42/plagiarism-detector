@@ -1,3 +1,5 @@
+from Process import BaseProcess
+_BaseProcess = BaseProcess.BaseProcess
 from Process import LogProcess
 _LogProcess = LogProcess.LogProcess
 from Process import PlagiarismTypeProcess

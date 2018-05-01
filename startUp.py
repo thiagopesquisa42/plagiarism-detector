@@ -11,6 +11,7 @@ class StartUp(object):
 
     def LayersComunnicationTest(self):
         self.Hello()
+        self._dataView.Hello()
         self._setupView.Hello()
         self._executeView.Hello()
         self._validationView.Hello()
@@ -28,5 +29,5 @@ class StartUp(object):
     def __init__(self):
         pass
 
-# StartUp().LayersComunnicationTest()
-StartUp().ImportPanDataBase()
+StartUp().LayersComunnicationTest()
+# StartUp().ImportPanDataBase()
