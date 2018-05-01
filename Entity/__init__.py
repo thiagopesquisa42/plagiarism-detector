@@ -20,6 +20,5 @@ _Token = Token.Token
 from Entity import Detection
 _Detection = Detection.Detection
 
-from Entity import DetectionEntitiesWithoutIds
-_PanDetectionEntitiesWithoutIds = DetectionEntitiesWithoutIds.DetectionEntitiesWithoutIds
-_DetectionPanXmlPlain = DetectionEntitiesWithoutIds.DetectionPanXmlPlain
+from Entity import DetectionPanXmlPlain
+_DetectionPanXmlPlain = DetectionPanXmlPlain.DetectionPanXmlPlain
