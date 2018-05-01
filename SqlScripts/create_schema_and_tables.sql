@@ -334,7 +334,7 @@ CREATE TABLE IF NOT EXISTS `plagiarism_detection`.`detection` (
   `rawTextSuspiciousLocationId` INT UNSIGNED NOT NULL,
   `rawTextSourceLocationId` INT UNSIGNED NOT NULL,
   `name` TEXT NULL,
-  `obfuscation` ENUM('none') NULL,
+  `obfuscation` ENUM('none', 'random') NULL,
   `type` ENUM('artificial') NULL,
   `obfuscationDegree` DOUBLE NULL,
   `isGiven` ENUM('Yes', 'No') NOT NULL,
