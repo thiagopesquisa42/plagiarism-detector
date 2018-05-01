@@ -1,5 +1,6 @@
 from Repository import _DataBaseConnection as DataBaseConnection
 from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
+from Entity import _RawText as RawText
 
 class RawTextExcerptLocationRepository(DataBaseConnection):
 
@@ -20,6 +21,12 @@ class RawTextExcerptLocationRepository(DataBaseConnection):
     def Get(self, id):
         return self.session.query(RawTextExcerptLocation).filter(RawTextExcerptLocation.id == id).first()
 
+    def GetAllFromTextCollectionMetaId(self, textCollectionMetaId):
+        return self.session.query(
+            RawTextExcerptLocation).join(
+                RawText).filter(
+                    RawText.textCollectionMetaId == textCollectionMetaId).all()
+        
     def GetIdByRawTextIdLengthFirstCharacter(self, rawTextId, stringLength, firstCharacterPosition):
         rawTextExcerptLocationId = self.session.query(RawTextExcerptLocation.id).filter(
             (RawTextExcerptLocation.rawTextId == rawTextId) & 
