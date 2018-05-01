@@ -1,17 +1,20 @@
 import logging
 
 class BaseProcess(object):
-    def setLogger(self):
+    @staticmethod
+    def setLogger():
+        if(isinstance(BaseProcess.logger, logging.Logger)):
+            return
         init = "\n"
         ascTime = "%(asctime)s ";
         levelName = "%(levelname)s ";
-        pathName = "%(pathname)s \n";
+        #pathName = "%(pathname)s \n";
         module = "%(module)s ";
         functionName = "%(funcName)s ";
         lineNumber = "%(lineno)d \n";
         message = "%(message)s \n";
 
-        logFormat = init + ascTime + levelName + pathName + module + functionName + lineNumber + message
+        logFormat = init + ascTime + levelName + module + functionName + lineNumber + message
         logger = logging.getLogger(name = 'process')
         fileHandler = logging.FileHandler('logging.process.log')
         formatter = logging.Formatter(logFormat)
@@ -19,11 +22,13 @@ class BaseProcess(object):
         logger.addHandler(fileHandler) 
         logger.setLevel(logging.INFO)
                 
-        infoLogStruct = "\n ascTime levelName pathName \n module funcName lineNumber \n message \n"
+        infoLogStruct = "\n ascTime levelName module funcName lineNumber \n message \n"
         logger.info("This log has the struct: " + infoLogStruct)
-        self.logger = logger
-
+        BaseProcess.logger = logger
+    
     logger = None
 
     def __init__(self):
-        self.setLogger()
+        self.logger = BaseProcess.logger
+
+BaseProcess.setLogger()

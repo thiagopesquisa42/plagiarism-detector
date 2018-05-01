@@ -1,9 +1,11 @@
 from Internal import _TokenInternalProcess as TokenInternalProcess
 from Internal import _RawTextInternalProcess as RawTextInternalProcess
+from Process import _BaseProcess as BaseProcess
 
-class PreProcessingRawTextProcess(object):
+class PreProcessingRawTextProcess(BaseProcess):
 
     def Hello(self):
+        self.logger.info('Testing from PreProcessingRawTextProcess')
         print ('Hello, I\'m the PreProcessingRawTextProcess')
         print ('And I use these repositories:')
         print ('And I use these internals:')
@@ -14,6 +16,6 @@ class PreProcessingRawTextProcess(object):
     _rawTextInternalProcess = RawTextInternalProcess()
 
     def __init__(self):
-        pass
+        super().__init__()
 
     

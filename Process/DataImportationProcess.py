@@ -21,7 +21,7 @@ import os
 class DataImportationProcess(BaseProcess):
 
     def Hello(self):
-        self.logger.info('Testing')
+        self.logger.info('Testing from DataImportationProcess')
         print ('Hello, I\'m the DataImportationProcess')
         print ('And I use these repositories:')
         print ('And I use these internals:')
