@@ -25,22 +25,15 @@ class DataImportationProcess(object):
         print ('And I use these internals:')
 
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
-        # overview: 
-        #  create dataBaseId,
-        #  save rawTexts, 
-        #  import pairs relationships,
-        #  import detections relationships.
-
-        # textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
-        # rawTextList = self.GetRawTexts(
-        #     folderCompletePath = folderCompletePath, 
-        #     textCollectionMetaId = textCollectionMetaId)
-        # self.SaveRawTextList(rawTextList = rawTextList)
-        # rawTextPairList = self.GetRawTextPairList(
-        #     folderCompletePath = folderCompletePath, 
-        #     textCollectionMetaId = textCollectionMetaId)
-        # self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
-        textCollectionMetaId = 22
+        textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+        rawTextList = self.GetRawTexts(
+            folderCompletePath = folderCompletePath, 
+            textCollectionMetaId = textCollectionMetaId)
+        self.SaveRawTextList(rawTextList = rawTextList)
+        rawTextPairList = self.GetRawTextPairList(
+            folderCompletePath = folderCompletePath, 
+            textCollectionMetaId = textCollectionMetaId)
+        self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
         detectionList= self.ExtractDetectionList(
             folderCompletePath = folderCompletePath,
             textCollectionMetaId = textCollectionMetaId)
@@ -130,28 +123,23 @@ class DataImportationProcess(object):
             tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
                 tupleFileNameSuspiciousSource = (detectionPanXmlPlain.suspiciousFileName, detectionPanXmlPlain.sourceFileName), 
                 textCollectionMetaId = textCollectionMetaId)
-            #TODO: try to assigment rawTextId values by the bind in rawTextExcerptLocation objects instead to search at the database
-            #   tried, very lazy
-            #TODO: the next statment is raising an error 'StopIteration'. See why it's doing this.
-            def findSuspiciousRawTextExcerptLocation(rawTextExcerptLocation):
-                return (rawTextExcerptLocation.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
-                    rawTextExcerptLocation.firstCharacterPosition == detectionPanXmlPlain.suspiciousOffset and
-                    rawTextExcerptLocation.stringLength == detectionPanXmlPlain.suspiciousLength)
-            def findSourceRawTextExcerptLocation(rawTextExcerptLocation):
-                return (rawTextExcerptLocation.rawTextId == tupleRawTextIdsSuspiciousSource[1] and
-                    rawTextExcerptLocation.firstCharacterPosition == detectionPanXmlPlain.sourceOffset and
-                    rawTextExcerptLocation.stringLength == detectionPanXmlPlain.sourceLength)
             _rawTextSuspiciousLocationId = next(
-                item.id for item in rawTextExcerptLocationList if findSuspiciousRawTextExcerptLocation(item))
+                item.id for item in rawTextExcerptLocationList if (
+                    item.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
+                    item.firstCharacterPosition == detectionPanXmlPlain.suspiciousOffset and
+                    item.stringLength == detectionPanXmlPlain.suspiciousLength))
             _rawTextSourceLocationId = next(
-                item.id for item in rawTextExcerptLocationList if findSourceRawTextExcerptLocation(item))
+                item.id for item in rawTextExcerptLocationList if (
+                    item.rawTextId == tupleRawTextIdsSuspiciousSource[1] and
+                    item.firstCharacterPosition == detectionPanXmlPlain.sourceOffset and
+                    item.stringLength == detectionPanXmlPlain.sourceLength))
             detection = Detection(
                 textCollectionMetaId = textCollectionMetaId,
                 rawTextSuspiciousLocationId = _rawTextSuspiciousLocationId, 
                 rawTextSourceLocationId = _rawTextSourceLocationId,
-                _type = detectionPanXmlPlain._type,
+                _type = PlagiarismType.FromString(detectionPanXmlPlain._type),
                 obfuscationDegree = detectionPanXmlPlain.obfuscationDegree,
-                obfuscation = detectionPanXmlPlain.obfuscation,
+                obfuscation = PlagiarismObfuscation.FromString(detectionPanXmlPlain.obfuscation),
                 name = detectionPanXmlPlain.name,
                 isGiven = EnumYesNo.yes,
                 isDetected = EnumYesNo.no)

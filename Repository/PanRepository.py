@@ -61,12 +61,12 @@ class PanRepository():
             detectionPanXmlPlain = DetectionPanXmlPlain(
                 name = featureXml.attributes[featureStruture.attributes.NAME].value if hasName else None,
                 obfuscation = featureXml.attributes[featureStruture.attributes.OBFUSCATION].value if hasObfuscation else None,
-                obfuscationDegree = featureXml.attributes[featureStruture.attributes.OBFUSCATION_DEGREE].value if hasObfuscationDegree else None,
+                obfuscationDegree = float(featureXml.attributes[featureStruture.attributes.OBFUSCATION_DEGREE].value) if hasObfuscationDegree else None,
                 _type = featureXml.attributes[featureStruture.attributes.TYPE].value if hasType else None,
-                suspiciousLength = featureXml.attributes[featureStruture.attributes.THIS_LENGTH].value if hasSuspiciousLength else None,
-                suspiciousOffset = featureXml.attributes[featureStruture.attributes.THIS_OFFSET].value if hasSuspiciousOffset else None,
-                sourceLength = featureXml.attributes[featureStruture.attributes.SOURCE_LENGTH].value if hasSourceLength else None,
-                sourceOffset = featureXml.attributes[featureStruture.attributes.SOURCE_OFFSET].value if hasSourceOffset else None,
+                suspiciousLength = int(featureXml.attributes[featureStruture.attributes.THIS_LENGTH].value) if hasSuspiciousLength else None,
+                suspiciousOffset = int(featureXml.attributes[featureStruture.attributes.THIS_OFFSET].value) if hasSuspiciousOffset else None,
+                sourceLength = int(featureXml.attributes[featureStruture.attributes.SOURCE_LENGTH].value) if hasSourceLength else None,
+                sourceOffset = int(featureXml.attributes[featureStruture.attributes.SOURCE_OFFSET].value) if hasSourceOffset else None,
                 sourceFileName = featureXml.attributes[featureStruture.attributes.SOURCE_REFERENCE].value if hasSourceFileName else None,
                 suspiciousFileName = _suspiciousFileName)
             detectionPanXmlPlainList.append(detectionPanXmlPlain)
