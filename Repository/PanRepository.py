@@ -1,8 +1,8 @@
 from Entity import _RawText as RawText
 from Entity import _Detection as Detection
 from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
-from Entity import _DetectionPanXmlPlain as DetectionPanXmlPlain
-from Constant import _PanDetectionXmlStructure as PanDetectionXmlStructure
+from Entity import _PanDetectionXmlPlain as PanDetectionXmlPlain
+from Entity import _PanDetectionXmlStructure as PanDetectionXmlStructure
 import os
 from xml.dom import minidom
 
@@ -38,52 +38,52 @@ class PanRepository():
                 tupleFileNameList.append((suspiciousFileName, sourceFileName))
         return tupleFileNameList
 
-    def GetDetectionPanXmlPlainListFromFile(self, filePath):
-        documentStructure = PanDetectionXmlStructure.Structure
-        featureStruture = documentStructure.featureChild
+    def GetPanDetectionXmlPlainListFromFile(self, filePath):
+        documentStructure = PanDetectionXmlStructure.Document
+        featureStruture = documentStructure.Feature
         documentXml = minidom.parse(filePath).getElementsByTagName(
             name = documentStructure.DOCUMENT)[0]
-        _suspiciousFileName = documentXml.attributes[documentStructure.attributes.REFERENCE].value
-        detectionPanXmlPlainList = []
+        _suspiciousFileName = documentXml.attributes[documentStructure.Attributes.REFERENCE].value
+        panDetectionXmlPlainList = []
         for featureXml in documentXml.getElementsByTagName(
             name = featureStruture.FEATURE):
             
-            hasName = featureXml.hasAttribute(featureStruture.attributes.NAME)
-            hasObfuscation = featureXml.hasAttribute(featureStruture.attributes.OBFUSCATION)
-            hasObfuscationDegree = featureXml.hasAttribute(featureStruture.attributes.OBFUSCATION_DEGREE)
-            hasType = featureXml.hasAttribute(featureStruture.attributes.TYPE)
-            hasSuspiciousLength = featureXml.hasAttribute(featureStruture.attributes.THIS_LENGTH)
-            hasSuspiciousOffset = featureXml.hasAttribute(featureStruture.attributes.THIS_OFFSET)
-            hasSourceLength = featureXml.hasAttribute(featureStruture.attributes.SOURCE_LENGTH)
-            hasSourceOffset = featureXml.hasAttribute(featureStruture.attributes.SOURCE_OFFSET)
-            hasSourceFileName = featureXml.hasAttribute(featureStruture.attributes.SOURCE_REFERENCE)
+            hasName = featureXml.hasAttribute(featureStruture.Attributes.NAME)
+            hasObfuscation = featureXml.hasAttribute(featureStruture.Attributes.OBFUSCATION)
+            hasObfuscationDegree = featureXml.hasAttribute(featureStruture.Attributes.OBFUSCATION_DEGREE)
+            hasType = featureXml.hasAttribute(featureStruture.Attributes.TYPE)
+            hasSuspiciousLength = featureXml.hasAttribute(featureStruture.Attributes.THIS_LENGTH)
+            hasSuspiciousOffset = featureXml.hasAttribute(featureStruture.Attributes.THIS_OFFSET)
+            hasSourceLength = featureXml.hasAttribute(featureStruture.Attributes.SOURCE_LENGTH)
+            hasSourceOffset = featureXml.hasAttribute(featureStruture.Attributes.SOURCE_OFFSET)
+            hasSourceFileName = featureXml.hasAttribute(featureStruture.Attributes.SOURCE_REFERENCE)
             
-            detectionPanXmlPlain = DetectionPanXmlPlain(
-                name = featureXml.attributes[featureStruture.attributes.NAME].value if hasName else None,
-                obfuscation = featureXml.attributes[featureStruture.attributes.OBFUSCATION].value if hasObfuscation else None,
-                obfuscationDegree = float(featureXml.attributes[featureStruture.attributes.OBFUSCATION_DEGREE].value) if hasObfuscationDegree else None,
-                _type = featureXml.attributes[featureStruture.attributes.TYPE].value if hasType else None,
-                suspiciousLength = int(featureXml.attributes[featureStruture.attributes.THIS_LENGTH].value) if hasSuspiciousLength else None,
-                suspiciousOffset = int(featureXml.attributes[featureStruture.attributes.THIS_OFFSET].value) if hasSuspiciousOffset else None,
-                sourceLength = int(featureXml.attributes[featureStruture.attributes.SOURCE_LENGTH].value) if hasSourceLength else None,
-                sourceOffset = int(featureXml.attributes[featureStruture.attributes.SOURCE_OFFSET].value) if hasSourceOffset else None,
-                sourceFileName = featureXml.attributes[featureStruture.attributes.SOURCE_REFERENCE].value if hasSourceFileName else None,
+            panDetectionXmlPlain = PanDetectionXmlPlain(
+                name = featureXml.attributes[featureStruture.Attributes.NAME].value if hasName else None,
+                obfuscation = featureXml.attributes[featureStruture.Attributes.OBFUSCATION].value if hasObfuscation else None,
+                obfuscationDegree = float(featureXml.attributes[featureStruture.Attributes.OBFUSCATION_DEGREE].value) if hasObfuscationDegree else None,
+                _type = featureXml.attributes[featureStruture.Attributes.TYPE].value if hasType else None,
+                suspiciousLength = int(featureXml.attributes[featureStruture.Attributes.THIS_LENGTH].value) if hasSuspiciousLength else None,
+                suspiciousOffset = int(featureXml.attributes[featureStruture.Attributes.THIS_OFFSET].value) if hasSuspiciousOffset else None,
+                sourceLength = int(featureXml.attributes[featureStruture.Attributes.SOURCE_LENGTH].value) if hasSourceLength else None,
+                sourceOffset = int(featureXml.attributes[featureStruture.Attributes.SOURCE_OFFSET].value) if hasSourceOffset else None,
+                sourceFileName = featureXml.attributes[featureStruture.Attributes.SOURCE_REFERENCE].value if hasSourceFileName else None,
                 suspiciousFileName = _suspiciousFileName)
-            detectionPanXmlPlainList.append(detectionPanXmlPlain)
-        return detectionPanXmlPlainList
+            panDetectionXmlPlainList.append(panDetectionXmlPlain)
+        return panDetectionXmlPlainList
 
-    def GetDetectionPanXmlPlainListFromDiretory(self, filesFolderPath):
+    def GetPanDetectionXmlPlainListFromDiretory(self, filesFolderPath):
         xmlFilesNames = []
         for _file in os.listdir(filesFolderPath):
             if _file.endswith(".xml"):
                 xmlFilesNames.append(_file)
-        detectionPanXmlPlainList = []
+        panDetectionXmlPlainList = []
         for xmlFileName in xmlFilesNames:
             xmlFilePath = os.path.join(filesFolderPath, xmlFileName)
-            detectionPanXmlPlainListFromFile = self.GetDetectionPanXmlPlainListFromFile(
+            panDetectionXmlPlainListFromFile = self.GetPanDetectionXmlPlainListFromFile(
                 filePath = xmlFilePath)
-            detectionPanXmlPlainList = detectionPanXmlPlainList + detectionPanXmlPlainListFromFile
-        return detectionPanXmlPlainList
+            panDetectionXmlPlainList = panDetectionXmlPlainList + panDetectionXmlPlainListFromFile
+        return panDetectionXmlPlainList
 
     def Hello(self):
         print ('Hello, I\'m a repository')

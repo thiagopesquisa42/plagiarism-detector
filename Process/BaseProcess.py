@@ -1,20 +1,12 @@
+import util
 import logging
 
 class BaseProcess(object):
     @staticmethod
-    def setLogger():
+    def SetLogger():
         if(isinstance(BaseProcess.logger, logging.Logger)):
             return
-        init = "\n"
-        ascTime = "%(asctime)s ";
-        levelName = "%(levelname)s ";
-        #pathName = "%(pathname)s \n";
-        module = "%(module)s ";
-        functionName = "%(funcName)s ";
-        lineNumber = "%(lineno)d \n";
-        message = "%(message)s \n";
-
-        logFormat = init + ascTime + levelName + module + functionName + lineNumber + message
+        logFormat = util.GetLoggerFormat()
         logger = logging.getLogger(name = 'process')
         fileHandler = logging.FileHandler('logging.process.log')
         formatter = logging.Formatter(logFormat)
@@ -31,4 +23,4 @@ class BaseProcess(object):
     def __init__(self):
         self.logger = BaseProcess.logger
 
-BaseProcess.setLogger()
+BaseProcess.SetLogger()

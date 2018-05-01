@@ -20,5 +20,7 @@ _Token = Token.Token
 from Entity import Detection
 _Detection = Detection.Detection
 
-from Entity import DetectionPanXmlPlain
-_DetectionPanXmlPlain = DetectionPanXmlPlain.DetectionPanXmlPlain
+from Entity import Pan
+_PanFolderStructure = Pan.PanFolderStructure
+_PanDetectionXmlStructure = Pan.PanDetectionXmlStructure
+_PanDetectionXmlPlain = Pan.PanDetectionXmlPlain
