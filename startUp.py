@@ -29,5 +29,5 @@ class StartUp(object):
     def __init__(self):
         pass
 
-# StartUp().LayersComunnicationTest()
-StartUp().ImportPanDataBase()
+StartUp().LayersComunnicationTest()
+# StartUp().ImportPanDataBase()

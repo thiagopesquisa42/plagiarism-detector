@@ -1,4 +1,5 @@
 import util
+from constant import LoggerConstant
 import logging
 
 class BaseProcess(object):
@@ -6,9 +7,9 @@ class BaseProcess(object):
     def SetLogger():
         if(isinstance(BaseProcess.logger, logging.Logger)):
             return
-        logFormat = util.GetLoggerFormat()
-        logger = logging.getLogger(name = 'process')
-        fileHandler = logging.FileHandler('logging.process.log')
+        logFormat = util.LoggerUtil.GetLoggerFormat()
+        logger = logging.getLogger(name = LoggerConstant.Name.PROCESS)
+        fileHandler = logging.FileHandler(filename = LoggerConstant.File.PROCESS)
         formatter = logging.Formatter(logFormat)
         fileHandler.setFormatter(formatter)
         logger.addHandler(fileHandler) 
