@@ -83,8 +83,7 @@ class DataImportationProcess(BaseProcess):
 
     def GetPanDetectionXmlPlainList(self, folderCompletePath):
         detectionFolderPathList = [
-            os.path.join(folderCompletePath, PanFolderStructure.NO_OBFUSCATION_DETECTION_FOLDER),
-            os.path.join(folderCompletePath, PanFolderStructure.RANDOM_OBFUSCATION_DETECTION_FOLDER)]
+            os.path.join(folderCompletePath, detectionFolderName) for detectionFolderName in PanFolderStructure.DETECTION_FOLDER_NAME_LIST]
         detectionFolderPathList = list(filter(lambda folderPath: os.path.isdir(folderPath), detectionFolderPathList))
         panDetectionXmlPlainList = []
         for detectionFolderPath in detectionFolderPathList:
