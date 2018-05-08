@@ -10,6 +10,10 @@ class RawTextInternalProcess(object):
             _type = RawTextType.suspicious)
         self._rawTextRepository.Insert(document)
 
+    def GetRawTextsByCollectionId(self, textCollectionMetaId):
+        return self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+
+
     def Hello(self):
         print ('Hello, I\'m the RawTextInternalProcess')
         print ('And I use these repositories:')

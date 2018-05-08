@@ -1,18 +1,6 @@
 from Process import BaseProcess
 _BaseProcess = BaseProcess.BaseProcess
-from Process import LogProcess
-_LogProcess = LogProcess.LogProcess
-from Process import PlagiarismTypeProcess
-_PlagiarismTypeProcess = PlagiarismTypeProcess.PlagiarismTypeProcess
 from Process import PreProcessingRawTextProcess
 _PreProcessingRawTextProcess = PreProcessingRawTextProcess.PreProcessingRawTextProcess
-from Process import SeedAttributesProcess
-_SeedAttributesProcess = SeedAttributesProcess.SeedAttributesProcess
-from Process import SeedClassifierProcess
-_SeedClassifierProcess = SeedClassifierProcess.SeedClassifierProcess
-from Process import SeedEvaluationProcess
-_SeedEvaluationProcess = SeedEvaluationProcess.SeedEvaluationProcess
-from Process import SetupProcess
-_SetupProcess = SetupProcess.SetupProcess
 from Process import DataImportationProcess
 _DataImportationProcess = DataImportationProcess.DataImportationProcess

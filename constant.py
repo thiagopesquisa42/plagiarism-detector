@@ -2,6 +2,7 @@ import os
 
 class LoggerConstant():
     class Name():
+        REPOSITORY_SQLALCHEMY = 'sqlalchemy.engine'
         REPOSITORY = 'repository'
         INTERNAL = 'internal'
         PROCESS = 'process'
@@ -13,6 +14,7 @@ class LoggerConstant():
         FOLDER_PATH = 'log'
         BIG_LOG_FOLDER_PATH = os.path.join(FOLDER_PATH, 'big')
         FILE_EXTENSION = '.log'
+        REPOSITORY_SQLALCHEMY = os.path.join(FOLDER_PATH, 'repository_sqlalchemy' + FILE_EXTENSION)
         REPOSITORY = os.path.join(FOLDER_PATH, 'repository' + FILE_EXTENSION)
         INTERNAL = os.path.join(FOLDER_PATH, 'internal' + FILE_EXTENSION)
         PROCESS = os.path.join(FOLDER_PATH, 'process' + FILE_EXTENSION)

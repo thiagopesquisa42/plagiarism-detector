@@ -18,6 +18,9 @@ class RawTextRepository(DataBaseConnection):
 
     def Get(self, id):
         return self.session.query(RawText).filter(RawText.id == id).first()
+    
+    def GetByTextCollectionMetaId(self, textCollectionMetaId):
+        return self.session.query(RawText).filter(RawText.textCollectionMetaId == textCollectionMetaId).all()
 
     def GetTupleRawTextIdsSuspiciousSource(self, tupleFileNameSuspiciousSource, textCollectionMetaId):
         rawTextSuspiciousId = self.session.query(RawText.id).filter(

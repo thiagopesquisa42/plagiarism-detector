@@ -5,8 +5,6 @@ _DataBaseConnection = DataBaseConnection.DataBaseConnection
 
 from Repository import RawTextRepository
 _RawTextRepository = RawTextRepository.RawTextRepository
-from Repository import TokenRepository
-_TokenRepository = TokenRepository.TokenRepository
 from Repository import TextCollectionMetaRepository
 _TextCollectionMetaRepository = TextCollectionMetaRepository.TextCollectionMetaRepository
 from Repository import DetectionRepository

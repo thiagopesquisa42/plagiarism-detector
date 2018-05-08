@@ -1,6 +1,7 @@
-from Internal import _TokenInternalProcess as TokenInternalProcess
 from Internal import _RawTextInternalProcess as RawTextInternalProcess
 from Process import _BaseProcess as BaseProcess
+from Entity import _BagOfTexts as BagOfTexts
+import nltk
 
 class PreProcessingRawTextProcess(BaseProcess):
 
@@ -9,10 +10,25 @@ class PreProcessingRawTextProcess(BaseProcess):
         print ('Hello, I\'m the PreProcessingRawTextProcess')
         print ('And I use these repositories:')
         print ('And I use these internals:')
-        self._tokenInternalProcess.Hello()
         self._rawTextInternalProcess.Hello()
 
-    _tokenInternalProcess = TokenInternalProcess()
+    def PreProcessing(self, textCollectionMetaId):
+        rawTextList = self._rawTextInternalProcess.GetRawTextsByCollectionId(textCollectionMetaId)
+        a = BagOfTexts()
+        print('')
+
+
+
+    def LowerRawTextList(rawTextList):
+        pass
+
+    def LowerRawText(rawText):
+        return rawText.text.lower()
+        
+
+        # nltk....
+        pass
+
     _rawTextInternalProcess = RawTextInternalProcess()
 
     def __init__(self):

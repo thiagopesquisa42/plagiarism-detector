@@ -1,4 +1,5 @@
 import Repository.DataBaseConfiguration as DataBaseConfiguration
+from constant import LoggerConstant
 # Import create_engine function
 from sqlalchemy import create_engine
 # the Session class 
@@ -19,8 +20,8 @@ class DataBaseConnection(object):
         message = "%(message)s \n";
 
         logFormat = init + ascTime + levelName + pathName + module + functionName + lineNumber + message
-        logging.basicConfig(filename = 'logging.sqlalchemy.log', format = logFormat)
-        logger = logging.getLogger(name = 'sqlalchemy.engine')
+        logging.basicConfig(filename = LoggerConstant.File.REPOSITORY_SQLALCHEMY, format = logFormat)
+        logger = logging.getLogger(name = LoggerConstant.Name.REPOSITORY_SQLALCHEMY)
         logger.setLevel(logging.INFO)
                 
         infoLogStruct = "\n ascTime levelName pathName \n module funcName lineNumber \n message \n"
