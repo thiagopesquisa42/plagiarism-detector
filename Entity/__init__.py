@@ -6,6 +6,11 @@ _RawTextType = Enumerables.RawTextType
 _PlagiarismObfuscation = Enumerables.PlagiarismObfuscation
 _PlagiarismType = Enumerables.PlagiarismType
 _EnumYesNo = Enumerables.EnumYesNo
+_PreProcessName = Enumerables.PreProcessName
+_TokenizeType = Enumerables.TokenizeType
+_StemmingType = Enumerables.StemmingType
+_NGramType = Enumerables.NGramType
+_BagType = Enumerables.BagType
 
 from Entity.RawDataBase import TextCollectionMeta
 _TextCollectionMeta = TextCollectionMeta.TextCollectionMeta
@@ -22,5 +27,5 @@ _PanDetectionXmlPlain = Pan.PanDetectionXmlPlain
 
 from Entity.PreProcessing import RawTextExcerptLocation
 _RawTextExcerptLocation = RawTextExcerptLocation.RawTextExcerptLocation
-from Entity.PreProcessing.Bag import BagOfTexts
-_BagOfTexts = BagOfTexts.BagOfTexts
+from Entity.PreProcessing import PreProcessStep
+_PreProcessStep = PreProcessStep.PreProcessStep

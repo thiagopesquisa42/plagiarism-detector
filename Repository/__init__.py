@@ -15,4 +15,5 @@ from Repository import RawTextPairRepository
 _RawTextPairRepository = RawTextPairRepository.RawTextPairRepository
 from Repository import PanRepository
 _PanRepository = PanRepository.PanRepository
-
+from Repository import BagOfTextsRepository
+_BagOfTextsRepository = BagOfTextsRepository.BagOfTextsRepository

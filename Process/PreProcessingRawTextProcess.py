@@ -1,6 +1,7 @@
 from Internal import _RawTextInternalProcess as RawTextInternalProcess
 from Process import _BaseProcess as BaseProcess
-from Entity import _BagOfTexts as BagOfTexts
+from Repository import _BagOfTextsRepository as BagOfTextsRepository
+from Entity.PreProcessing.Bag import _BagOfTexts as BagOfTexts
 import nltk
 
 class PreProcessingRawTextProcess(BaseProcess):
@@ -14,10 +15,10 @@ class PreProcessingRawTextProcess(BaseProcess):
 
     def PreProcessing(self, textCollectionMetaId):
         rawTextList = self._rawTextInternalProcess.GetRawTextsByCollectionId(textCollectionMetaId)
-        a = BagOfTexts()
+        a = BagOfTexts(textCollectionMetaId = textCollectionMetaId)
+        b = self._bagOfTextsRepository.GetByTextCollectionMetaId(
+            textCollectionMetaId = textCollectionMetaId)
         print('')
-
-
 
     def LowerRawTextList(rawTextList):
         pass
@@ -30,6 +31,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         pass
 
     _rawTextInternalProcess = RawTextInternalProcess()
+    _bagOfTextsRepository = BagOfTextsRepository()
 
     def __init__(self):
         super().__init__()
