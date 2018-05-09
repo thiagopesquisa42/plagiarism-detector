@@ -3,7 +3,7 @@ from Entity import _RawText as RawText
 from Entity import _RawTextType as RawTextType
 from Entity import _RawTextPair as RawTextPair
 from Entity import _Detection as Detection
-from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
+from Entity.PreProcessing import _RawTextExcerptLocation as RawTextExcerptLocation
 from Entity import _EnumYesNo as EnumYesNo
 from Entity import _PlagiarismObfuscation as PlagiarismObfuscation
 from Entity import _PlagiarismType as PlagiarismType

@@ -7,9 +7,6 @@ class RawTextExcerptLocation(EntityBase):
     id                      = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     firstCharacterPosition  = Column(Integer, nullable=False)
     stringLength            = Column(Integer, nullable=False)
-
-#    preProcessedDataId      = Column(Integer, ForeignKey('pre_processed_data.id'), nullable=True)
-    preProcessedDataId      = Column(Integer, nullable=True)
     rawTextId               = Column(Integer, ForeignKey('raw_text.id'), nullable=False)
     rawText                 = relationship('RawText', foreign_keys=[rawTextId])
     

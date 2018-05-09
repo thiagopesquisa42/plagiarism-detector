@@ -25,7 +25,5 @@ _PanFolderStructure = Pan.PanFolderStructure
 _PanDetectionXmlStructure = Pan.PanDetectionXmlStructure
 _PanDetectionXmlPlain = Pan.PanDetectionXmlPlain
 
-from Entity.PreProcessing import RawTextExcerptLocation
-_RawTextExcerptLocation = RawTextExcerptLocation.RawTextExcerptLocation
 from Entity.PreProcessing import PreProcessStep
 _PreProcessStep = PreProcessStep.PreProcessStep

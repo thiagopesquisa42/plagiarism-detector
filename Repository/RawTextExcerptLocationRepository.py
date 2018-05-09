@@ -1,5 +1,5 @@
 from Repository import _DataBaseConnection as DataBaseConnection
-from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
+from Entity.PreProcessing import _RawTextExcerptLocation as RawTextExcerptLocation
 from Entity import _RawText as RawText
 
 class RawTextExcerptLocationRepository(DataBaseConnection):

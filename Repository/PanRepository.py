@@ -1,6 +1,6 @@
 from Entity import _RawText as RawText
 from Entity import _Detection as Detection
-from Entity import _RawTextExcerptLocation as RawTextExcerptLocation
+from Entity.PreProcessing import _RawTextExcerptLocation as RawTextExcerptLocation
 from Entity import _PanDetectionXmlPlain as PanDetectionXmlPlain
 from Entity import _PanDetectionXmlStructure as PanDetectionXmlStructure
 import os
