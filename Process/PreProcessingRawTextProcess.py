@@ -1,12 +1,11 @@
-from Internal import _RawTextInternalProcess as RawTextInternalProcess
 from Process import _BaseProcess as BaseProcess
-from Repository.PreProcessing.Bag import _BagOfTextsRepository as BagOfTextsRepository
-from Repository.PreProcessing.Bag import _TextRepository as TextRepository
-from Repository import _RawTextExcerptLocationRepository as RawTextExcerptLocationRepository
-from Entity.PreProcessing.Bag import _BagOfTexts as BagOfTexts
-from Entity.PreProcessing.Bag import _BagOfTexts as BagOfTexts
-from Entity.PreProcessing.Bag import _Text as Text
-from Entity.PreProcessing import _RawTextExcerptLocation as RawTextExcerptLocation
+from Repository.PreProcessing import _PreProcessedDataRepository as PreProcessedDataRepository
+from Entity.PreProcessing import _PreProcessedData as PreProcessedData
+
+from constant import StopWord
+import nltk
+import re
+from collections import Counter
 
 class PreProcessingRawTextProcess(BaseProcess):
 
@@ -20,42 +19,28 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            rawTextList = self._rawTextInternalProcess.GetRawTextsByCollectionId(textCollectionMetaId)
-            bagOfTexts = self.CreateGetBagOfTextsLowered(rawTextList)
+            dataBase = self.CreatePreProcessedDataBaseIdentifier()
+            print(dataBase.id)
+            # [Z]
+            # 1. create data base preprocessed id 
+            # 2. create pp-step-chain node
+            # 3. store pp-step configuration of the node
+            # 4. store pp-step-chain node
+            # 5. start tokenize in sentences step 
+            # 6. for each raw text, create a sentence list
+
         except Exception as exception:
             self.logger.info('PreProcessing failure: ' + str(exception))
         else:
             self.logger.info('PreProcessing finished')
 
-    def CreateGetBagOfTextsLowered(self, rawTextList):
-        if(rawTextList is None or len(rawTextList) == 0):
-            return None
-        textCollectionMetaId = rawTextList[0].textCollectionMetaId
-        bagOfTexts = BagOfTexts(textCollectionMetaId = textCollectionMetaId)
-        textList = []
-        for rawText in rawTextList:
-            loweredText = self.LowerRawText(rawText)
-            rawTextExcerptLocation = RawTextExcerptLocation(
-                rawTextId = rawText.id,
-                stringLength = len(rawText.text),
-                firstCharacterPosition = 0)
-            text = Text(
-                text = loweredText,
-                rawTextExcerptLocation = rawTextExcerptLocation,
-                bagOfTexts = bagOfTexts)
-            textList.append(text)
-        self._textRepository.InsertList(textList)
-        return bagOfTexts
-            
+    def CreatePreProcessedDataBaseIdentifier(self):
+        dataBase = PreProcessedData()
+        self._preProcessedDataRepository.Insert(dataBase)
+        return dataBase
 
-    def LowerRawText(self, rawText):
-        return rawText.text.lower()
-
-    _rawTextInternalProcess = RawTextInternalProcess()
-    _bagOfTextsRepository = BagOfTextsRepository()
-    _textRepository = TextRepository()
-    _rawTextExcerptLocationRepository = RawTextExcerptLocationRepository()
-
+    _preProcessedDataRepository = PreProcessedDataRepository()
+    
     def __init__(self):
         super().__init__()
 
