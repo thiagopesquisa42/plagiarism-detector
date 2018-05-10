@@ -1,14 +1,7 @@
-from Repository import _DataBaseConnection as DataBaseConnection
+from Repository import _BaseRepository as BaseRepository
 from Entity import _TextCollectionMeta as TextCollectionMeta
 
-class TextCollectionMetaRepository(DataBaseConnection):
-
-    def Insert(self, textCollectionMeta):
-        if(textCollectionMeta == None):
-            return
-        self.session.add(textCollectionMeta)
-        self.session.commit()
-        return textCollectionMeta.id
+class TextCollectionMetaRepository(BaseRepository):
 
     def Get(self, id):
         return self.session.query(TextCollectionMeta).filter(TextCollectionMeta.id == id).first()

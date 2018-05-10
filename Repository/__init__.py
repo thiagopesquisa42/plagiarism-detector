@@ -1,7 +1,7 @@
 from Repository import DataBaseConfiguration
 _DataBaseConfiguration = DataBaseConfiguration
-from Repository import DataBaseConnection
-_DataBaseConnection = DataBaseConnection.DataBaseConnection
+from Repository import BaseRepository
+_BaseRepository = BaseRepository.BaseRepository
 
 from Repository import RawTextRepository
 _RawTextRepository = RawTextRepository.RawTextRepository

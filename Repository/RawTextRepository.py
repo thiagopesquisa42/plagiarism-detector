@@ -1,20 +1,7 @@
-from Repository import _DataBaseConnection as DataBaseConnection
+from Repository import _BaseRepository as BaseRepository
 from Entity import _RawText as RawText
 
-class RawTextRepository(DataBaseConnection):
-
-    def Insert(self, rawText):
-        if(rawText == None):
-            return
-        self.session.add(rawText)
-        self.session.commit()
-    
-    def InsertList(self, rawTextList):
-        if(rawTextList == None or len(rawTextList) == 0):
-            return
-        for rawText in rawTextList:
-            self.session.add(rawText)
-        self.session.commit()
+class RawTextRepository(BaseRepository):
 
     def Get(self, id):
         return self.session.query(RawText).filter(RawText.id == id).first()

@@ -6,10 +6,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import logging
 
-class DataBaseConnection(object):
+class BaseRepository(object):
     session = None
     
-    def setLogger(self):
+    @staticmethod
+    def setLogger():
         init = "\n"
         ascTime = "%(asctime)s ";
         levelName = "%(levelname)s ";
@@ -27,10 +28,23 @@ class DataBaseConnection(object):
         infoLogStruct = "\n ascTime levelName pathName \n module funcName lineNumber \n message \n"
         logger.info("This log has the struct: " + infoLogStruct)
 
+    def Insert(self, item):
+        if(item == None):
+            return
+        self.session.add(item)
+        self.session.commit()
+
+    def InsertList(self, itemList):
+        if(itemList == None or len(itemList) == 0):
+            return
+        for item in itemList:
+            self.session.add(item)
+        self.session.commit()
+
     def __init__(self):
-        self.setLogger()
         # Create an engine to the census database
         engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
             SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
         self.session = sessionmaker(bind=engine)()
 
+BaseRepository.setLogger()

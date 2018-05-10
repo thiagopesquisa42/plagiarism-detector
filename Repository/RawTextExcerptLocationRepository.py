@@ -1,22 +1,8 @@
-from Repository import _DataBaseConnection as DataBaseConnection
+from Repository import _BaseRepository as BaseRepository
 from Entity.PreProcessing import _RawTextExcerptLocation as RawTextExcerptLocation
 from Entity import _RawText as RawText
 
-class RawTextExcerptLocationRepository(DataBaseConnection):
-
-    def Insert(self, rawTextExcerptLocation):
-        if(rawTextExcerptLocation == None):
-            return
-        self.session.add(rawTextExcerptLocation)
-        self.session.commit()
-        return rawTextExcerptLocation.id
-
-    def InsertList(self, rawTextExcerptLocationList):
-        if(rawTextExcerptLocationList == None or len(rawTextExcerptLocationList) == 0):
-            return
-        for rawTextExcerptLocation in rawTextExcerptLocationList:
-            self.session.add(rawTextExcerptLocation)
-        self.session.commit()
+class RawTextExcerptLocationRepository(BaseRepository):
 
     def Get(self, id):
         return self.session.query(RawTextExcerptLocation).filter(RawTextExcerptLocation.id == id).first()

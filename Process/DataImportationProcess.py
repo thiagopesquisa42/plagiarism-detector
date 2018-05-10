@@ -42,7 +42,8 @@ class DataImportationProcess(BaseProcess):
         self.SaveDetectionList(detectionList = detectionList)
 
     def SaveTextCollection(self, textCollectionMeta):
-        return self._textCollectionMetaRepository.Insert(textCollectionMeta = textCollectionMeta)
+        self._textCollectionMetaRepository.Insert(textCollectionMeta)
+        return textCollectionMeta.id
 
     def GetRawTexts(self, folderCompletePath, textCollectionMetaId):
         suspiciousFilesFolderPath = os.path.join(folderCompletePath, PanFolderStructure.SUSPICIOUS_RAW_TEXT_FOLDER)
@@ -59,7 +60,7 @@ class DataImportationProcess(BaseProcess):
         return rawTextList
         
     def SaveRawTextList(self, rawTextList):
-        self._rawTextRepository.InsertList(rawTextList = rawTextList)
+        self._rawTextRepository.InsertList(rawTextList)
 
     def GetRawTextPairList(self, folderCompletePath, textCollectionMetaId):
         pairsFilePath = os.path.join(folderCompletePath, PanFolderStructure.PAIRS_FILE_NAME)
@@ -79,7 +80,7 @@ class DataImportationProcess(BaseProcess):
         return rawTextPairList
     
     def SaveRawTextPairList(self, rawTextPairList):
-        self._rawTextPairRepository.InsertList(rawTextPairList = rawTextPairList)        
+        self._rawTextPairRepository.InsertList(rawTextPairList)        
 
     def GetPanDetectionXmlPlainList(self, folderCompletePath):
         detectionFolderPathList = [
@@ -113,8 +114,7 @@ class DataImportationProcess(BaseProcess):
         return rawTextExcerptLocationDistinctList
 
     def FillIdsRawTextExcerptLocationList(self, rawTextExcerptLocationList):
-        self._rawTextExcerptLocationRepository.InsertList(
-            rawTextExcerptLocationList = rawTextExcerptLocationList)
+        self._rawTextExcerptLocationRepository.InsertList(rawTextExcerptLocationList)
         return rawTextExcerptLocationList
 
     def GetDetectionList(self, panDetectionXmlPlainList, rawTextExcerptLocationList,
@@ -161,7 +161,7 @@ class DataImportationProcess(BaseProcess):
         return detectionList
 
     def SaveDetectionList(self, detectionList):
-        self._detectionRepository.InsertList(detectionList = detectionList) 
+        self._detectionRepository.InsertList(detectionList) 
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
     _rawTextRepository = RawTextRepository()
