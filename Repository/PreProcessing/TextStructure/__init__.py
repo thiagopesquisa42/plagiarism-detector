@@ -1,0 +1,4 @@
+from Repository.PreProcessing.TextStructure import SentenceRepository
+_SentenceRepository = SentenceRepository.SentenceRepository
+from Repository.PreProcessing.TextStructure import SentenceListRepository
+_SentenceListRepository = SentenceListRepository.SentenceListRepository

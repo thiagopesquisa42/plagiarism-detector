@@ -10,7 +10,14 @@ class BaseRepository(object):
     session = None
     
     @staticmethod
-    def setLogger():
+    def InitSession():
+        # Create an engine to the census database
+        engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
+            SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
+        BaseRepository.session = sessionmaker(bind=engine)()
+
+    @staticmethod
+    def SetLogger():
         init = "\n"
         ascTime = "%(asctime)s ";
         levelName = "%(levelname)s ";
@@ -41,10 +48,11 @@ class BaseRepository(object):
             self.session.add(item)
         self.session.commit()
 
-    def __init__(self):
-        # Create an engine to the census database
-        engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
-            SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
-        self.session = sessionmaker(bind=engine)()
+    def Update(self, item):
+        self.Insert(item)
 
-BaseRepository.setLogger()
+    def __init__(self):
+        self.session = BaseRepository.session
+
+BaseRepository.SetLogger()
+BaseRepository.InitSession()

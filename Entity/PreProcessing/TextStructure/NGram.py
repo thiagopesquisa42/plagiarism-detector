@@ -6,7 +6,7 @@ class NGram(EntityBase):
     __tablename__           = 'n_gram'
     id                      = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     nGramsListId            = Column(Integer, ForeignKey('n_grams_list.id'), nullable=False)
-    nGramsList              = relationship('NGramsList', foreign_keys=[bagOfNGramsId])
+    nGramsList              = relationship('NGramsList', foreign_keys=[nGramsListId])
     occurence               = Column(Integer, nullable=False)
     commaSeparatedGrams     = Column(String, nullable=False)
 

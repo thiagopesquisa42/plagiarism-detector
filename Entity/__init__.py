@@ -6,11 +6,6 @@ _RawTextType = Enumerables.RawTextType
 _PlagiarismObfuscation = Enumerables.PlagiarismObfuscation
 _PlagiarismType = Enumerables.PlagiarismType
 _EnumYesNo = Enumerables.EnumYesNo
-_PreProcessName = Enumerables.PreProcessName
-_TokenizeType = Enumerables.TokenizeType
-_StemmingType = Enumerables.StemmingType
-_NGramType = Enumerables.NGramType
-_BagType = Enumerables.BagType
 
 from Entity.RawDataBase import TextCollectionMeta
 _TextCollectionMeta = TextCollectionMeta.TextCollectionMeta

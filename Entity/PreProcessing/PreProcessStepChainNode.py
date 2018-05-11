@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey, Enum
 from sqlalchemy.orm import relationship
 from Entity import _EntityBase as EntityBase
-from Entity import _BagType as BagType
 
 class PreProcessStepChainNode(EntityBase):
     __tablename__                       = 'pre_process_step_chain_node'
@@ -12,8 +11,7 @@ class PreProcessStepChainNode(EntityBase):
     preProcessStep                    = relationship('PreProcessStep', foreign_keys=[preProcessStepId])
     stepPosition                        = Column(Integer, nullable=False)
     previousPreProcessStepChainNodeId   = Column(Integer, ForeignKey('pre_process_step_chain_node.id'), nullable=True)
-    previousPreProcessStepChainNode   = relationship('PreProcessStepChainNode', foreign_keys=[previousPreProcessStepChainNodeId])
-    bagType                             = Column(Enum(BagType), nullable=False)
+    previousPreProcessStepChainNode   = relationship('PreProcessStepChainNode', foreign_keys=[previousPreProcessStepChainNodeId], uselist=False)
 
     #unique identifier of the object
     def __repr__(self):
