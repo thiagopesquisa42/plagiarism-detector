@@ -17,6 +17,9 @@ from Repository import _DetectionRepository as DetectionRepository
 from Repository import _PanRepository as PanRepository
 from Process import _BaseProcess as BaseProcess
 import os
+import random
+from distutils.dir_util import copy_tree
+from datetime import datetime
 
 class DataImportationProcess(BaseProcess):
 
@@ -83,14 +86,18 @@ class DataImportationProcess(BaseProcess):
         self._rawTextPairRepository.InsertList(rawTextPairList)        
 
     def GetPanDetectionXmlPlainList(self, folderCompletePath):
-        detectionFolderPathList = [
-            os.path.join(folderCompletePath, detectionFolderName) for detectionFolderName in PanFolderStructure.DETECTION_FOLDER_NAME_LIST]
-        detectionFolderPathList = list(filter(lambda folderPath: os.path.isdir(folderPath), detectionFolderPathList))
+        detectionFolderPathList = self.GetExistingDetectionFolders(folderCompletePath)
         panDetectionXmlPlainList = []
         for detectionFolderPath in detectionFolderPathList:
             panDetectionXmlPlainList = panDetectionXmlPlainList + self._panRepository.GetPanDetectionXmlPlainListFromDiretory(
                 filesFolderPath = detectionFolderPath)
         return panDetectionXmlPlainList
+
+    def GetExistingDetectionFolders(self, folderCompletePath):
+        detectionFolderPathList = [
+            os.path.join(folderCompletePath, detectionFolderName) for detectionFolderName in PanFolderStructure.DETECTION_FOLDER_NAME_LIST]
+        detectionFolderPathList = list(filter(lambda folderPath: os.path.isdir(folderPath), detectionFolderPathList))
+        return detectionFolderPathList
 
     def ExtractRawTextExcerptLocationDistinctList(self, panDetectionXmlPlainList, textCollectionMetaId):
         rawTextExcerptLocationList = []
@@ -162,6 +169,152 @@ class DataImportationProcess(BaseProcess):
 
     def SaveDetectionList(self, detectionList):
         self._detectionRepository.InsertList(detectionList) 
+
+    def DecreasePanDataBaseInNewFolder(self, decreasePercentage, folderCompletePath):
+        remainingPercentage = 1 - decreasePercentage
+        newFolderCompletePath = DataImportationProcess.CreateNewDirectoryDecreasedDataBase(
+            folderCompletePath, remainingPercentage)
+        
+        pairsOfRawTextsFilePath = os.path.join(newFolderCompletePath, PanFolderStructure.PAIRS_FILE_NAME)
+        tupleFileNameSuspiciousSourceList = self._panRepository.GetTupleFileNameSuspiciousSourceList(
+            pairsFilePath = pairsOfRawTextsFilePath)
+        numberOfTuplesKeeping = int(len(tupleFileNameSuspiciousSourceList) * remainingPercentage)
+        keptTupleFileNameSuspiciousSourceList = DataImportationProcess.GetRandomSubset(
+            iterator = tupleFileNameSuspiciousSourceList, K = numberOfTuplesKeeping)
+        
+        notKeepTupleFileNameSuspiciousSourceList = DataImportationProcess.GetTupleFileNameSuspiciousSourceListToRemove(
+            keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList)
+        DataImportationProcess.RemoveSuspiciousRawTextsByTupleFileList(
+            notKeepTupleFileNameSuspiciousSourceList, newFolderCompletePath)
+        DataImportationProcess.RemoveSourceRawTextsByTupleFileList(
+            notKeepTupleFileNameSuspiciousSourceList, newFolderCompletePath)
+
+        self.UpdatePairFile(
+                folderPath = newFolderCompletePath,
+                keptTupleFileNameSuspiciousSourceList = keptTupleFileNameSuspiciousSourceList)
+
+        self.DecreaseDetectionFolders(
+            newFolderCompletePath, keptTupleFileNameSuspiciousSourceList)
+        
+        return newFolderCompletePath
+    
+    def CreateNewDirectoryDecreasedDataBase(folderCompletePath, percentage):
+        dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
+        newFolderCompletePath =\
+            os.path.dirname(folderCompletePath) +\
+            '_' + dateTimeString +\
+            '_p' +\
+            "{:.0f}".format(100 * percentage)
+        if(not os.path.exists(newFolderCompletePath)):
+            os.makedirs(newFolderCompletePath)
+        DataImportationProcess.CopyEntireFolder(
+            folder = folderCompletePath, 
+            newFolderPath = newFolderCompletePath)
+        return newFolderCompletePath
+
+    def CopyEntireFolder(folder, newFolderPath):
+        # External source code from here: https://stackoverflow.com/questions/15034151/copy-directory-contents-into-a-directory-with-python
+        copy_tree(src = folder, dst = newFolderPath, 
+            preserve_mode = True, preserve_times = True, preserve_symlinks = True)
+
+    @staticmethod
+    def GetRandomSubset(iterator, K ):
+        # External source code from here: https://stackoverflow.com/questions/2612648/reservoir-sampling
+        result = []
+        N = 0
+        for item in iterator:
+            N += 1
+            if len( result ) < K:
+                result.append( item )
+            else:
+                s = int(random.random() * N)
+                if s < K:
+                    result[ s ] = item
+        return result
+
+    def GetTupleFileNameSuspiciousSourceListToRemove(keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList):
+        notKeepTupleFileNameSuspiciousSourceList = list(
+            filter(
+                lambda _tuple: _tuple not in keptTupleFileNameSuspiciousSourceList, 
+                tupleFileNameSuspiciousSourceList))
+        return notKeepTupleFileNameSuspiciousSourceList
+
+    def RemoveFilesList(filePathList):
+        for filePath in filePathList:
+            os.remove(filePath)
+        
+    def RemoveSuspiciousRawTextsByTupleFileList(notKeepTupleFileNameSuspiciousSourceList, folderCompletePath):
+        removeListWithDuplicates = list(map(
+            lambda tupleFileNameSuspiciousSource: os.path.join(
+                folderCompletePath, 
+                PanFolderStructure.SUSPICIOUS_RAW_TEXT_FOLDER,
+                tupleFileNameSuspiciousSource[0]),
+            notKeepTupleFileNameSuspiciousSourceList))
+        removeList = list(set(removeListWithDuplicates))
+        DataImportationProcess.RemoveFilesList(filePathList = removeList)
+    
+    def RemoveSourceRawTextsByTupleFileList(notKeepTupleFileNameSuspiciousSourceList, folderCompletePath):
+        removeListWithDuplicates = list(map(
+            lambda tupleFileNameSuspiciousSource: os.path.join(
+                folderCompletePath, 
+                PanFolderStructure.SOURCE_RAW_TEXTS_FOLDER,
+                tupleFileNameSuspiciousSource[1]),
+            notKeepTupleFileNameSuspiciousSourceList))
+        removeList = list(set(removeListWithDuplicates))
+        DataImportationProcess.RemoveFilesList(filePathList = removeList)
+
+    def UpdatePairFile(self, folderPath, keptTupleFileNameSuspiciousSourceList):
+        pairsLines = []
+        for keptTupleFileNameSuspiciousSource in keptTupleFileNameSuspiciousSourceList:
+            pairsLines.append(
+                keptTupleFileNameSuspiciousSource[0] + ' ' + keptTupleFileNameSuspiciousSource[1])
+        pairsFilePath = os.path.join(folderPath, PanFolderStructure.PAIRS_FILE_NAME)
+        self._panRepository.UpdatePairsFile(
+            pairsFilePath = pairsFilePath, pairsLines = pairsLines)
+
+    def DecreaseDetectionFolders(self, folderCompletePath, keptTupleFileNameSuspiciousSourceList):
+        detectionFolderPathList = self.GetExistingDetectionFolders(folderCompletePath)
+        for detectionFolderPath in detectionFolderPathList:
+            tupleFileNameSuspiciousSourceDetectionList = self.GetTupleFileNameSuspiciousSourceDetectionList(detectionFolderPath)
+            keptTupleFileNameSuspiciousSourceDetectionList = list(
+                filter(
+                    lambda _tuple: _tuple in keptTupleFileNameSuspiciousSourceList, 
+                    tupleFileNameSuspiciousSourceDetectionList))
+            notKeepTupleFileNameSuspiciousSourceList = DataImportationProcess.GetTupleFileNameSuspiciousSourceListToRemove(
+                keptTupleFileNameSuspiciousSourceDetectionList, tupleFileNameSuspiciousSourceDetectionList)
+            detectionFileNameListToRemove = DataImportationProcess.GetDetectionFileNameListFromTupleFile(
+                tupleFileNameSuspiciousSourceDetectionList = notKeepTupleFileNameSuspiciousSourceList)
+            DataImportationProcess.RemoveDetectionsAtTheList(
+                detectionFolderPath = detectionFolderPath, 
+                detectionFileNameList = detectionFileNameListToRemove)
+            self.UpdatePairFile(
+                folderPath = detectionFolderPath,
+                keptTupleFileNameSuspiciousSourceList = keptTupleFileNameSuspiciousSourceDetectionList)
+    
+    def GetTupleFileNameSuspiciousSourceDetectionList(self, detectionFolderPath):
+        detectionPairFilePath =  os.path.join(detectionFolderPath, PanFolderStructure.PAIRS_FILE_NAME)
+        tupleFileNameSuspiciousSourceDetectionList = self._panRepository.GetTupleFileNameSuspiciousSourceList(
+            pairsFilePath = detectionPairFilePath)
+        return tupleFileNameSuspiciousSourceDetectionList
+    
+    def GetDetectionFileNameListFromTupleFile(tupleFileNameSuspiciousSourceDetectionList):
+        detectionFileNameList = []
+        for tupleFileNameSuspiciousSourceDetection in tupleFileNameSuspiciousSourceDetectionList:
+            detectionFileName =\
+                tupleFileNameSuspiciousSourceDetection[0].split('.txt')[0] +\
+                '-' +\
+                tupleFileNameSuspiciousSourceDetection[1].split('.txt')[0] +\
+                '.xml'
+            detectionFileNameList.append(detectionFileName)
+        return detectionFileNameList
+
+    def RemoveDetectionsAtTheList(detectionFolderPath, detectionFileNameList):
+        detectionFilePathList = [
+            os.path.join(detectionFolderPath,detectionFileName)
+            for detectionFileName in detectionFileNameList]
+        DataImportationProcess.RemoveFilesList(
+            filePathList = detectionFilePathList)
+
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
     _rawTextRepository = RawTextRepository()

@@ -37,6 +37,13 @@ class PanRepository():
                 suspiciousFileName, sourceFileName = pairsFileLine.split()
                 tupleFileNameList.append((suspiciousFileName, sourceFileName))
         return tupleFileNameList
+    
+    def UpdatePairsFile(self, pairsFilePath, pairsLines):
+        try:
+            with open(pairsFilePath, 'w') as pairsFile:
+                pairsFile.write('\n'.join(pairsLines))
+        except Exception as exception:
+            raise exception
 
     def GetPanDetectionXmlPlainListFromFile(self, filePath):
         documentStructure = PanDetectionXmlStructure.Document
