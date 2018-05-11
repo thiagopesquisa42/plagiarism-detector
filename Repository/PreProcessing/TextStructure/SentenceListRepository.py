@@ -5,6 +5,10 @@ class SentenceListRepository(BaseRepository):
 
     def Get(self, id):
         return self.session.query(SentenceList).filter(SentenceList.id == id).first()
+    
+    def GetByPreProcessStepChainNode(self, preProcessStepChainNode):
+        return self.session.query(SentenceList).\
+            filter(SentenceList.preProcessStepChainNode == preProcessStepChainNode).all()
 
     def Hello(self):
         print ('Hello, I\'m a repository')

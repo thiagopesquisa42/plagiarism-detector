@@ -1,8 +1,8 @@
+import util
 #TODO: remove this 'debugger'
 from Process import _PreProcessingRawTextProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
-import util
 
 _PreProcessingRawTextProcess().PreProcessing(24)
 

@@ -7,5 +7,8 @@ _Tokenization = Tokenization.Tokenization
 _TokenizationAlgorithm = Tokenization.TokenizationAlgorithm
 _TokenizationType = Tokenization.TokenizationType
 
+from Entity.PreProcessing.Algorithm import ToLower
+_ToLower = ToLower.ToLower
+
 
 
