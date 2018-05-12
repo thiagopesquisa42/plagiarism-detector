@@ -27,10 +27,18 @@ from Entity import _RawText as RawText
 # _PreProcessStepRepository().Insert(step)
 
 from Process import _DataImportationProcess
-_DataImportationProcess().DecreasePanDataBaseInNewFolder(
-    decreasePercentage = 0.8,
-    folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
-    # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus1-2013-03-08\\')
-    # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus2-2013-01-21\\')
-    # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-training-corpus-2013-01-21\\')
-    # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan12-text-alignment-training-corpus-2012-03-16\\') #-> failed, 2012 doesn't have pair file in the root!!
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.8,
+    # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.8,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus1-2013-03-08\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.8,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus2-2013-01-21\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.8,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-training-corpus-2013-01-21\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.8,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan12-text-alignment-training-corpus-2012-03-16\\') #-> failed, 2012 doesn't have pair file in the root!!
