@@ -13,7 +13,7 @@ class DataManager(object):
             sourceUrl = None,
             name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180511_214100_p20',
             description = 'teste pan 2014-maio reduzida em 80%',
-            creationDate = '2013-01-21')
+            creationDate = '2014-05-14')
         self._dataImportationProcess.ImportFromPanFiles(
             textCollectionMeta = textCollectionMeta, 
             folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180511_214100_p20\\')
