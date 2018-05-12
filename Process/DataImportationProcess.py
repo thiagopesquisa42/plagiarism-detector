@@ -108,12 +108,10 @@ class DataImportationProcess(BaseProcess):
             suspiciousRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.suspiciousLength,
                 firstCharacterPosition = panDetectionXmlPlain.suspiciousOffset,
-                preProcessedDataId = None,
                 rawTextId = tupleRawTextIdsSuspiciousSource[0])
             sourceRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.sourceLength,
                 firstCharacterPosition = panDetectionXmlPlain.sourceOffset,
-                preProcessedDataId = None,
                 rawTextId = tupleRawTextIdsSuspiciousSource[1])
             rawTextExcerptLocationList.append(suspiciousRawTextExcerptLocation)
             rawTextExcerptLocationList.append(sourceRawTextExcerptLocation)
@@ -182,16 +180,18 @@ class DataImportationProcess(BaseProcess):
         keptTupleFileNameSuspiciousSourceList = DataImportationProcess.GetRandomSubset(
             iterator = tupleFileNameSuspiciousSourceList, K = numberOfTuplesKeeping)
         
-        notKeepTupleFileNameSuspiciousSourceList = DataImportationProcess.GetTupleFileNameSuspiciousSourceListToRemove(
+        fileNameSuspiciousListToRemove = DataImportationProcess.GetFileNameSuspiciousListToRemove(
             keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList)
-        DataImportationProcess.RemoveSuspiciousRawTextsByTupleFileList(
-            notKeepTupleFileNameSuspiciousSourceList, newFolderCompletePath)
-        DataImportationProcess.RemoveSourceRawTextsByTupleFileList(
-            notKeepTupleFileNameSuspiciousSourceList, newFolderCompletePath)
+        fileNameSourceListToRemove = DataImportationProcess.GetFileNameSourceListToRemove(
+            keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList)
+        DataImportationProcess.RemoveSuspiciousFileSet(
+            fileNameSuspiciousListToRemove, newFolderCompletePath)
+        DataImportationProcess.RemoveSourceFileSet(
+            fileNameSourceListToRemove, newFolderCompletePath)
 
         self.UpdatePairFile(
-                folderPath = newFolderCompletePath,
-                keptTupleFileNameSuspiciousSourceList = keptTupleFileNameSuspiciousSourceList)
+            folderPath = newFolderCompletePath,
+            keptTupleFileNameSuspiciousSourceList = keptTupleFileNameSuspiciousSourceList)
 
         self.DecreaseDetectionFolders(
             newFolderCompletePath, keptTupleFileNameSuspiciousSourceList)
@@ -232,36 +232,53 @@ class DataImportationProcess(BaseProcess):
                     result[ s ] = item
         return result
 
-    def GetTupleFileNameSuspiciousSourceListToRemove(keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList):
-        notKeepTupleFileNameSuspiciousSourceList = list(
-            filter(
-                lambda _tuple: _tuple not in keptTupleFileNameSuspiciousSourceList, 
-                tupleFileNameSuspiciousSourceList))
-        return notKeepTupleFileNameSuspiciousSourceList
+    def GetFileNameSuspiciousListToRemove(keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList):
+        keptFileNameSuspiciousSet = DataImportationProcess.GetSetOfSuspiciousFileFromTupleSuspiciousSource(keptTupleFileNameSuspiciousSourceList)
+        allFileNameSuspiciousSet = DataImportationProcess.GetSetOfSuspiciousFileFromTupleSuspiciousSource(tupleFileNameSuspiciousSourceList)
+        removeFileNameSuspiciousSet = set(
+            filter(lambda fileName: fileName not in keptFileNameSuspiciousSet, 
+                allFileNameSuspiciousSet))
+        return removeFileNameSuspiciousSet
+    
+    def GetFileNameSourceListToRemove(keptTupleFileNameSuspiciousSourceList, tupleFileNameSuspiciousSourceList):
+        keptFileNameSourceSet = DataImportationProcess.GetSetOfSourceFileFromTupleSuspiciousSource(keptTupleFileNameSuspiciousSourceList)
+        allFileNameSourceSet = DataImportationProcess.GetSetOfSourceFileFromTupleSuspiciousSource(tupleFileNameSuspiciousSourceList)
+        removeFileNameSourceSet = set(
+            filter(lambda fileName: fileName not in keptFileNameSourceSet, 
+                allFileNameSourceSet))
+        return removeFileNameSourceSet
 
-    def RemoveFilesList(filePathList):
-        for filePath in filePathList:
+    def GetSetOfSuspiciousFileFromTupleSuspiciousSource(tupleFileNameSuspiciousSourceList):
+        return set( map( 
+            lambda tupleFileNameSuspiciousSource: tupleFileNameSuspiciousSource[0],
+            tupleFileNameSuspiciousSourceList))
+
+    def GetSetOfSourceFileFromTupleSuspiciousSource(tupleFileNameSuspiciousSourceList):
+        return set( map( 
+            lambda tupleFileNameSuspiciousSource: tupleFileNameSuspiciousSource[1],
+            tupleFileNameSuspiciousSourceList))
+
+    def RemoveFiles(filePathListOrSet):
+        for filePath in filePathListOrSet:
             os.remove(filePath)
         
-    def RemoveSuspiciousRawTextsByTupleFileList(notKeepTupleFileNameSuspiciousSourceList, folderCompletePath):
-        removeListWithDuplicates = list(map(
-            lambda tupleFileNameSuspiciousSource: os.path.join(
+    def RemoveSuspiciousFileSet(fileNameSuspiciousListToRemove, folderCompletePath):
+        removeSet = set(map(
+            lambda fileNameSource: os.path.join(
                 folderCompletePath, 
                 PanFolderStructure.SUSPICIOUS_RAW_TEXT_FOLDER,
-                tupleFileNameSuspiciousSource[0]),
-            notKeepTupleFileNameSuspiciousSourceList))
-        removeList = list(set(removeListWithDuplicates))
-        DataImportationProcess.RemoveFilesList(filePathList = removeList)
+                fileNameSource),
+            fileNameSuspiciousListToRemove))
+        DataImportationProcess.RemoveFiles(filePathListOrSet = removeSet)
     
-    def RemoveSourceRawTextsByTupleFileList(notKeepTupleFileNameSuspiciousSourceList, folderCompletePath):
-        removeListWithDuplicates = list(map(
-            lambda tupleFileNameSuspiciousSource: os.path.join(
+    def RemoveSourceFileSet(fileNameSourceListToRemove, folderCompletePath):
+        removeSet = set(map(
+            lambda fileNameSource: os.path.join(
                 folderCompletePath, 
                 PanFolderStructure.SOURCE_RAW_TEXTS_FOLDER,
-                tupleFileNameSuspiciousSource[1]),
-            notKeepTupleFileNameSuspiciousSourceList))
-        removeList = list(set(removeListWithDuplicates))
-        DataImportationProcess.RemoveFilesList(filePathList = removeList)
+                fileNameSource),
+            fileNameSourceListToRemove))
+        DataImportationProcess.RemoveFiles(filePathListOrSet = removeSet)
 
     def UpdatePairFile(self, folderPath, keptTupleFileNameSuspiciousSourceList):
         pairsLines = []
@@ -280,10 +297,8 @@ class DataImportationProcess(BaseProcess):
                 filter(
                     lambda _tuple: _tuple in keptTupleFileNameSuspiciousSourceList, 
                     tupleFileNameSuspiciousSourceDetectionList))
-            notKeepTupleFileNameSuspiciousSourceList = DataImportationProcess.GetTupleFileNameSuspiciousSourceListToRemove(
+            detectionFileNameListToRemove = DataImportationProcess.GetDetectionFileNameSetToRemove(
                 keptTupleFileNameSuspiciousSourceDetectionList, tupleFileNameSuspiciousSourceDetectionList)
-            detectionFileNameListToRemove = DataImportationProcess.GetDetectionFileNameListFromTupleFile(
-                tupleFileNameSuspiciousSourceDetectionList = notKeepTupleFileNameSuspiciousSourceList)
             DataImportationProcess.RemoveDetectionsAtTheList(
                 detectionFolderPath = detectionFolderPath, 
                 detectionFileNameList = detectionFileNameListToRemove)
@@ -297,9 +312,15 @@ class DataImportationProcess(BaseProcess):
             pairsFilePath = detectionPairFilePath)
         return tupleFileNameSuspiciousSourceDetectionList
     
-    def GetDetectionFileNameListFromTupleFile(tupleFileNameSuspiciousSourceDetectionList):
+    def GetDetectionFileNameSetToRemove(
+        keptTupleFileNameSuspiciousSourceDetectionList, tupleFileNameSuspiciousSourceDetectionList):
+        tupleFileNameSuspiciousSourceDetectionSetToRemove = set(
+            filter(
+                lambda tupleFileNameSuspiciousSourceDetection: 
+                    tupleFileNameSuspiciousSourceDetection not in keptTupleFileNameSuspiciousSourceDetectionList, 
+                tupleFileNameSuspiciousSourceDetectionList))
         detectionFileNameList = []
-        for tupleFileNameSuspiciousSourceDetection in tupleFileNameSuspiciousSourceDetectionList:
+        for tupleFileNameSuspiciousSourceDetection in tupleFileNameSuspiciousSourceDetectionSetToRemove:
             detectionFileName =\
                 tupleFileNameSuspiciousSourceDetection[0].split('.txt')[0] +\
                 '-' +\
@@ -312,8 +333,8 @@ class DataImportationProcess(BaseProcess):
         detectionFilePathList = [
             os.path.join(detectionFolderPath,detectionFileName)
             for detectionFileName in detectionFileNameList]
-        DataImportationProcess.RemoveFilesList(
-            filePathList = detectionFilePathList)
+        DataImportationProcess.RemoveFiles(
+            filePathListOrSet = detectionFilePathList)
 
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
