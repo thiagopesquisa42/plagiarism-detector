@@ -10,10 +10,8 @@ class Sentence(EntityBase):
     text                        = Column(String, nullable=False)
     rawTextExcerptLocationId    = Column(Integer, ForeignKey('raw_text_excerpt_location.id'), nullable=False)
     rawTextExcerptLocation      = relationship('RawTextExcerptLocation', foreign_keys=[rawTextExcerptLocationId])
-    bagOfWordsId                = Column(Integer, ForeignKey('bag_of_words.id'), nullable=True)
-    bagOfWords                  = relationship('BagOfWords', foreign_keys=[bagOfWordsId])
-    nGramsListId                = Column(Integer, ForeignKey('n_grams_list.id'), nullable=True)
-    nGramsList                  = relationship('NGramsList', foreign_keys=[nGramsListId])
+    bagOfWords                  = relationship('BagOfWords', primaryjoin="Sentence.id==BagOfWords.sentenceId", uselist=False)
+    nGramsList                  = relationship('NGramsList', primaryjoin="Sentence.id==NGramsList.sentenceId", uselist=False)
 
     #unique identifier of the object
     def __repr__(self):

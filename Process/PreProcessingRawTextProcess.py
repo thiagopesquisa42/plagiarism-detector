@@ -36,11 +36,11 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            # preProcessedData = self.CreatePreProcessedDataIdentifier()
-            # rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
-            # self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
-            # self.ToLowerSentenceListGroup(preProcessedData)
-            preProcessedData = self._preProcessedDataRepository.Get(id = 12)
+            preProcessedData = self.CreatePreProcessedDataIdentifier()
+            rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+            self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            self.ToLowerSentenceListGroup(preProcessedData)
+            # preProcessedData = self._preProcessedDataRepository.Get(id = 12)
             self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
 
             # [Z]
@@ -184,7 +184,6 @@ class PreProcessingRawTextProcess(BaseProcess):
     def TokenizeSentencesInBagOfWords(self, sentenceList):
         listOfBagOfWords = self.CreateBagOfWordsByTreeBankWordTokenizer(
             sentenceList.sentences)
-        self.UpdateSentencesBagOfWordsRelationship(listOfBagOfWords)
 
     def CreateBagOfWordsByTreeBankWordTokenizer(self, sentences):
         listOfbagOfWords = []
@@ -199,14 +198,6 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._bagOfWordsRepository.InsertList(listOfbagOfWords)
         return listOfbagOfWords
 
-    def UpdateSentencesBagOfWordsRelationship(self, listOfBagOfWords):
-        sentencesWithBagOfWordReference = []
-        for bagOfWords in listOfBagOfWords:
-            sentence = bagOfWords.sentence
-            sentence.bagOfWords = bagOfWords
-            sentencesWithBagOfWordReference.append(sentence)
-        self._sentenceRepository.UpdateList(sentencesWithBagOfWordReference)
-        
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()
     _preProcessStepChainNodeRepository = PreProcessStepChainNodeRepository()
