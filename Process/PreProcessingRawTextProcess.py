@@ -37,11 +37,15 @@ class PreProcessingRawTextProcess(BaseProcess):
         try:
             self.logger.info('PreProcessing started')
             preProcessedData = self.CreatePreProcessedDataIdentifier()
+            self.logger.info('Tokenize in Sentences')
             rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
             self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            self.logger.info('To Lower')
             self.ToLowerSentenceListGroup(preProcessedData)
+            self.logger.info('Tokenize in Words, create Bag-of-Words')
             # preProcessedData = self._preProcessedDataRepository.Get(id = 12)
             self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
+            self.logger.info('Remove stopwords from Bag-of-Words')
 
             # [Z]
             # 1. create data base preprocessed id [ok]
@@ -57,7 +61,13 @@ class PreProcessingRawTextProcess(BaseProcess):
             # 8. for each sentence in sentence-list from previous step-node
             #      create another sentence passed by the pp-step
             # 
-
+            # [B]
+            # repeat 2 to 4 plus
+            # 7. start remove sw step
+            # 8. for each sentence in sentence-list from previous step-node
+            #      create another sentence passed by the pp-step
+            # 
+            
             # [D]
             # repeat 2 to 4 plus
             # 7. start tokenize in words step
@@ -76,58 +86,6 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._preProcessedDataRepository.Insert(preProcessedData)
         return preProcessedData
     
-    def TokenizeRawTextInSentences(self, rawTextList, preProcessedData):
-        preProcessStep = self.CreateTokenizationStep(
-            tokenizationType = TokenizationType.SENTENCE, 
-            tokenizationAlgorithm = TokenizationAlgorithm.PUNKT_EN, description = 'em testes')
-        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
-            preProcessedData = preProcessedData, 
-            preProcessStep = preProcessStep)
-        for rawText in rawTextList:
-            sentenceList = self.CreateSentenceListFromRawText(rawText, preProcessStepChainNode)
-            self.CreateSentencesByPunktTokenizer(rawText, sentenceList)
-    
-    def ToLowerSentenceListGroup(self, preProcessedData):
-        preProcessStep = self.CreateToLowerStep(description = 'em testes')
-        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
-            preProcessedData = preProcessedData, 
-            preProcessStep = preProcessStep)
-        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
-            preProcessStepChainNode.previousPreProcessStepChainNode)
-        for sentenceList in sentenceListGroup:
-            sentenceList.preProcessStepChainNode = preProcessStepChainNode
-            self.ToLowerSentences(sentenceList)
-        self._sentenceListRepository.UpdateList(sentenceListGroup)
-
-    def TokenizeSentenceListGroupInBagOfWords(self, preProcessedData):
-        preProcessStep = self.CreateTokenizationStep(
-            tokenizationType = TokenizationType.WORD, 
-            tokenizationAlgorithm = TokenizationAlgorithm.TREEBANK_WORD_TOKENIZER, 
-            description = 'em testes')
-        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
-            preProcessedData = preProcessedData, 
-            preProcessStep = preProcessStep)
-        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
-            preProcessStepChainNode.previousPreProcessStepChainNode)
-        for sentenceList in sentenceListGroup:
-            sentenceList.preProcessStepChainNode = preProcessStepChainNode
-            self.TokenizeSentencesInBagOfWords(sentenceList)
-
-    def CreateTokenizationStep(self, tokenizationType, tokenizationAlgorithm, description = None):
-        tokenization = Tokenization(
-            _type = tokenizationType,
-            algorithm = tokenizationAlgorithm, 
-            description = description)
-        preProcessStep = PreProcessStep(algorithm = tokenization.ToDictionary())
-        self._preProcessStepRepository.Insert(preProcessStep)
-        return preProcessStep
-    
-    def CreateToLowerStep(self, description = None):
-        toLower = ToLower(description = description)
-        preProcessStep = PreProcessStep(algorithm = toLower.ToDictionary())
-        self._preProcessStepRepository.Insert(preProcessStep)
-        return preProcessStep
-
     def AddPreProcessStepToStepChain(self, preProcessedData, preProcessStep):
         previousPreProcessStepChainNode = preProcessedData.topPreProcessStepChainNode
         preProcessStepChainNode = PreProcessStepChainNode(
@@ -139,6 +97,27 @@ class PreProcessingRawTextProcess(BaseProcess):
         preProcessedData.topPreProcessStepChainNodeId = preProcessStepChainNode.id
         self._preProcessedDataRepository.Update(preProcessedData)
         return preProcessStepChainNode
+    
+    #region [Tokenize raw text in sentences]
+    def TokenizeRawTextInSentences(self, rawTextList, preProcessedData):
+        preProcessStep = self.CreateTokenizationStep(
+            tokenizationType = TokenizationType.SENTENCE, 
+            tokenizationAlgorithm = TokenizationAlgorithm.PUNKT_EN, description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        for rawText in rawTextList:
+            sentenceList = self.CreateSentenceListFromRawText(rawText, preProcessStepChainNode)
+            self.CreateSentencesByPunktTokenizer(rawText, sentenceList)
+
+    def CreateTokenizationStep(self, tokenizationType, tokenizationAlgorithm, description = None):
+        tokenization = Tokenization(
+            _type = tokenizationType,
+            algorithm = tokenizationAlgorithm, 
+            description = description)
+        preProcessStep = PreProcessStep(algorithm = tokenization.ToDictionary())
+        self._preProcessStepRepository.Insert(preProcessStep)
+        return preProcessStep
     
     def CreateSentenceListFromRawText(self, rawText, preProcessStepChainNode):
         sentenceList = SentenceList(
@@ -175,11 +154,48 @@ class PreProcessingRawTextProcess(BaseProcess):
                     nGramsList = None))
         self._sentenceRepository.InsertList(sentences)
         return sentences
+    #end_region [Tokenize raw text in sentences]
+
+    #region [To lower sentences]
+    def ToLowerSentenceListGroup(self, preProcessedData):
+        preProcessStep = self.CreateToLowerStep(description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for sentenceList in sentenceListGroup:
+            sentenceList.preProcessStepChainNode = preProcessStepChainNode
+            self.ToLowerSentences(sentenceList)
+        self._sentenceListRepository.UpdateList(sentenceListGroup)
+
+    def CreateToLowerStep(self, description = None):
+        toLower = ToLower(description = description)
+        preProcessStep = PreProcessStep(algorithm = toLower.ToDictionary())
+        self._preProcessStepRepository.Insert(preProcessStep)
+        return preProcessStep
 
     def ToLowerSentences(self, sentenceList):
         for sentences in sentenceList.sentences:
             sentences.text = sentences.text.lower()
         self._sentenceRepository.UpdateList(sentenceList.sentences)
+    #end_region [To lower sentences]
+
+    #region [Tokenize in words]
+    def TokenizeSentenceListGroupInBagOfWords(self, preProcessedData):
+        preProcessStep = self.CreateTokenizationStep(
+            tokenizationType = TokenizationType.WORD, 
+            tokenizationAlgorithm = TokenizationAlgorithm.TREEBANK_WORD_TOKENIZER, 
+            description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for sentenceList in sentenceListGroup:
+            sentenceList.preProcessStepChainNode = preProcessStepChainNode
+            self.TokenizeSentencesInBagOfWords(sentenceList)
+        self._sentenceListRepository.UpdateList(sentenceListGroup)
 
     def TokenizeSentencesInBagOfWords(self, sentenceList):
         listOfBagOfWords = self.CreateBagOfWordsByTreeBankWordTokenizer(
@@ -197,6 +213,7 @@ class PreProcessingRawTextProcess(BaseProcess):
             listOfbagOfWords.append(bagOfWords)
         self._bagOfWordsRepository.InsertList(listOfbagOfWords)
         return listOfbagOfWords
+    #end_region [Tokenize in words]
 
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()
