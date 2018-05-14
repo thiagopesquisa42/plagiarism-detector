@@ -51,8 +51,8 @@ class BaseRepository(object):
     def Update(self, item):
         self.Insert(item)
     
-    def UpdateList(self, item):
-        self.InsertList(item)
+    def UpdateList(self, itemList):
+        self.InsertList(itemList)
 
     def __init__(self):
         self.session = BaseRepository.session
