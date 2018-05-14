@@ -1,9 +1,8 @@
 import re
 from collections import Counter
-
 import nltk
-
 from constant import StopWord
+
 from Entity.PreProcessing import _PreProcessedData as PreProcessedData
 from Entity.PreProcessing import _PreProcessStep as PreProcessStep
 from Entity.PreProcessing import _PreProcessStepChainNode as PreProcessStepChainNode
@@ -14,6 +13,7 @@ from Entity.PreProcessing.Algorithm import _TokenizationType as TokenizationType
 from Entity.PreProcessing.Algorithm import _ToLower as ToLower
 from Entity.PreProcessing.TextStructure import _Sentence as Sentence
 from Entity.PreProcessing.TextStructure import _SentenceList as SentenceList
+from Entity.PreProcessing.TextStructure import _BagOfWords as BagOfWords
 from Process import _BaseProcess as BaseProcess
 from Repository import _RawTextExcerptLocationRepository as RawTextExcerptLocationRepository
 from Repository import _RawTextRepository as RawTextRepository
@@ -22,7 +22,7 @@ from Repository.PreProcessing import _PreProcessStepChainNodeRepository as PrePr
 from Repository.PreProcessing import _PreProcessStepRepository as PreProcessStepRepository
 from Repository.PreProcessing.TextStructure import _SentenceListRepository as SentenceListRepository
 from Repository.PreProcessing.TextStructure import _SentenceRepository as SentenceRepository
-
+from Repository.PreProcessing.TextStructure import _BagOfWordsRepository as BagOfWordsRepository
 
 class PreProcessingRawTextProcess(BaseProcess):
 
@@ -36,11 +36,12 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            #preProcessedData = self.CreatePreProcessedDataIdentifier()
-            #rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
-            #self.TokenizeInSentences(rawTextList, preProcessedData)
-            preProcessedData = self._preProcessedDataRepository.Get(id = 8)
-            self.ToLowerSentenceListGroup(preProcessedData)
+            # preProcessedData = self.CreatePreProcessedDataIdentifier()
+            # rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+            # self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            # self.ToLowerSentenceListGroup(preProcessedData)
+            preProcessedData = self._preProcessedDataRepository.Get(id = 11)
+            self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
 
             # [Z]
             # 1. create data base preprocessed id [ok]
@@ -57,6 +58,13 @@ class PreProcessingRawTextProcess(BaseProcess):
             #      create another sentence passed by the pp-step
             # 
 
+            # [D]
+            # repeat 2 to 4 plus
+            # 7. start tokenize in words step
+            # 8. for each sentence in sentence-list from previous step-node
+            #       create another sentence passed by the pp-step
+            #       create BoW from the tokenized words
+
         except Exception as exception:
             self.logger.info('PreProcessing failure: ' + str(exception))
             raise exception
@@ -68,7 +76,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._preProcessedDataRepository.Insert(preProcessedData)
         return preProcessedData
     
-    def TokenizeInSentences(self, rawTextList, preProcessedData):
+    def TokenizeRawTextInSentences(self, rawTextList, preProcessedData):
         preProcessStep = self.CreateTokenizationStep(
             tokenizationType = TokenizationType.SENTENCE, 
             tokenizationAlgorithm = TokenizationAlgorithm.PUNKT_EN, description = 'em testes')
@@ -90,8 +98,26 @@ class PreProcessingRawTextProcess(BaseProcess):
             sentenceList = SentenceList(
                 rawTextExcerptLocation = previousSentenceList.rawTextExcerptLocation,
                 preProcessStepChainNode = preProcessStepChainNode)
-            self.ToLowerSentences(sentenceList, previousSentenceList)
-            
+            self._sentenceListRepository.Insert(sentenceList)
+            self.ToLowerSentences(previousSentenceList, sentenceList)
+
+    def TokenizeSentenceListGroupInBagOfWords(self, preProcessedData):
+        preProcessStep = self.CreateTokenizationStep(
+            tokenizationType = TokenizationType.WORD, 
+            tokenizationAlgorithm = TokenizationAlgorithm.TREEBANK_WORD_TOKENIZER, 
+            description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        previousSentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for previousSentenceList in previousSentenceListGroup:
+            sentenceList = SentenceList(
+                rawTextExcerptLocation = previousSentenceList.rawTextExcerptLocation,
+                preProcessStepChainNode = preProcessStepChainNode)
+            self._sentenceListRepository.Insert(sentenceList)
+            self.TokenizeSentencesInBagOfWords(previousSentenceList, sentenceList)
+
     def CreateTokenizationStep(self, tokenizationType, tokenizationAlgorithm, description = None):
         tokenization = Tokenization(
             _type = tokenizationType,
@@ -155,7 +181,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._sentenceRepository.InsertList(sentences)
         return sentences
 
-    def ToLowerSentences(self, sentenceList, previousSentenceList):
+    def ToLowerSentences(self, previousSentenceList, sentenceList):
         sentences = []
         for previousSentence in previousSentenceList.sentences:
             sentences.append(
@@ -167,6 +193,37 @@ class PreProcessingRawTextProcess(BaseProcess):
                     nGramsList = None))
         self._sentenceRepository.InsertList(sentences)
 
+    def TokenizeSentencesInBagOfWords(self, previousSentenceList, sentenceList):
+        sentences = []
+        for previousSentence in previousSentenceList.sentences:
+            sentences.append(
+                Sentence(
+                    text = previousSentence.text,
+                    rawTextExcerptLocation = previousSentence.rawTextExcerptLocation,
+                    sentenceList = sentenceList,
+                    bagOfWords = None,
+                    nGramsList = None))
+        self._sentenceRepository.InsertList(sentences)
+        self.CreateBagOfWordsByTreeBankWordTokenizer(sentences)
+
+    def CreateBagOfWordsByTreeBankWordTokenizer(self, sentences):
+        listOfbagOfWords = []
+        wordTokenizer = nltk.TreebankWordTokenizer()
+        for sentence in sentences:
+            wordsSimpleList = wordTokenizer.tokenize(sentence.text)
+            wordOccurenceDictionary = Counter(wordsSimpleList)
+            bagOfWords = BagOfWords(
+                sentence = sentence,
+                wordOccurenceDictionary = wordOccurenceDictionary)
+            listOfbagOfWords.append(bagOfWords)
+        self._bagOfWordsRepository.InsertList(listOfbagOfWords)
+        sentencesWithBagOfWordReference = []
+        for bagOfWords in listOfbagOfWords:
+            sentence = bagOfWords.sentence
+            sentence.bagOfWords = bagOfWords
+            sentencesWithBagOfWordReference.append(sentence)
+        self._sentenceRepository.UpdateList(sentencesWithBagOfWordReference)
+        
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()
     _preProcessStepChainNodeRepository = PreProcessStepChainNodeRepository()
@@ -174,6 +231,7 @@ class PreProcessingRawTextProcess(BaseProcess):
     _rawTextRepository = RawTextRepository()
     _sentenceListRepository = SentenceListRepository()
     _sentenceRepository = SentenceRepository()
+    _bagOfWordsRepository = BagOfWordsRepository()
 
     def __init__(self):
         super().__init__()

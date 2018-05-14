@@ -4,7 +4,7 @@ from Process import _PreProcessingRawTextProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
 
-#_PreProcessingRawTextProcess().PreProcessing(24)
+_PreProcessingRawTextProcess().PreProcessing(32)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)
@@ -26,7 +26,7 @@ from Entity import _RawText as RawText
 
 # _PreProcessStepRepository().Insert(step)
 
-from Process import _DataImportationProcess
+# from Process import _DataImportationProcess
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.8,
     # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
@@ -42,3 +42,6 @@ from Process import _DataImportationProcess
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.8,
 #     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan12-text-alignment-training-corpus-2012-03-16\\') #-> failed, 2012 doesn't have pair file in the root!!
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.95,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')

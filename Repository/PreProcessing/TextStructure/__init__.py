@@ -2,3 +2,5 @@ from Repository.PreProcessing.TextStructure import SentenceRepository
 _SentenceRepository = SentenceRepository.SentenceRepository
 from Repository.PreProcessing.TextStructure import SentenceListRepository
 _SentenceListRepository = SentenceListRepository.SentenceListRepository
+from Repository.PreProcessing.TextStructure import BagOfWordsRepository
+_BagOfWordsRepository = BagOfWordsRepository.BagOfWordsRepository

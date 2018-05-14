@@ -11,7 +11,8 @@ class PreProcessStepChainNode(EntityBase):
     preProcessStep                      = relationship('PreProcessStep', foreign_keys=[preProcessStepId])
     stepPosition                        = Column(Integer, nullable=False)
     previousPreProcessStepChainNodeId   = Column(Integer, ForeignKey('pre_process_step_chain_node.id'), nullable=True)
-    previousPreProcessStepChainNode     = relationship('PreProcessStepChainNode', foreign_keys=[previousPreProcessStepChainNodeId], uselist=False)
+    previousPreProcessStepChainNode     = relationship('PreProcessStepChainNode', remote_side=[id])
+    
 
     #unique identifier of the object
     def __repr__(self):
