@@ -10,5 +10,8 @@ _TokenizationType = Tokenization.TokenizationType
 from Entity.PreProcessing.Algorithm import ToLower
 _ToLower = ToLower.ToLower
 
+from Entity.PreProcessing.Algorithm import RemoveStopWords
+_RemoveStopWords = RemoveStopWords.RemoveStopWords
+
 
 

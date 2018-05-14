@@ -11,6 +11,7 @@ from Entity.PreProcessing.Algorithm import _Tokenization as Tokenization
 from Entity.PreProcessing.Algorithm import _TokenizationAlgorithm as TokenizationAlgorithm
 from Entity.PreProcessing.Algorithm import _TokenizationType as TokenizationType
 from Entity.PreProcessing.Algorithm import _ToLower as ToLower
+from Entity.PreProcessing.Algorithm import _RemoveStopWords as RemoveStopWords
 from Entity.PreProcessing.TextStructure import _Sentence as Sentence
 from Entity.PreProcessing.TextStructure import _SentenceList as SentenceList
 from Entity.PreProcessing.TextStructure import _BagOfWords as BagOfWords
@@ -37,15 +38,20 @@ class PreProcessingRawTextProcess(BaseProcess):
         try:
             self.logger.info('PreProcessing started')
             preProcessedData = self.CreatePreProcessedDataIdentifier()
+            
             self.logger.info('Tokenize in Sentences')
             rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
             self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            
             self.logger.info('To Lower')
             self.ToLowerSentenceListGroup(preProcessedData)
+            
             self.logger.info('Tokenize in Words, create Bag-of-Words')
-            # preProcessedData = self._preProcessedDataRepository.Get(id = 12)
             self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
+            
             self.logger.info('Remove stopwords from Bag-of-Words')
+            # preProcessedData = self._preProcessedDataRepository.Get(id = 14)
+            self.RemoveStopWordsSentenceListGroup(preProcessedData)
 
             # [Z]
             # 1. create data base preprocessed id [ok]
@@ -214,6 +220,42 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._bagOfWordsRepository.InsertList(listOfbagOfWords)
         return listOfbagOfWords
     #end_region [Tokenize in words]
+
+    #region [Remove stopwords from bag-of-words]
+    def RemoveStopWordsSentenceListGroup(self, preProcessedData):
+        stopWordList = StopWord.STOP_WORD_FULL_LIST
+        preProcessStep = self.CreateStopWordStep(
+            stopWordList = stopWordList,
+            description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for sentenceList in sentenceListGroup:
+            sentenceList.preProcessStepChainNode = preProcessStepChainNode
+            self.RemoveStopWordsFromSentences(sentenceList, stopWordList)
+        self._sentenceListRepository.UpdateList(sentenceListGroup)
+
+    def CreateStopWordStep(self, stopWordList, description = None):
+        removeStopWords = RemoveStopWords(
+            stopWordList = stopWordList, 
+            description = description)
+        preProcessStep = PreProcessStep(algorithm = removeStopWords.ToDictionary())
+        self._preProcessStepRepository.Insert(preProcessStep)
+        return preProcessStep
+
+    def RemoveStopWordsFromSentences(self, sentenceList, stopWordList):
+        for sentence in sentenceList.sentences:
+            self.RemoveStopWordsFromBagOfWords(sentence.bagOfWords, stopWordList)
+        self._sentenceRepository.UpdateList(sentenceList.sentences)
+
+    def RemoveStopWordsFromBagOfWords(self, bagOfWords, stopWordList):
+        bagOfWords.wordOccurenceDictionary = {
+            word: occurence 
+            for (word, occurence) in bagOfWords.wordOccurenceDictionary.items() 
+            if word not in stopWordList}
+    #end_region [Remove stopwords from bag-of-words]
 
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()
