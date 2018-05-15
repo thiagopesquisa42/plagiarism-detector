@@ -44,6 +44,6 @@ class StopWord():
         'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', '\'s', 'n\'t', 'can',
         'will', 'just', 'don', 'should', 'now']
 
-
-        
+class Threshold():
+    SENTENCE_NUMBER_WORDS_TO_FUSE = 3
 

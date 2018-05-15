@@ -5,7 +5,7 @@ from Entity import _EntityBase as EntityBase
 class Sentence(EntityBase):
     __tablename__               = 'sentence'
     id                          = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    sentenceListId              = Column(Integer, ForeignKey('sentence_list.id'), nullable=False)
+    sentenceListId              = Column(Integer, ForeignKey('sentence_list.id'), nullable=True)
     sentenceList                = relationship('SentenceList', foreign_keys=[sentenceListId])
     text                        = Column(String, nullable=False)
     rawTextExcerptLocationId    = Column(Integer, ForeignKey('raw_text_excerpt_location.id'), nullable=False)

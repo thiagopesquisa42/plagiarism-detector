@@ -2,6 +2,7 @@ import re
 from collections import Counter
 import nltk
 from constant import StopWord
+from constant import Threshold
 
 from Entity.PreProcessing import _PreProcessedData as PreProcessedData
 from Entity.PreProcessing import _PreProcessStep as PreProcessStep
@@ -12,6 +13,7 @@ from Entity.PreProcessing.Algorithm import _TokenizationAlgorithm as Tokenizatio
 from Entity.PreProcessing.Algorithm import _TokenizationType as TokenizationType
 from Entity.PreProcessing.Algorithm import _ToLower as ToLower
 from Entity.PreProcessing.Algorithm import _RemoveStopWords as RemoveStopWords
+from Entity.PreProcessing.Algorithm import _FuseSentences as FuseSentences
 from Entity.PreProcessing.TextStructure import _Sentence as Sentence
 from Entity.PreProcessing.TextStructure import _SentenceList as SentenceList
 from Entity.PreProcessing.TextStructure import _BagOfWords as BagOfWords
@@ -37,22 +39,24 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            preProcessedData = self.CreatePreProcessedDataIdentifier()
+            # preProcessedData = self.CreatePreProcessedDataIdentifier()
             
-            self.logger.info('Tokenize in Sentences')
-            rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
-            self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            # self.logger.info('Tokenize in Sentences')
+            # rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+            # self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
             
-            self.logger.info('To Lower')
-            self.ToLowerSentenceListGroup(preProcessedData)
+            # self.logger.info('To Lower')
+            # self.ToLowerSentenceListGroup(preProcessedData)
             
-            self.logger.info('Tokenize in Words, create Bag-of-Words')
-            self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
+            # self.logger.info('Tokenize in Words, create Bag-of-Words')
+            # self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
             
-            self.logger.info('Remove stopwords from Bag-of-Words')
-            # preProcessedData = self._preProcessedDataRepository.Get(id = 14)
-            self.RemoveStopWordsSentenceListGroup(preProcessedData)
+            # self.logger.info('Remove stopwords from Bag-of-Words')
+            # self.RemoveStopWordsSentenceListGroup(preProcessedData)
 
+            preProcessedData = self._preProcessedDataRepository.Get(id = 14)
+            self.logger.info('Fuse small sentences')
+            self.SentenceListGroupInnerFusion(preProcessedData)
             # [Z]
             # 1. create data base preprocessed id [ok]
             # 2. create pp-step-chain node
@@ -256,6 +260,73 @@ class PreProcessingRawTextProcess(BaseProcess):
             for (word, occurence) in bagOfWords.wordOccurenceDictionary.items() 
             if word not in stopWordList}
     #end_region [Remove stopwords from bag-of-words]
+
+    #region [fuse sentences and bag-of-words]
+    def SentenceListGroupInnerFusion(self, preProcessedData):
+        threshold = Threshold.SENTENCE_NUMBER_WORDS_TO_FUSE
+        preProcessStep = self.CreateFuseSentenceStep(
+            threshold = threshold, description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for sentenceList in sentenceListGroup:
+            sentenceList.preProcessStepChainNode = preProcessStepChainNode
+            self.SentenceListInnerFusion(sentenceList, threshold)
+        self._sentenceListRepository.UpdateList(sentenceListGroup)
+
+    def CreateFuseSentenceStep(self, threshold, description = None):
+        fuseSentences = FuseSentences(
+            threshold = threshold, 
+            description = description)
+        preProcessStep = PreProcessStep(algorithm = fuseSentences.ToDictionary())
+        self._preProcessStepRepository.Insert(preProcessStep)
+        return preProcessStep
+
+    def OrderAscendentSentencesByLocation(self, sentences):
+        return sorted(sentences, 
+            key = lambda sentence: (sentence.rawTextExcerptLocation.firstCharacterPosition))
+
+    def SentenceListInnerFusion(self, _sentenceList, threshold):
+        sentences = _sentenceList.sentences[:]
+        if (len(sentences) == 0):
+            return
+        sortedSentences = self.OrderAscendentSentencesByLocation(sentences)
+        deleteSentences = []
+        newSentences = []
+        newSentences.append(sortedSentences[0])
+        for sentence in sortedSentences[1:]:
+            sentenceNumberWords = sum(sentence.bagOfWords.wordOccurenceDictionary.values())
+            if( sentenceNumberWords <= threshold):
+                self.FuseWithLastSentence(newSentences, sentence)
+                deleteSentences.append(sentence)
+            else:
+                newSentences.append(sentence)
+        self._sentenceRepository.UpdateList(newSentences)
+        self._sentenceRepository.BecomeOrphanList(deleteSentences)  
+
+    def FuseWithLastSentence(self, sentenceList, sentence):
+        if (len(sentenceList) == 0):
+            raise Exception('Error fusing sentence into empty list')
+        sentenceDestination = sentenceList[-1] #get last item from list
+        sentenceDestination.rawTextExcerptLocation.stringLength +=\
+            sentence.rawTextExcerptLocation.stringLength
+        sentenceDestination.text += ' ' + sentence.text
+        self.FuseBagOfWords(
+            bagOfWordsDestination = sentenceDestination.bagOfWords,
+            bagOfWords = sentence.bagOfWords)
+
+    def FuseBagOfWords(self, bagOfWordsDestination, bagOfWords):
+        destinationWordOccurenceDictionary = bagOfWordsDestination.wordOccurenceDictionary
+        wordOccurenceDictionary = bagOfWords.wordOccurenceDictionary
+        wordSimpleList = []
+        for word, occurence in destinationWordOccurenceDictionary.items():
+            wordSimpleList.extend([word for index in range(0, occurence)])
+        for word, occurence in wordOccurenceDictionary.items():
+            wordSimpleList.extend([word for index in range(0, occurence)])
+        bagOfWordsDestination.wordOccurenceDictionary = Counter(wordSimpleList)
+    #end_region [fuse sentences and bag-of-words]
 
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()

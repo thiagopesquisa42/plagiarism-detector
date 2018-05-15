@@ -13,5 +13,5 @@ _ToLower = ToLower.ToLower
 from Entity.PreProcessing.Algorithm import RemoveStopWords
 _RemoveStopWords = RemoveStopWords.RemoveStopWords
 
-
-
+from Entity.PreProcessing.Algorithm import FuseSentences
+_FuseSentences = FuseSentences.FuseSentences
