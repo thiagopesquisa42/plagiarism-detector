@@ -15,3 +15,7 @@ _RemoveStopWords = RemoveStopWords.RemoveStopWords
 
 from Entity.PreProcessing.Algorithm import FuseSentences
 _FuseSentences = FuseSentences.FuseSentences
+
+from Entity.PreProcessing.Algorithm import Stemmer
+_Stemmer = Stemmer.Stemmer
+_StemmerAlgorithm = Stemmer.StemmerAlgorithm

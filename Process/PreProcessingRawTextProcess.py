@@ -14,6 +14,8 @@ from Entity.PreProcessing.Algorithm import _TokenizationType as TokenizationType
 from Entity.PreProcessing.Algorithm import _ToLower as ToLower
 from Entity.PreProcessing.Algorithm import _RemoveStopWords as RemoveStopWords
 from Entity.PreProcessing.Algorithm import _FuseSentences as FuseSentences
+from Entity.PreProcessing.Algorithm import _Stemmer as Stemmer
+from Entity.PreProcessing.Algorithm import _StemmerAlgorithm as StemmerAlgorithm
 from Entity.PreProcessing.TextStructure import _Sentence as Sentence
 from Entity.PreProcessing.TextStructure import _SentenceList as SentenceList
 from Entity.PreProcessing.TextStructure import _BagOfWords as BagOfWords
@@ -39,24 +41,28 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            # preProcessedData = self.CreatePreProcessedDataIdentifier()
+            preProcessedData = self.CreatePreProcessedDataIdentifier()
             
-            # self.logger.info('Tokenize in Sentences')
-            # rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
-            # self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
+            self.logger.info('Tokenize in Sentences')
+            rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+            self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
             
-            # self.logger.info('To Lower')
-            # self.ToLowerSentenceListGroup(preProcessedData)
+            self.logger.info('To Lower')
+            self.ToLowerSentenceListGroup(preProcessedData)
             
-            # self.logger.info('Tokenize in Words, create Bag-of-Words')
-            # self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
+            self.logger.info('Tokenize in Words, create Bag-of-Words')
+            self.TokenizeSentenceListGroupInBagOfWords(preProcessedData)
             
-            # self.logger.info('Remove stopwords from Bag-of-Words')
-            # self.RemoveStopWordsSentenceListGroup(preProcessedData)
+            self.logger.info('Remove stopwords from Bag-of-Words')
+            self.RemoveStopWordsSentenceListGroup(preProcessedData)
 
-            preProcessedData = self._preProcessedDataRepository.Get(id = 14)
             self.logger.info('Fuse small sentences')
             self.SentenceListGroupInnerFusion(preProcessedData)
+            
+            self.logger.info('Stem words from Bags-of-words')
+            self.StemSentenceListGroup(preProcessedData)
+            
+            # preProcessedData = self._preProcessedDataRepository.Get(id = 14)
             # [Z]
             # 1. create data base preprocessed id [ok]
             # 2. create pp-step-chain node
@@ -77,13 +83,27 @@ class PreProcessingRawTextProcess(BaseProcess):
             # 8. for each sentence in sentence-list from previous step-node
             #      create another sentence passed by the pp-step
             # 
-            
+            # 
+            # [C]
+            # repeat 2 to 4 plus
+            # 7. start fuse small sentences step
+            # 8. for each sentence in sentence-list from previous step-node
+            #      create another sentence passed by the pp-step
+            # 
             # [D]
             # repeat 2 to 4 plus
             # 7. start tokenize in words step
             # 8. for each sentence in sentence-list from previous step-node
             #       create another sentence passed by the pp-step
             #       create BoW from the tokenized words
+            # 
+            # [E]
+            # repeat 2 to 4 plus
+            # 7. start stem BoW step
+            # 8. for each sentence in sentence-list from previous step-node
+            #       create another sentence passed by the pp-step
+            #       create another BoW from the previously tokenized words
+            # 
 
         except Exception as exception:
             self.logger.info('PreProcessing failure: ' + str(exception))
@@ -320,14 +340,56 @@ class PreProcessingRawTextProcess(BaseProcess):
     def FuseBagOfWords(self, bagOfWordsDestination, bagOfWords):
         destinationWordOccurenceDictionary = bagOfWordsDestination.wordOccurenceDictionary
         wordOccurenceDictionary = bagOfWords.wordOccurenceDictionary
+        wordSimpleList = self.WordOccurenceDictionaryToWordList(
+            destinationWordOccurenceDictionary)
+        wordSimpleList.extend(self.WordOccurenceDictionaryToWordList(
+            wordOccurenceDictionary))
+        bagOfWordsDestination.wordOccurenceDictionary = Counter(wordSimpleList)
+
+    def WordOccurenceDictionaryToWordList(self, wordOccurenceDictionary):
         wordSimpleList = []
-        for word, occurence in destinationWordOccurenceDictionary.items():
-            wordSimpleList.extend([word for index in range(0, occurence)])
         for word, occurence in wordOccurenceDictionary.items():
             wordSimpleList.extend([word for index in range(0, occurence)])
-        bagOfWordsDestination.wordOccurenceDictionary = Counter(wordSimpleList)
+        return wordSimpleList
     #end_region [fuse sentences and bag-of-words]
 
+    #region [stem words in bag-of-words]
+    def StemSentenceListGroup(self, preProcessedData):
+        preProcessStep = self.CreateStemmerStep(
+            stemmerAlgorithm = StemmerAlgorithm.PORTER, description = 'em testes')
+        preProcessStepChainNode = self.AddPreProcessStepToStepChain(
+            preProcessedData = preProcessedData, 
+            preProcessStep = preProcessStep)
+        sentenceListGroup = self._sentenceListRepository.GetByPreProcessStepChainNode(
+            preProcessStepChainNode.previousPreProcessStepChainNode)
+        for sentenceList in sentenceListGroup:
+            sentenceList.preProcessStepChainNode = preProcessStepChainNode
+            self.StemsSentenceListByPorter(sentenceList)
+        self._sentenceListRepository.UpdateList(sentenceListGroup)
+
+    def CreateStemmerStep(self, stemmerAlgorithm, description = None):
+        stemmer = Stemmer(
+            algorithm = stemmerAlgorithm, 
+            description = description)
+        preProcessStep = PreProcessStep(algorithm = stemmer.ToDictionary())
+        self._preProcessStepRepository.Insert(preProcessStep)
+        return preProcessStep
+
+    def StemsSentenceListByPorter(self, sentenceList):
+        for sentence in sentenceList.sentences:
+            sentence.bagOfWords = self.StemsBagOfWordsByPorter(sentence.bagOfWords)
+        self._sentenceRepository.UpdateList(sentenceList.sentences)
+
+    def StemsBagOfWordsByPorter(self, bagOfWords):
+        stemmer = nltk.stem.porter.PorterStemmer()
+        wordOccurenceDictionary = Counter()
+        for word, occurence in bagOfWords.wordOccurenceDictionary.items():
+            word = stemmer.stem(word)
+            wordOccurenceDictionary.update({word: occurence})
+        bagOfWords.wordOccurenceDictionary = wordOccurenceDictionary
+        return bagOfWords
+    #end_region [stem words in bag-of-words]
+    
     _preProcessedDataRepository = PreProcessedDataRepository()
     _preProcessStepRepository = PreProcessStepRepository()
     _preProcessStepChainNodeRepository = PreProcessStepChainNodeRepository()

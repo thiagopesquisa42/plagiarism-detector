@@ -4,7 +4,7 @@ from Process import _PreProcessingRawTextProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
 
-_PreProcessingRawTextProcess().PreProcessing(32)
+_PreProcessingRawTextProcess().PreProcessing(textCollectionMetaId = 32)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)
