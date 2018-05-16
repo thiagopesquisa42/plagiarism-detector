@@ -1,10 +1,12 @@
 #TODO: remove this 'debugger'
 import util
 from Process import _PreProcessingRawTextProcess
+from Process import _SeedingProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
 
-_PreProcessingRawTextProcess().PreProcessing(textCollectionMetaId = 32)
+#_PreProcessingRawTextProcess().PreProcessing(textCollectionMetaId = 32)
+_SeedingProcess().SeedingProcessing(preProcessedDataId = 15)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)

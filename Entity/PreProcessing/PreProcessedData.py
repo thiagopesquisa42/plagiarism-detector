@@ -7,7 +7,9 @@ class PreProcessedData(EntityBase):
     id                              = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     topPreProcessStepChainNodeId    = Column(Integer, ForeignKey('pre_process_step_chain_node.id'), nullable=True)
     topPreProcessStepChainNode      = relationship('PreProcessStepChainNode', foreign_keys=[topPreProcessStepChainNodeId])
-    
+    textCollectionMetaId            = Column(Integer, ForeignKey('text_collection_meta.id'), nullable=True)
+    textCollectionMeta              = relationship('TextCollectionMeta', foreign_keys=[textCollectionMetaId])
+
     #unique identifier of the object
     def __repr__(self):
         return "<PreProcessedData (id='" + id + "'>"

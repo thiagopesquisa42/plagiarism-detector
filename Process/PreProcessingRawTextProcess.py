@@ -41,10 +41,10 @@ class PreProcessingRawTextProcess(BaseProcess):
     def PreProcessing(self, textCollectionMetaId):
         try:
             self.logger.info('PreProcessing started')
-            preProcessedData = self.CreatePreProcessedDataIdentifier()
+            preProcessedData = self.CreatePreProcessedDataIdentifier(textCollectionMetaId)
             
             self.logger.info('Tokenize in Sentences')
-            rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(textCollectionMetaId)
+            rawTextList = self._rawTextRepository.GetByTextCollectionMetaId(preProcessedData.textCollectionMetaId)
             self.TokenizeRawTextInSentences(rawTextList, preProcessedData)
             
             self.logger.info('To Lower')
@@ -62,57 +62,14 @@ class PreProcessingRawTextProcess(BaseProcess):
             self.logger.info('Stem words from Bags-of-words')
             self.StemSentenceListGroup(preProcessedData)
             
-            # preProcessedData = self._preProcessedDataRepository.Get(id = 14)
-            # [Z]
-            # 1. create data base preprocessed id [ok]
-            # 2. create pp-step-chain node
-            # 3. store pp-step configuration of the node
-            # 4. store pp-step-chain node
-            # 5. start tokenize in sentences step 
-            # 6. for each raw text, create a sentence list
-
-            # [A]
-            # repeat 2 to 4 plus
-            # 7. start lower step
-            # 8. for each sentence in sentence-list from previous step-node
-            #      create another sentence passed by the pp-step
-            # 
-            # [B]
-            # repeat 2 to 4 plus
-            # 7. start remove sw step
-            # 8. for each sentence in sentence-list from previous step-node
-            #      create another sentence passed by the pp-step
-            # 
-            # 
-            # [C]
-            # repeat 2 to 4 plus
-            # 7. start fuse small sentences step
-            # 8. for each sentence in sentence-list from previous step-node
-            #      create another sentence passed by the pp-step
-            # 
-            # [D]
-            # repeat 2 to 4 plus
-            # 7. start tokenize in words step
-            # 8. for each sentence in sentence-list from previous step-node
-            #       create another sentence passed by the pp-step
-            #       create BoW from the tokenized words
-            # 
-            # [E]
-            # repeat 2 to 4 plus
-            # 7. start stem BoW step
-            # 8. for each sentence in sentence-list from previous step-node
-            #       create another sentence passed by the pp-step
-            #       create another BoW from the previously tokenized words
-            # 
-
         except Exception as exception:
             self.logger.info('PreProcessing failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('PreProcessing finished')
 
-    def CreatePreProcessedDataIdentifier(self):
-        preProcessedData = PreProcessedData()
+    def CreatePreProcessedDataIdentifier(self, textCollectionMetaId):
+        preProcessedData = PreProcessedData(textCollectionMetaId = textCollectionMetaId)
         self._preProcessedDataRepository.Insert(preProcessedData)
         return preProcessedData
     
