@@ -11,12 +11,12 @@ class DataManager(object):
     def ImportPanDataBase(self):
         textCollectionMeta = TextCollectionMeta(
             sourceUrl = None,
-            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180513_184401_p5',
-            description = 'teste pan 2014-maio reduzida em 95%',
+            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1',
+            description = 'teste pan 2014-maio reduzida em 99%',
             creationDate = '2014-05-14')
         self._dataImportationProcess.ImportFromPanFiles(
             textCollectionMeta = textCollectionMeta, 
-            folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180513_184401_p5\\')
+            folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1\\')
 
     _dataImportationProcess = DataImportationProcess()
 

@@ -108,10 +108,12 @@ class DataImportationProcess(BaseProcess):
             suspiciousRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.suspiciousLength,
                 firstCharacterPosition = panDetectionXmlPlain.suspiciousOffset,
+                lastCharacterPosition = panDetectionXmlPlain.suspiciousOffset + panDetectionXmlPlain.suspiciousLength,
                 rawTextId = tupleRawTextIdsSuspiciousSource[0])
             sourceRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.sourceLength,
                 firstCharacterPosition = panDetectionXmlPlain.sourceOffset,
+                lastCharacterPosition = panDetectionXmlPlain.sourceOffset + panDetectionXmlPlain.sourceLength,
                 rawTextId = tupleRawTextIdsSuspiciousSource[1])
             rawTextExcerptLocationList.append(suspiciousRawTextExcerptLocation)
             rawTextExcerptLocationList.append(sourceRawTextExcerptLocation)
@@ -129,6 +131,9 @@ class DataImportationProcess(BaseProcess):
             tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
                 tupleFileNameSuspiciousSource = (panDetectionXmlPlain.suspiciousFileName, panDetectionXmlPlain.sourceFileName), 
                 textCollectionMetaId = textCollectionMetaId)
+            rawTextPair = self._rawTextPairRepository.GetBySuspiciousSourceRawTextsIds(
+                suspiciousRawTextId = tupleRawTextIdsSuspiciousSource[0], 
+                sourceRawTextId = tupleRawTextIdsSuspiciousSource[1])
             _rawTextSuspiciousLocationId = next(
                 item.id for item in rawTextExcerptLocationList if (
                     item.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
@@ -148,7 +153,8 @@ class DataImportationProcess(BaseProcess):
                 obfuscation = PlagiarismObfuscation.FromString(panDetectionXmlPlain.obfuscation),
                 name = panDetectionXmlPlain.name,
                 isGiven = EnumYesNo.yes,
-                isDetected = EnumYesNo.no)
+                isDetected = EnumYesNo.no,
+                rawTextPair = rawTextPair)
             detectionList.append(detection)
         return detectionList
 

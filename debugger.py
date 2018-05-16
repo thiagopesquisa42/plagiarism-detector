@@ -6,7 +6,7 @@ from Repository import _RawTextRepository
 from Entity import _RawText as RawText
 
 #_PreProcessingRawTextProcess().PreProcessing(textCollectionMetaId = 32)
-_SeedingProcess().SeedingProcessing(preProcessedDataId = 15)
+# _SeedingProcess().SeedingProcessing(preProcessedDataId = 15)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)
@@ -46,4 +46,7 @@ _SeedingProcess().SeedingProcessing(preProcessedDataId = 15)
 #     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan12-text-alignment-training-corpus-2012-03-16\\') #-> failed, 2012 doesn't have pair file in the root!!
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.95,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.99,
 #     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')

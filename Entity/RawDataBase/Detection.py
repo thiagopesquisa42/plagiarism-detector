@@ -23,6 +23,9 @@ class Detection(EntityBase):
     textCollectionMetaId         = Column(Integer, ForeignKey('text_collection_meta.id'), nullable=False)
     textCollectionMeta           = relationship('TextCollectionMeta', foreign_keys=[textCollectionMetaId])
 
+    rawTextPairId         = Column(Integer, ForeignKey('raw_text_pair.id'), nullable=False)
+    rawTextPair           = relationship('RawTextPair', foreign_keys=[rawTextPairId])
+
     #unique identifier of the object
     def __repr__(self):
         return "<RawTextExcerptLocation (id='" + id + "'>"

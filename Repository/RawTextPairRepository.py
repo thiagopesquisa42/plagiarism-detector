@@ -14,6 +14,12 @@ class RawTextPairRepository(BaseRepository):
             filter(RawText.textCollectionMeta == textCollectionMeta).\
             all()
 
+    def GetBySuspiciousSourceRawTextsIds(self, suspiciousRawTextId, sourceRawTextId):
+        return self.session.query(RawTextPair).\
+            filter((RawTextPair.suspiciousRawTextId == suspiciousRawTextId) &\
+                (RawTextPair.sourceRawTextId == sourceRawTextId)).\
+            one()
+
     def Hello(self):
         print ('Hello, I\'m a repository')
 
