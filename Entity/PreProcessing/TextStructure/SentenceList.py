@@ -7,7 +7,7 @@ class SentenceList(EntityBase):
     id                          = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     preProcessStepChainNodeId   = Column(Integer, ForeignKey('pre_process_step_chain_node.id'), nullable=False)
     preProcessStepChainNode     = relationship('PreProcessStepChainNode', foreign_keys=[preProcessStepChainNodeId])
-    rawTextId                   = Column(Integer, ForeignKey('raw_text.id'), nullable=True)
+    rawTextId                   = Column(Integer, ForeignKey('raw_text.id'), nullable=False)
     rawText                     = relationship('RawText', foreign_keys=[rawTextId])
     sentences                   = relationship("Sentence", primaryjoin="SentenceList.id==Sentence.sentenceListId")
 

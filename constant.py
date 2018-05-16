@@ -48,8 +48,8 @@ class Threshold():
     SENTENCE_NUMBER_WORDS_TO_FUSE = 3
 
 class TextCollectionMeta():
-    ID_ONE_PERCENT_PAN_2014 = 37
+    ID_ONE_PERCENT_PAN_2014 = 1
 
 class PreProcessedData():
-    ID_CURRENT = 17
+    ID_CURRENT = 1
 
