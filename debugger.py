@@ -4,11 +4,11 @@ from Process import _PreProcessingRawTextProcess
 from Process import _SeedingProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
-from constant import TextCollectionMeta
+from constant import TextCollectionMeta, PreProcessedData
 
-_PreProcessingRawTextProcess().PreProcessing(
-    textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014)
-# _SeedingProcess().SeedingProcessing(preProcessedDataId = 15)
+# _PreProcessingRawTextProcess().PreProcessing(
+#     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014)
+_SeedingProcess().SeedingProcessing(preProcessedDataId = PreProcessedData.ID_CURRENT)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)

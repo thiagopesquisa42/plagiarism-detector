@@ -11,6 +11,8 @@ class Seed(EntityBase):
     suspiciousSentence          = relationship('Sentence', foreign_keys=[suspiciousSentenceId])
     sourceSentenceId            = Column(Integer, ForeignKey('sentence.id'), nullable=False)
     sourceSentence              = relationship('Sentence', foreign_keys=[sourceSentenceId])
+    rawTextPairId               = Column(Integer, ForeignKey('raw_text_pair.id'), nullable=False)
+    rawTextPair                 = relationship('RawTextPair', foreign_keys=[rawTextPairId])
 
     #unique identifier of the object
     def __repr__(self):

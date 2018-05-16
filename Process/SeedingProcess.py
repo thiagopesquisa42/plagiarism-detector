@@ -48,28 +48,25 @@ class SeedingProcess(BaseProcess):
     #region [Create seeds candidates]
     def CreateSeedCandidateListFromRawTextPairList(self, seedingData, rawTextPairList):
         for rawTextPair in rawTextPairList:
-            self.CreateSeedCandidateList(
-                seedingData,
-                suspiciousRawText = rawTextPair.suspiciousRawText, 
-                sourceRawText = rawTextPair.sourceRawText)
+            self.CreateSeedCandidateList(seedingData, rawTextPair)
     
-    def CreateSeedCandidateList(self, 
-        seedingData, suspiciousRawText, sourceRawText):
+    def CreateSeedCandidateList(self, seedingData, rawTextPair):
         suspiciousSentenceList = self._sentenceListRepository.GetByRawText(
-            rawText = suspiciousRawText, 
+            rawText = rawTextPair.suspiciousRawText, 
             preProcessedData = seedingData.preProcessedData)
         sourceSentenceList = self._sentenceListRepository.GetByRawText(
-            rawText = sourceRawText, 
+            rawText = rawTextPair.sourceRawText, 
             preProcessedData = seedingData.preProcessedData)
         seedCandidateList = [
             Seed(seedingData = seedingData,
                 suspiciousSentence = suspiciousSentence,
-                sourceSentence = sourceSentence)
+                sourceSentence = sourceSentence,
+                rawTextPair = rawTextPair)
             for suspiciousSentence in suspiciousSentenceList.sentences
             for sourceSentence in sourceSentenceList.sentences]
         self._baseRepository.InsertList(seedCandidateList)
     #end_region [Create seeds candidates]
-    
+
     _baseRepository = BaseRepository()
     _preProcessedDataRepository = PreProcessedDataRepository()
     _rawTextPairRepository = RawTextPairRepository()

@@ -13,11 +13,7 @@ class SentenceListRepository(BaseRepository):
     
     def GetByRawText(self, rawText, preProcessedData):
         return self.session.query(SentenceList).\
-            join((
-                RawTextExcerptLocation, 
-                SentenceList.rawTextExcerptLocationId == RawTextExcerptLocation.id)).\
-            filter(RawTextExcerptLocation.rawText == rawText).\
-            filter(SentenceList.preProcessStepChainNode == preProcessedData.topPreProcessStepChainNode).\
+            filter(SentenceList.rawText == rawText).\
             one()
 
     def Hello(self):

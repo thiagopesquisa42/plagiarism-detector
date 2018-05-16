@@ -50,3 +50,6 @@ class Threshold():
 class TextCollectionMeta():
     ID_ONE_PERCENT_PAN_2014 = 37
 
+class PreProcessedData():
+    ID_CURRENT = 17
+
