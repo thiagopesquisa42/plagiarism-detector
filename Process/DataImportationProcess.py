@@ -134,20 +134,20 @@ class DataImportationProcess(BaseProcess):
             rawTextPair = self._rawTextPairRepository.GetBySuspiciousSourceRawTextsIds(
                 suspiciousRawTextId = tupleRawTextIdsSuspiciousSource[0], 
                 sourceRawTextId = tupleRawTextIdsSuspiciousSource[1])
-            _rawTextSuspiciousLocationId = next(
-                item.id for item in rawTextExcerptLocationList if (
+            _rawTextSuspiciousLocation = next(
+                item for item in rawTextExcerptLocationList if (
                     item.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
                     item.firstCharacterPosition == panDetectionXmlPlain.suspiciousOffset and
                     item.stringLength == panDetectionXmlPlain.suspiciousLength))
-            _rawTextSourceLocationId = next(
-                item.id for item in rawTextExcerptLocationList if (
+            _rawTextSourceLocation = next(
+                item for item in rawTextExcerptLocationList if (
                     item.rawTextId == tupleRawTextIdsSuspiciousSource[1] and
                     item.firstCharacterPosition == panDetectionXmlPlain.sourceOffset and
                     item.stringLength == panDetectionXmlPlain.sourceLength))
             detection = Detection(
                 textCollectionMetaId = textCollectionMetaId,
-                rawTextSuspiciousLocationId = _rawTextSuspiciousLocationId, 
-                rawTextSourceLocationId = _rawTextSourceLocationId,
+                rawTextSuspiciousLocation = _rawTextSuspiciousLocation, 
+                rawTextSourceLocation = _rawTextSourceLocation,
                 _type = PlagiarismType.FromString(panDetectionXmlPlain._type),
                 obfuscationDegree = panDetectionXmlPlain.obfuscationDegree,
                 obfuscation = PlagiarismObfuscation.FromString(panDetectionXmlPlain.obfuscation),
