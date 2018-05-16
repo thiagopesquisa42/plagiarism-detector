@@ -109,24 +109,17 @@ class PreProcessingRawTextProcess(BaseProcess):
     def CreateSentenceListFromRawText(self, rawText, preProcessStepChainNode):
         sentenceList = SentenceList(
             preProcessStepChainNode = preProcessStepChainNode,
-            rawTextExcerptLocation = self.CreateLocationEntireRawText(rawText))
+            rawText = rawText)
         self._sentenceListRepository.Insert(sentenceList)
         return sentenceList
-
-    def CreateLocationEntireRawText(self, rawText):
-        rawTextExcerptLocation = RawTextExcerptLocation(
-            firstCharacterPosition = 0,
-            stringLength = len(rawText.text),
-            rawText = rawText)
-        self._rawTextExcerptLocationRepository.Insert(rawTextExcerptLocation)
-        return rawTextExcerptLocation
 
     def CreateSentencesByPunktTokenizer(self, rawText, sentenceList):
         sentenceDetector = nltk.data.load('tokenizers/punkt/english.pickle')
         sentenceRawTextExcerptLocationList = [
             RawTextExcerptLocation(
-                firstCharacterPosition = firstCharacterPosition,
                 rawTextId = rawText.id,
+                firstCharacterPosition = firstCharacterPosition,
+                lastCharacterPosition = lastCharacterPosition,
                 stringLength = lastCharacterPosition - firstCharacterPosition)
             for (firstCharacterPosition, lastCharacterPosition) in sentenceDetector.span_tokenize(rawText.text)]
         sentenceTextList = sentenceDetector.tokenize(rawText.text)
@@ -261,7 +254,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         self._preProcessStepRepository.Insert(preProcessStep)
         return preProcessStep
 
-    def OrderAscendentSentencesByLocation(self, sentences):
+    def SortAscendentSentencesByLocation(self, sentences):
         return sorted(sentences, 
             key = lambda sentence: (sentence.rawTextExcerptLocation.firstCharacterPosition))
 
@@ -269,7 +262,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         sentences = _sentenceList.sentences[:]
         if (len(sentences) == 0):
             return
-        sortedSentences = self.OrderAscendentSentencesByLocation(sentences)
+        sortedSentences = self.SortAscendentSentencesByLocation(sentences)
         deleteSentences = []
         newSentences = []
         newSentences.append(sortedSentences[0])
@@ -287,6 +280,8 @@ class PreProcessingRawTextProcess(BaseProcess):
         if (len(sentenceList) == 0):
             raise Exception('Error fusing sentence into empty list')
         sentenceDestination = sentenceList[-1] #get last item from list
+        sentenceDestination.rawTextExcerptLocation.lastCharacterPosition =\
+            sentence.rawTextExcerptLocation.lastCharacterPosition
         sentenceDestination.rawTextExcerptLocation.stringLength +=\
             sentence.rawTextExcerptLocation.stringLength
         sentenceDestination.text += ' ' + sentence.text
