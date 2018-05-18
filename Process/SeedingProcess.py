@@ -205,8 +205,8 @@ class SeedingProcess(BaseProcess):
         commitList = []
         for rawTextPair in rawTextPairList:
             seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
-            seedList = self.CalculateSeedListCosine(seedList)
-            # seedList = self.CalculateDice(seedList)
+            # seedList = self.CalculateSeedListCosine(seedList)
+            seedList = self.CalculateSeedListDice(seedList)
             # seedList = self.CalculateIsMaxCosineDice(seedList)
             # seedList = self.CalculateMaxDiffCosineDice(seedList)
             # seedList = self.CalculateMeanDiffCosineDice(seedList)
@@ -253,15 +253,33 @@ class SeedingProcess(BaseProcess):
             for key in commomKeys}
         return coocurrenceDicitionary
 
-def CalculateDice(seedList):
-        pass
+    def CalculateSeedListDice(self, seedList):
+        for seed in seedList:  
+            seed.attributes.dice = SeedingProcess.Dice(
+                seed.suspiciousSentence.bagOfWords.wordOccurenceDictionary, 
+                seed.sourceSentence.bagOfWords.wordOccurenceDictionary)
+        return seedList
+    
+    def Dice(dictionary1, dictionary2):
+        dictionary1Binary = SeedingProcess.Binarize(dictionary1)
+        dictionary2Binary = SeedingProcess.Binarize(dictionary2)
+        euclidianNormDictionary1 = SeedingProcess.EuclidianNormalize(dictionary1Binary)
+        euclidianNormDictionary2 = SeedingProcess.EuclidianNormalize(dictionary2Binary)
+        denominator = euclidianNormDictionary1**2 + euclidianNormDictionary2**2
 
-    def CalculateIsMaxCosineDice(seedList):
-        pass
+        coocurrenceDictionary = SeedingProcess.GetCoocurrenceDictionary(
+            dictionary1Binary, dictionary2Binary)
+        scalarProduct = sum([
+            occurence1 * occurence2
+            for occurence1, occurence2 in coocurrenceDictionary.values()])
+        dice = 2*scalarProduct/denominator
+        return dice
 
-    def CalculateMaxDiffCosineDice(seedList):
-        pass
-        
+    def Binarize(dictionary):
+        return {
+            key: value != 0
+            for key, value in dictionary.items()}
+
     def CalculateMeanDiffCosineDice(seedList):
         pass
 
