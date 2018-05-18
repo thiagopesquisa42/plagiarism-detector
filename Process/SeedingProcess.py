@@ -24,30 +24,33 @@ class SeedingProcess(BaseProcess):
         try:
             self.logger.info('Seeding Processing started')
 
-            # self.logger.info('create Seeding Data Instance')
-            # preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
-            # seedingData = self.CreateSeedingData(preProcessedData)
+            self.logger.info('create Seeding Data Instance')
+            preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
+            seedingData = self.CreateSeedingData(preProcessedData)
 
-            # self.logger.info('create seeds candidates')
-            #rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(preProcessedData.textCollectionMeta)
-            # seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
-
-            seedingData = self._seedingDataRepository.Get(id = 1)
+            self.logger.info('create seeds candidates')
             rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
+            seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
+
+            # seedingData = self._seedingDataRepository.Get(id = 1)
+            # rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
             # seedCandidateList = self._seedRepository.GetListBySeedingData(seedingData)
             
-            # self.logger.info('create seeds attributes registers')
-            # self.CreateAttributesDefaultRegisterForSeeds(
-            #     seedList = seedCandidateList)
+            # [0] Create seeds candidates from 
+            #   all possible sentences suspicious-source-pairs in preprocessedData
+            self.logger.info('create seeds attributes registers')
+            self.CreateAttributesDefaultRegisterForSeeds(
+                seedList = seedCandidateList)
             
+            # [1] Fill class (no-plag, obfuscated-plag...)
             self.logger.info('label seeds detected')
             self.LabelSeedList(seedingData, rawTextPairList)
 
-            print('')
-            # [0] Create seeds candidates from 
-            #   all possible sentences suspicious-source-pairs in preprocessedData
-            # [1] Fill class (no-plag, obfuscated-plag...)
             # [2] Calculate attributes over bag-of-words and locations from both sentences
+            self.logger.info('calculate seeds attributes')
+
+
+            print('')
 
         except Exception as exception:
             self.logger.info('Seeding Processing failure: ' + str(exception))
@@ -194,8 +197,48 @@ class SeedingProcess(BaseProcess):
         overlappedLength = min(detectionLastPosition, sentenceLastPosition) - max(detectionFirstPosition, sentenceFirstPosition)
         percentageInDetection = overlappedLength / sentenceLength
         return percentageInDetection
-
     #end_region [Fill seeds plagiarism class]    
+
+    #region [Calculate attributes over seeds candidates]
+    def CalculateAttributesSeeedList(self, rawTextPairList):
+        commitList = []
+        for rawTextPair in rawTextPairList:
+            seedList = self._seedRepository.GetListByRawTextPair(rawTextPair)
+            seedList = self.CalculateCosine(seedList)
+            seedList = self.CalculateDice(seedList)
+            seedList = self.CalculateIsMaxCosineDice(seedList)
+            seedList = self.CalculateMaxDiffCosineDice(seedList)
+            seedList = self.CalculateMeanDiffCosineDice(seedList)
+            seedList = self.CalculateMaxNeighbour(seedList)
+            seedList = self.CalculateVerticalMaxDistance(seedList)
+            seedList = self.CalculateLengthRatio(seedList)
+            commitList.extend(seedList)
+        self._baseRepository.InsertList(commitList)
+
+    def CalculateCosine(seedList):
+        pass
+
+    def CalculateDice(seedList):
+        pass
+
+    def CalculateIsMaxCosineDice(seedList):
+        pass
+
+    def CalculateMaxDiffCosineDice(seedList):
+        pass
+
+    def CalculateMeanDiffCosineDice(seedList):
+        pass
+
+    def CalculateMaxNeighbour(seedList):
+        pass
+
+    def CalculateVerticalMaxDistance(seedList):
+        pass
+
+    def CalculateLengthRatio(seedList):
+        pass
+    #end_region [Calculate attributes over seeds candidates]
     
     _baseRepository = BaseRepository()
     _preProcessedDataRepository = PreProcessedDataRepository()
