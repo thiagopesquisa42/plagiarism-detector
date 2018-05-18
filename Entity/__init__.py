@@ -6,6 +6,7 @@ _RawTextType = Enumerables.RawTextType
 _PlagiarismObfuscation = Enumerables.PlagiarismObfuscation
 _PlagiarismType = Enumerables.PlagiarismType
 _EnumYesNo = Enumerables.EnumYesNo
+_PlagiarismClass = Enumerables.PlagiarismClass
 
 from Entity.RawDataBase import TextCollectionMeta
 _TextCollectionMeta = TextCollectionMeta.TextCollectionMeta

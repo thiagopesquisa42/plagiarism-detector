@@ -46,6 +46,7 @@ class StopWord():
 
 class Threshold():
     SENTENCE_NUMBER_WORDS_TO_FUSE = 3
+    DETECTION_MINIMUM_PERCENTUAL_INTERSECTION = 0.5
 
 class TextCollectionMeta():
     ID_ONE_PERCENT_PAN_2014 = 1
