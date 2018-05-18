@@ -1,4 +1,5 @@
 from itertools import groupby
+import math
 
 from Process import _BaseProcess as BaseProcess
 from Entity.Seeding import _SeedingData as SeedingData
@@ -24,31 +25,31 @@ class SeedingProcess(BaseProcess):
         try:
             self.logger.info('Seeding Processing started')
 
-            self.logger.info('create Seeding Data Instance')
-            preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
-            seedingData = self.CreateSeedingData(preProcessedData)
+            # self.logger.info('create Seeding Data Instance')
+            # preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
+            # seedingData = self.CreateSeedingData(preProcessedData)
 
-            self.logger.info('create seeds candidates')
-            rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
-
-            # seedingData = self._seedingDataRepository.Get(id = 1)
+            # self.logger.info('create seeds candidates')
             # rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            # seedCandidateList = self._seedRepository.GetListBySeedingData(seedingData)
-            
-            # [0] Create seeds candidates from 
-            #   all possible sentences suspicious-source-pairs in preprocessedData
-            self.logger.info('create seeds attributes registers')
-            self.CreateAttributesDefaultRegisterForSeeds(
-                seedList = seedCandidateList)
-            
-            # [1] Fill class (no-plag, obfuscated-plag...)
-            self.logger.info('label seeds detected')
-            self.LabelSeedList(seedingData, rawTextPairList)
+            # seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
 
+            
+            # # [0] Create seeds candidates from 
+            # #   all possible sentences suspicious-source-pairs in preprocessedData
+            # self.logger.info('create seeds attributes registers')
+            # self.CreateAttributesDefaultRegisterForSeeds(
+            #     seedList = seedCandidateList)
+            
+            # # [1] Fill class (no-plag, obfuscated-plag...)
+            # self.logger.info('label seeds detected')
+            # self.LabelSeedList(seedingData, rawTextPairList)
+
+            seedingData = self._seedingDataRepository.Get(id = 1)
+            rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
+            # seedCandidateList = self._seedRepository.GetListBySeedingData(seedingData)
             # [2] Calculate attributes over bag-of-words and locations from both sentences
             self.logger.info('calculate seeds attributes')
-
+            self.CalculateAttributesSeeedList(seedingData, rawTextPairList)
 
             print('')
 
@@ -100,7 +101,7 @@ class SeedingProcess(BaseProcess):
     def LabelSeedList(self, seedingData, rawTextPairList):
         commitList = []
         for rawTextPair in rawTextPairList:
-            seedList = self._seedRepository.GetListByRawTextPair(rawTextPair)
+            seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
             seedList = self.LabelAllSeedAsNone(seedList)
             seedDetectedSet = self.LabelSeedAsDetection(seedList, rawTextPair)
             seedList = set(seedList)
@@ -123,7 +124,7 @@ class SeedingProcess(BaseProcess):
     def GetSeedsInsideAnyDetection(self, detectionList, seedList):
         seedSortedList = self.SortSeedListBySuspiciousSourceLocation(seedList)
         
-        # get matrix oriented seed arrange
+        # get matrix seed indexed by suspicious and source locations
         seedMatrixLineSuspiciousColumnSource = [
             (
                 location[0], 
@@ -200,25 +201,59 @@ class SeedingProcess(BaseProcess):
     #end_region [Fill seeds plagiarism class]    
 
     #region [Calculate attributes over seeds candidates]
-    def CalculateAttributesSeeedList(self, rawTextPairList):
+    def CalculateAttributesSeeedList(self, seedingData, rawTextPairList):
         commitList = []
         for rawTextPair in rawTextPairList:
-            seedList = self._seedRepository.GetListByRawTextPair(rawTextPair)
-            seedList = self.CalculateCosine(seedList)
-            seedList = self.CalculateDice(seedList)
-            seedList = self.CalculateIsMaxCosineDice(seedList)
-            seedList = self.CalculateMaxDiffCosineDice(seedList)
-            seedList = self.CalculateMeanDiffCosineDice(seedList)
-            seedList = self.CalculateMaxNeighbour(seedList)
-            seedList = self.CalculateVerticalMaxDistance(seedList)
-            seedList = self.CalculateLengthRatio(seedList)
+            seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
+            seedList = self.CalculateSeedListCosine(seedList)
+            # seedList = self.CalculateDice(seedList)
+            # seedList = self.CalculateIsMaxCosineDice(seedList)
+            # seedList = self.CalculateMaxDiffCosineDice(seedList)
+            # seedList = self.CalculateMeanDiffCosineDice(seedList)
+            # seedList = self.CalculateMaxNeighbour(seedList)
+            # seedList = self.CalculateVerticalMaxDistance(seedList)
+            # seedList = self.CalculateLengthRatio(seedList)
             commitList.extend(seedList)
         self._baseRepository.InsertList(commitList)
 
-    def CalculateCosine(seedList):
-        pass
+    def CalculateSeedListCosine(self, seedList):
+        for seed in seedList:  
+            seed.attributes.cosine = SeedingProcess.Cosine(
+                seed.suspiciousSentence.bagOfWords.wordOccurenceDictionary, 
+                seed.sourceSentence.bagOfWords.wordOccurenceDictionary)
+        return seedList
 
-    def CalculateDice(seedList):
+    def Cosine(dictionary1, dictionary2):
+        scalarProduct = 0.0
+        denominator =\
+            SeedingProcess.EuclidianNormalize(dictionary1) *\
+            SeedingProcess.EuclidianNormalize(dictionary2)
+        if denominator == 0:
+            return 0
+        coocurrenceDicitionary = SeedingProcess.GetCoocurrenceDictionary(
+            dictionary1, dictionary2)
+        scalarProduct = sum([
+            occurence1 * occurence2
+            for occurence1, occurence2 in coocurrenceDicitionary.values()])
+        cosine = scalarProduct/denominator
+        return cosine
+    
+    def EuclidianNormalize(dictionary):
+        squares = list(map(lambda value: value*value, dictionary.values()))
+        _sum = sum(squares)
+        euclidianNorm = math.sqrt(_sum)
+        return euclidianNorm
+
+    def GetCoocurrenceDictionary(dictionary1, dictionary2):
+        keys1 = set(dictionary1.keys())
+        keys2 = set(dictionary2.keys())
+        commomKeys = keys1 & keys2
+        coocurrenceDicitionary = {
+            key: (dictionary1[key], dictionary2[key])
+            for key in commomKeys}
+        return coocurrenceDicitionary
+
+def CalculateDice(seedList):
         pass
 
     def CalculateIsMaxCosineDice(seedList):
@@ -226,7 +261,7 @@ class SeedingProcess(BaseProcess):
 
     def CalculateMaxDiffCosineDice(seedList):
         pass
-
+        
     def CalculateMeanDiffCosineDice(seedList):
         pass
 

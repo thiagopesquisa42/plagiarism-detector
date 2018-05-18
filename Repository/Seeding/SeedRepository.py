@@ -6,9 +6,10 @@ class SeedRepository(BaseRepository):
     def Get(self, id):
         return self.session.query(Seed).filter(Seed.id == id).first()
     
-    def GetListByRawTextPair(self, rawTextPair):
+    def GetListByRawTextPair(self, rawTextPair, seedingData):
         return self.session.query(Seed).\
-            filter(Seed.rawTextPair == rawTextPair).all()
+            filter((Seed.rawTextPair == rawTextPair)\
+                & (Seed.seedingData == seedingData)).all()
 
     def GetListBySeedingData(self, seedingData):
         return self.session.query(Seed).\
