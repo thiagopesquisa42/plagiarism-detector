@@ -6,3 +6,5 @@ from Process import DataImportationProcess
 _DataImportationProcess = DataImportationProcess.DataImportationProcess
 from Process import SeedingProcess
 _SeedingProcess = SeedingProcess.SeedingProcess
+from Process import SeedingClassifierProcess
+_SeedingClassifierProcess = SeedingClassifierProcess.SeedingClassifierProcess
