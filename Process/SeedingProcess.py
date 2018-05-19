@@ -125,15 +125,7 @@ class SeedingProcess(BaseProcess):
         seedSortedList = self.SortSeedListBySuspiciousSourceLocation(seedList)
         
         # get matrix seed indexed by suspicious and source locations
-        seedMatrixLineSuspiciousColumnSource = [
-            (
-                location[0], 
-                location[1],
-                [(
-                    seed.sourceSentence.rawTextExcerptLocation.firstCharacterPosition, 
-                    seed.sourceSentence.rawTextExcerptLocation.lastCharacterPosition, 
-                    seed) for seed in seedListIterator])
-            for location, seedListIterator in groupby(seedSortedList, SeedingProcess.GetSuspiciousLocation)]
+        seedMatrixLineSuspiciousColumnSource = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedSortedList)
 
         # def detection area (indexes min max, i j)
         # cut off seeds in external detection area
@@ -163,6 +155,18 @@ class SeedingProcess(BaseProcess):
     def GetSourceLocation(seed):
         return (seed.sourceSentence.rawTextExcerptLocation.firstCharacterPosition,
             seed.sourceSentence.rawTextExcerptLocation.lastCharacterPosition)
+
+    def GetMatrixLineSuspiciousColumnSource(seedList):
+        seedMatrixLineSuspiciousColumnSource = [
+            (
+                location[0], 
+                location[1],
+                [(
+                    seed.sourceSentence.rawTextExcerptLocation.firstCharacterPosition, 
+                    seed.sourceSentence.rawTextExcerptLocation.lastCharacterPosition, 
+                    seed) for seed in seedListIterator])
+            for location, seedListIterator in groupby(seedList, SeedingProcess.GetSuspiciousLocation)]
+        return seedMatrixLineSuspiciousColumnSource
 
     def GetSeedListInDetection(self, seedMatrixLineSuspiciousColumnSource, detection):
         detectionSuspiciousFirstPosition = detection.rawTextSuspiciousLocation.firstCharacterPosition
@@ -206,12 +210,9 @@ class SeedingProcess(BaseProcess):
         for rawTextPair in rawTextPairList:
             seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
             # seedList = self.CalculateSeedListCosine(seedList)
-            seedList = self.CalculateSeedListDice(seedList)
-            # seedList = self.CalculateIsMaxCosineDice(seedList)
-            # seedList = self.CalculateMaxDiffCosineDice(seedList)
-            # seedList = self.CalculateMeanDiffCosineDice(seedList)
-            # seedList = self.CalculateMaxNeighbour(seedList)
-            # seedList = self.CalculateVerticalMaxDistance(seedList)
+            # seedList = self.CalculateSeedListDice(seedList)
+            seedList = self.CalculateSeedListMetaCosineAttributes(seedList)
+            seedList = self.CalculateSeedListMetaDiceAttributes(seedList)
             # seedList = self.CalculateLengthRatio(seedList)
             commitList.extend(seedList)
         self._baseRepository.InsertList(commitList)
@@ -280,15 +281,75 @@ class SeedingProcess(BaseProcess):
             key: value != 0
             for key, value in dictionary.items()}
 
-    def CalculateMeanDiffCosineDice(seedList):
-        pass
+    def CalculateSeedListMetaCosineAttributes(self, seedList):
+        seedMatrix = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedList)
+        cosineMatrix = [
+            [seed.attributes.cosine 
+                for sourceFirstPosition, sourceLastPosition, seed in seedListSameSuspicious]
+            for suspiciousFirstPosition, suspiciousLastPosition, seedListSameSuspicious in seedMatrix]
+        maxCosineList = [max(cosineList) for cosineList in cosineMatrix]
+        meanMaxCosine = sum(maxCosineList)/float(len(maxCosineList))
+        for suspiciousIndex,\
+            (suspiciousFirstPosition, suspiciousLastPosition, seedListSameSuspicious)\
+            in enumerate(seedMatrix):
+            maxCosineNeighbour = SeedingProcess.CalculateMaxNeighbour(suspiciousIndex, maxCosineList)
+            verticalCosineMaxMeasures = SeedingProcess.CalculateVerticalMaxMeasures(suspiciousIndex, maxCosineList, cosineMatrix)
+            for sourceIndex,\
+                (sourceFirstPosition, sourceLastPosition, seed)\
+                in enumerate(seedListSameSuspicious):
+                seed.attributes.isMaxCosine = (seed.attributes.cosine == maxCosineList[suspiciousIndex])
+                seed.attributes.maxCosineDiff = maxCosineList[suspiciousIndex] - seed.attributes.cosine
+                seed.attributes.meanMaxCosineDiff = meanMaxCosine - seed.attributes.cosine
+                seed.attributes.maxCosineNeighbour = maxCosineNeighbour
+                seed.attributes.verticalCosineMaxDistance = verticalCosineMaxMeasures[0]
+                seed.attributes.verticalCosineMaxMeasure = verticalCosineMaxMeasures[1]
+        return seedList
 
-    def CalculateMaxNeighbour(seedList):
-        pass
+    def CalculateMaxNeighbour(suspiciousIndex, maxValuesList):
+        if(suspiciousIndex == 0):
+            return maxValuesList[suspiciousIndex + 1]
+        if(suspiciousIndex + 1 == len(maxValuesList)):
+            return maxValuesList[suspiciousIndex - 1]
+        return max(
+            maxValuesList[suspiciousIndex - 1],
+            maxValuesList[suspiciousIndex + 1])
+    
+    def CalculateVerticalMaxMeasures(suspiciousIndex, maxValuesList, matrix):
+        valueListSameSuspicious = matrix[suspiciousIndex]
+        maxValue = maxValuesList[suspiciousIndex]
+        normalizedVerticalIndexMaxValue = [
+            index/(len(valueListSameSuspicious) - 1)
+            for index, cosine in enumerate(valueListSameSuspicious)
+            if(cosine == maxValue)][0]
+        normalizedSuspiciousIndex = suspiciousIndex/(len(matrix) - 1)
+        verticalMaxMeasure = normalizedVerticalIndexMaxValue - normalizedSuspiciousIndex
+        verticalMaxDistance = abs(verticalMaxMeasure)
+        return (verticalMaxDistance, verticalMaxMeasure)
 
-    def CalculateVerticalMaxDistance(seedList):
-        pass
-
+    def CalculateSeedListMetaDiceAttributes(self, seedList):
+        seedMatrix = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedList)
+        diceMatrix = [
+            [seed.attributes.dice 
+                for sourceFirstPosition, sourceLastPosition, seed in seedListSameSuspicious]
+            for suspiciousFirstPosition, suspiciousLastPosition, seedListSameSuspicious in seedMatrix]
+        maxDiceList = [max(diceList) for diceList in diceMatrix]
+        meanMaxDice = sum(maxDiceList)/float(len(maxDiceList))
+        for suspiciousIndex,\
+            (suspiciousFirstPosition, suspiciousLastPosition, seedListSameSuspicious)\
+            in enumerate(seedMatrix):
+            maxDiceNeighbour = SeedingProcess.CalculateMaxNeighbour(suspiciousIndex, maxDiceList)
+            verticalDiceMaxMeasures = SeedingProcess.CalculateVerticalMaxMeasures(suspiciousIndex, maxDiceList, diceMatrix)
+            for sourceIndex,\
+                (sourceFirstPosition, sourceLastPosition, seed)\
+                in enumerate(seedListSameSuspicious):
+                seed.attributes.isMaxDice = (seed.attributes.dice == maxDiceList[suspiciousIndex])
+                seed.attributes.maxDiceDiff = maxDiceList[suspiciousIndex] - seed.attributes.dice
+                seed.attributes.meanMaxDiceDiff = meanMaxDice - seed.attributes.dice
+                seed.attributes.maxDiceNeighbour = maxDiceNeighbour
+                seed.attributes.verticalDiceMaxDistance = verticalDiceMaxMeasures[0]
+                seed.attributes.verticalDiceMaxMeasure = verticalDiceMaxMeasures[1]
+        return seedList
+    
     def CalculateLengthRatio(seedList):
         pass
     #end_region [Calculate attributes over seeds candidates]
