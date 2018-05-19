@@ -211,9 +211,9 @@ class SeedingProcess(BaseProcess):
             seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
             # seedList = self.CalculateSeedListCosine(seedList)
             # seedList = self.CalculateSeedListDice(seedList)
-            seedList = self.CalculateSeedListMetaCosineAttributes(seedList)
-            seedList = self.CalculateSeedListMetaDiceAttributes(seedList)
-            # seedList = self.CalculateLengthRatio(seedList)
+            # seedList = self.CalculateSeedListMetaCosineAttributes(seedList)
+            # seedList = self.CalculateSeedListMetaDiceAttributes(seedList)
+            seedList = self.CalculateLengthRatio(seedList)
             commitList.extend(seedList)
         self._baseRepository.InsertList(commitList)
 
@@ -354,8 +354,14 @@ class SeedingProcess(BaseProcess):
                 seed.attributes.verticalDiceMaxMeasure = verticalDiceMaxMeasures[1]
         return seedList
     
-    def CalculateLengthRatio(seedList):
-        pass
+    def CalculateLengthRatio(self, seedList):
+        lengthRatioList = [
+            (seed.suspiciousSentence.rawTextExcerptLocation.stringLength /
+                seed.sourceSentence.rawTextExcerptLocation.stringLength)
+            for seed in seedList]
+        for index, seed in enumerate(seedList):  
+            seed.attributes.lengthRatio = lengthRatioList[index]
+        return seedList
     #end_region [Calculate attributes over seeds candidates]
     
     _baseRepository = BaseRepository()

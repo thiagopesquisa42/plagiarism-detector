@@ -27,6 +27,8 @@ class SeedAttributes(EntityBase):
     verticalDiceMaxDistance     = Column(Float)
     verticalDiceMaxMeasure      = Column(Float)
 
+    lengthRatio                 = Column(Float)
+
     #unique identifier of the object
     def __repr__(self):
         return "<SeedAttributes (seedId='" + seedId + "'>"
