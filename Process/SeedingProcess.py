@@ -25,33 +25,31 @@ class SeedingProcess(BaseProcess):
         try:
             self.logger.info('Seeding Processing started')
 
-            # self.logger.info('create Seeding Data Instance')
-            # preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
-            # seedingData = self.CreateSeedingData(preProcessedData)
+            self.logger.info('create Seeding Data Instance')
+            preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
+            seedingData = self.CreateSeedingData(preProcessedData)
 
-            # self.logger.info('create seeds candidates')
-            # rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            # seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
-
-            
-            # # [0] Create seeds candidates from 
-            # #   all possible sentences suspicious-source-pairs in preprocessedData
-            # self.logger.info('create seeds attributes registers')
-            # self.CreateAttributesDefaultRegisterForSeeds(
-            #     seedList = seedCandidateList)
-            
-            # # [1] Fill class (no-plag, obfuscated-plag...)
-            # self.logger.info('label seeds detected')
-            # self.LabelSeedList(seedingData, rawTextPairList)
-
-            seedingData = self._seedingDataRepository.Get(id = 1)
+            self.logger.info('create seeds candidates')
             rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
+            seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
+
+            
+            # [0] Create seeds candidates from 
+            #   all possible sentences suspicious-source-pairs in preprocessedData
+            self.logger.info('create seeds attributes registers')
+            self.CreateAttributesDefaultRegisterForSeeds(
+                seedList = seedCandidateList)
+            
+            # [1] Fill class (no-plag, obfuscated-plag...)
+            self.logger.info('label seeds detected')
+            self.LabelSeedList(seedingData, rawTextPairList)
+
+            # seedingData = self._seedingDataRepository.Get(id = 1)
+            # rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
             # seedCandidateList = self._seedRepository.GetListBySeedingData(seedingData)
             # [2] Calculate attributes over bag-of-words and locations from both sentences
             self.logger.info('calculate seeds attributes')
             self.CalculateAttributesSeeedList(seedingData, rawTextPairList)
-
-            print('')
 
         except Exception as exception:
             self.logger.info('Seeding Processing failure: ' + str(exception))
@@ -123,19 +121,12 @@ class SeedingProcess(BaseProcess):
 
     def GetSeedsInsideAnyDetection(self, detectionList, seedList):
         seedSortedList = self.SortSeedListBySuspiciousSourceLocation(seedList)
-        
-        # get matrix seed indexed by suspicious and source locations
         seedMatrixLineSuspiciousColumnSource = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedSortedList)
-
-        # def detection area (indexes min max, i j)
-        # cut off seeds in external detection area
         seedDetectedSet = set()
         for detection in detectionList:
-            # solve border cases by threshold (cut off the ones failed)
             seedDetectedList = self.GetSeedListInDetection(
                 seedMatrixLineSuspiciousColumnSource, 
                 detection)
-            # label remaing seed as detection.class
             for seed in seedDetectedList:
                 seed.attributes.plagiarismClass = PlagiarismClass.FromPlagiarismObfuscation(detection.obfuscation)
             seedDetectedSet.update(seedDetectedList)
@@ -209,10 +200,10 @@ class SeedingProcess(BaseProcess):
         commitList = []
         for rawTextPair in rawTextPairList:
             seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
-            # seedList = self.CalculateSeedListCosine(seedList)
-            # seedList = self.CalculateSeedListDice(seedList)
-            # seedList = self.CalculateSeedListMetaCosineAttributes(seedList)
-            # seedList = self.CalculateSeedListMetaDiceAttributes(seedList)
+            seedList = self.CalculateSeedListCosine(seedList)
+            seedList = self.CalculateSeedListDice(seedList)
+            seedList = self.CalculateSeedListMetaCosineAttributes(seedList)
+            seedList = self.CalculateSeedListMetaDiceAttributes(seedList)
             seedList = self.CalculateLengthRatio(seedList)
             commitList.extend(seedList)
         self._baseRepository.InsertList(commitList)
