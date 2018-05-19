@@ -306,6 +306,8 @@ class SeedingProcess(BaseProcess):
         return seedList
 
     def CalculateMaxNeighbour(suspiciousIndex, maxValuesList):
+        if(len(maxValuesList) == 1):
+            return None
         if(suspiciousIndex == 0):
             return maxValuesList[suspiciousIndex + 1]
         if(suspiciousIndex + 1 == len(maxValuesList)):
@@ -316,6 +318,8 @@ class SeedingProcess(BaseProcess):
     
     def CalculateVerticalMaxMeasures(suspiciousIndex, maxValuesList, matrix):
         valueListSameSuspicious = matrix[suspiciousIndex]
+        if(len(valueListSameSuspicious) == 1 or len(matrix) == 1):
+            return (None, None)
         maxValue = maxValuesList[suspiciousIndex]
         normalizedVerticalIndexMaxValue = [
             index/(len(valueListSameSuspicious) - 1)
