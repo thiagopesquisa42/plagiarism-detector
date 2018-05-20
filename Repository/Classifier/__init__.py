@@ -1,2 +1,4 @@
 from Repository.Classifier import SeedingDataFrameRepository
 _SeedingDataFrameRepository = SeedingDataFrameRepository.SeedingDataFrameRepository
+from Repository.Classifier import ClassifierMetaRepository
+_ClassifierMetaRepository = ClassifierMetaRepository.ClassifierMetaRepository

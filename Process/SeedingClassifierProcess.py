@@ -4,10 +4,14 @@ from Repository import _BaseRepository as BaseRepository
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Seeding import _SeedAttributesRepository as SeedAttributesRepository
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
+from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRepository
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
+from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from constant import SeedAttributesNames
 import pandas
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 class SeedingClassifierProcess(BaseProcess):
 
@@ -30,24 +34,30 @@ class SeedingClassifierProcess(BaseProcess):
             # self.logger.info('get seeds attributes')
             # seedAttributesList = self._seedAttributesRepository.GetListBySeedingData(seedingData)
 
+            # [7] salvar dataframe de treino and
             # # [2] transform in dataFrame
             # self.logger.info('get seeds attributes')
             # seedingDataFrame = self.TransformInSeedingDataFrame(seedAttributesList, seedingData)
             # dataFrame = seedingDataFrame.getDataFrame()
  
+            # [3] attributes selection
+            # self.logger.info('attributes selection')
+            # dataFrame = self.SelectColumnsInDataFrame(dataFrame)
+            # self.UpdateSeedingDataFrame(seedingDataFrame, dataFrame)
+
+            # [4] dataframe cleaning
+
             seedingDataFrame = self._seedingDataFrameRepository.Get(id = 2)
             dataFrame = seedingDataFrame.getDataFrame()
-            # [3] attributes selection
-            self.logger.info('attributes selection')
-            dataFrame = self.SelectColumnsInDataFrame(dataFrame)
-            self.UpdateSeedingDataFrame(seedingDataFrame, dataFrame)
-
-            # [4] limpeza do dataframe
-            # [5] configurar classificador AdaBoost
-            # [6] salvar informações do classificador AdaBoost
-            # [7] salvar dataframe de treino
-            # [8] treinar classificador de sementes
             # [9] criar e salvar pickle do classificador treinado
+            # [6] salvar informações do classificador AdaBoost
+            # [5] setup AdaBoost classifier
+            self.logger.info('setup AdaBoost classifier')
+            classifierMeta = self.CreateClassifierMeta(
+                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+
+            # [8] treinar classificador de sementes
+            
 
             print('')
         except Exception as exception:
@@ -79,10 +89,34 @@ class SeedingClassifierProcess(BaseProcess):
             del dataFrame[attributeName]
         return dataFrame
     
+    def CreateClassifierMeta(self, classifierSetterMethod):
+        definitionDictionary, classifier = classifierSetterMethod()
+        classifierMeta = ClassifierMeta(definitionDictionary = definitionDictionary)
+        classifierMeta.setPickleClassifier(classifier)
+        self._baseRepository.Insert(classifierMeta)
+        return classifierMeta
+
+    def SetupAdaboostClassifier():
+        definitionDictionary = {
+            'baseEstimator': 'Decision Tree Classifier',
+            'baseEstimatorDefinition': {
+                'splitter': 'random'
+            },
+            'algorithm': 'SAMME',
+            'numberEstimators': 200
+        }
+        adaBoostClassifier = AdaBoostClassifier(
+            DecisionTreeClassifier(
+                splitter = definitionDictionary['baseEstimatorDefinition']['splitter']),
+            algorithm = definitionDictionary['algorithm'],
+            n_estimators = definitionDictionary['numberEstimators'])
+        return (definitionDictionary, adaBoostClassifier)
+
     _baseRepository = BaseRepository()
     _seedingDataRepository = SeedingDataRepository()
     _seedAttributesRepository = SeedAttributesRepository()
     _seedingDataFrameRepository = SeedingDataFrameRepository()
+    _classifierMetaRepository = ClassifierMetaRepository()
 
     def __init__(self):
         super().__init__()
