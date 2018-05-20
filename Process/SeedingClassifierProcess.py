@@ -4,6 +4,7 @@ from Repository import _BaseRepository as BaseRepository
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Seeding import _SeedAttributesRepository as SeedAttributesRepository
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
+import pandas
 
 class SeedingClassifierProcess(BaseProcess):
 
@@ -14,7 +15,7 @@ class SeedingClassifierProcess(BaseProcess):
     def TrainSeedClassifier(self, seedingDataId):
         try:
             self.logger.info('Train Seed Classifier started')
-            # [0] validar referencia aos dados
+            # [0] check data reference
             self.logger.info('check data set reference')
             seedingData = self._seedingDataRepository.Get(id = seedingDataId)
             TextCollectionMetaCommom.CheckPurpose(
@@ -22,11 +23,14 @@ class SeedingClassifierProcess(BaseProcess):
                 purpose = TextCollectionMetaPurpose.train
             )
             
-            # [1] obter dados
+            # [1] get data
             self.logger.info('get seeds attributes')
             seedAttributesList = self._seedAttributesRepository.GetListBySeedingData(seedingData)
 
-            # [2] transformação
+            # [2] transform in dataFrame
+            self.logger.info('get seeds attributes')
+            dataFrame = self.TransformInDataFrame(seedAttributesList)
+
             # [3] seleção de atributos
             # [4] limpeza do dataframe
             # [5] configurar classificador AdaBoost
@@ -37,14 +41,19 @@ class SeedingClassifierProcess(BaseProcess):
 
             print('')
         except Exception as exception:
-            self.logger.info('Train Seed Classifier failure: ' + str(exception))
+            self.logger.error('Train Seed Classifier failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Train Seed Classifier finished')
     
-    #region [Create seeding data]
-
-    #end_region [Create seeding data]
+    #region [Transform seedAttributes into a DataFrame]
+    def TransformInDataFrame(self, seedAttributesList):
+        seedAttributesDictionaryList = [
+            seedAttributes.ToDictionary()
+            for seedAttributes in seedAttributesList]
+        dataFrame = pandas.DataFrame.from_records(seedAttributesDictionaryList)
+        return dataFrame
+    #end_region [Transform seedAttributes into a DataFrame]
     
     _baseRepository = BaseRepository()
     _seedingDataRepository = SeedingDataRepository()

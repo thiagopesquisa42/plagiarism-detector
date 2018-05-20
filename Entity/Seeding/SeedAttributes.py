@@ -32,3 +32,25 @@ class SeedAttributes(EntityBase):
     #unique identifier of the object
     def __repr__(self):
         return "<SeedAttributes (seedId='" + seedId + "'>"
+
+    def ToDictionary(self):
+        return {
+            'seedId':                       self.seedId,
+            'plagiarismClass':              self.plagiarismClass.name,
+            'percentualInDetection':        self.percentualInDetection,
+            'cosine':                       self.cosine,
+            'dice':                         self.dice,
+            'isMaxCosine':                  self.isMaxCosine,
+            'maxCosineDiff':                self.maxCosineDiff,
+            'meanMaxCosineDiff':            self.meanMaxCosineDiff,
+            'maxCosineNeighbour':           self.maxCosineNeighbour,
+            'verticalCosineMaxDistance':    self.verticalCosineMaxDistance,
+            'verticalCosineMaxMeasure':     self.verticalCosineMaxMeasure,
+            'isMaxDice':                    self.isMaxDice,
+            'maxDiceDiff':                  self.maxDiceDiff,
+            'meanMaxDiceDiff':              self.meanMaxDiceDiff,
+            'maxDiceNeighbour':             self.maxDiceNeighbour,
+            'verticalDiceMaxDistance':      self.verticalDiceMaxDistance,
+            'verticalDiceMaxMeasure':       self.verticalDiceMaxMeasure,
+            'lengthRatio':                  self.lengthRatio
+        }
