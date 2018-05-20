@@ -4,6 +4,7 @@ from Repository import _BaseRepository as BaseRepository
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Seeding import _SeedAttributesRepository as SeedAttributesRepository
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
+from constant import SeedAttributesNames
 import pandas
 
 class SeedingClassifierProcess(BaseProcess):
@@ -31,7 +32,10 @@ class SeedingClassifierProcess(BaseProcess):
             self.logger.info('get seeds attributes')
             dataFrame = self.TransformInDataFrame(seedAttributesList)
 
-            # [3] seleção de atributos
+            # [3] attributes selection
+            self.logger.info('attributes selection')
+            dataFrame = self.SelectColumnsInDataFrame(dataFrame)
+
             # [4] limpeza do dataframe
             # [5] configurar classificador AdaBoost
             # [6] salvar informações do classificador AdaBoost
@@ -46,14 +50,17 @@ class SeedingClassifierProcess(BaseProcess):
         else:
             self.logger.info('Train Seed Classifier finished')
     
-    #region [Transform seedAttributes into a DataFrame]
     def TransformInDataFrame(self, seedAttributesList):
         seedAttributesDictionaryList = [
             seedAttributes.ToDictionary()
             for seedAttributes in seedAttributesList]
         dataFrame = pandas.DataFrame.from_records(seedAttributesDictionaryList)
         return dataFrame
-    #end_region [Transform seedAttributes into a DataFrame]
+
+    def SelectColumnsInDataFrame(self, dataFrame):
+        for attributeName in SeedAttributesNames.REMOVE_LIST:
+            del dataFrame[attributeName]
+        return dataFrame
     
     _baseRepository = BaseRepository()
     _seedingDataRepository = SeedingDataRepository()

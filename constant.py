@@ -61,3 +61,48 @@ class SeedingData():
         CURRENT_TRAIN_ID = 1
     IDS = TestTrainPair
 
+class SeedAttributesNames():
+    class Names():
+        seedId = 'seedId'
+        plagiarismClass = 'plagiarismClass'
+        percentualInDetection = 'percentualInDetection'
+        cosine = 'cosine'
+        dice = 'dice'
+        isMaxCosine = 'isMaxCosine'
+        maxCosineDiff = 'maxCosineDiff'
+        meanMaxCosineDiff = 'meanMaxCosineDiff'
+        maxCosineNeighbour = 'maxCosineNeighbour'
+        verticalCosineMaxDistance = 'verticalCosineMaxDistance'
+        verticalCosineMaxMeasure = 'verticalCosineMaxMeasure'
+        isMaxDice = 'isMaxDice'
+        maxDiceDiff = 'maxDiceDiff'
+        meanMaxDiceDiff = 'meanMaxDiceDiff'
+        maxDiceNeighbour = 'maxDiceNeighbour'
+        verticalDiceMaxDistance = 'verticalDiceMaxDistance'
+        verticalDiceMaxMeasure = 'verticalDiceMaxMeasure'
+        lengthRatio = 'lengthRatio'
+
+    ATTRIBUTES = [
+        Names.seedId,
+        Names.plagiarismClass,
+        Names.percentualInDetection,
+        Names.cosine,
+        Names.dice,
+        Names.isMaxCosine,
+        Names.maxCosineDiff,
+        Names.meanMaxCosineDiff,
+        Names.maxCosineNeighbour,
+        Names.verticalCosineMaxDistance,
+        Names.verticalCosineMaxMeasure,
+        Names.isMaxDice,
+        Names.maxDiceDiff,
+        Names.meanMaxDiceDiff,
+        Names.maxDiceNeighbour,
+        Names.verticalDiceMaxDistance,
+        Names.verticalDiceMaxMeasure,
+        Names.lengthRatio]
+    
+    REMOVE_LIST = [
+        Names.seedId,
+        Names.percentualInDetection]
+
