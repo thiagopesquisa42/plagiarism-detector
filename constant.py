@@ -49,8 +49,15 @@ class Threshold():
     DETECTION_MINIMUM_PERCENTUAL_INTERSECTION = 0.5
 
 class TextCollectionMeta():
-    ID_ONE_PERCENT_PAN_2014 = 1
+    ID_ONE_PERCENT_PAN_2014_TRAIN = 1
+    ID_ONE_PERCENT_PAN_2014_TEST = 2
 
 class PreProcessedData():
     ID_CURRENT = 1
+
+class SeedingData():
+    class TestTrainPair():
+        CURRENT_TEST_ID = None
+        CURRENT_TRAIN_ID = 1
+    IDS = TestTrainPair
 

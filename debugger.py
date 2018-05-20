@@ -1,14 +1,15 @@
 #TODO: remove this 'debugger'
 import util
 from Process import _PreProcessingRawTextProcess
-from Process import _SeedingProcess
+from Process import _SeedingProcess, _SeedingClassifierProcess
 from Repository import _RawTextRepository
 from Entity import _RawText as RawText
-from constant import TextCollectionMeta, PreProcessedData
+from constant import TextCollectionMeta, PreProcessedData, SeedingData
 
 # _PreProcessingRawTextProcess().PreProcessing(
-#     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014)
+#     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014_TRAIN)
 # _SeedingProcess().SeedingProcessing(preProcessedDataId = PreProcessedData.ID_CURRENT)
+_SeedingClassifierProcess().TrainSeedClassifier(seedingDataId = SeedingData.IDS.CURRENT_TRAIN_ID)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)

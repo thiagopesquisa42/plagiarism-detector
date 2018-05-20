@@ -22,15 +22,6 @@ class RawTextRepository(BaseRepository):
         else:
             return None
 
-    # def Update(self, rawText):
-    #     if(rawText == None):
-    #         return
-    #     rawTextToUpdate = self.Get(rawText.id)
-    #     rawTextToUpdate.fileName = rawText.fileName
-    #     rawTextToUpdate._type = rawText._type
-    #     rawTextToUpdate.text = rawText.text
-    #     self.session.commit()
-
     def Hello(self):
         print ('Hello, I\'m a repository')
 
