@@ -1,5 +1,6 @@
 from Process import _DataImportationProcess as DataImportationProcess
 from Entity import _TextCollectionMeta as TextCollectionMeta
+from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 
 class DataManager(object):
 
@@ -9,14 +10,25 @@ class DataManager(object):
         self._dataImportationProcess.Hello()
 
     def ImportPanDataBase(self):
-        textCollectionMeta = TextCollectionMeta(
+        trainTextCollectionMeta = TextCollectionMeta(
             sourceUrl = None,
-            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1',
-            description = 'teste pan 2014-maio reduzida em 99%',
-            creationDate = '2014-05-14')
-        self._dataImportationProcess.ImportFromPanFiles(
-            textCollectionMeta = textCollectionMeta, 
-            folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1\\')
+            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1_train',
+            description = 'treino, base pan 2014-maio reduzida em 99%, amostragem aleatória',
+            creationDate = '2014-05-14',
+            purpose = TextCollectionMetaPurpose.train)
+        trainFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1_train\\'
+        testTextCollectionMeta = TextCollectionMeta(
+            sourceUrl = None,
+            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180520_091948_p1_test',
+            description = 'teste, base pan 2014-maio reduzida em 99%, amostragem aleatória',
+            creationDate = '2014-05-14',
+            purpose = TextCollectionMetaPurpose.test)
+        testFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180520_091948_p1_test\\'        
+        self._dataImportationProcess.ImportTrainTestDataFromPanFiles(
+            testTextCollectionMeta = testTextCollectionMeta, 
+            testFolderCompletePath = testFolderCompletePath, 
+            trainTextCollectionMeta = trainTextCollectionMeta, 
+            trainFolderCompletePath = trainFolderCompletePath)
 
     _dataImportationProcess = DataImportationProcess()
 

@@ -9,6 +9,7 @@ from Entity import _PlagiarismObfuscation as PlagiarismObfuscation
 from Entity import _PlagiarismType as PlagiarismType
 from Entity import _PanDetectionXmlPlain as PanDetectionXmlPlain
 from Entity import _PanFolderStructure as PanFolderStructure
+from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Repository import _TextCollectionMetaRepository as TextCollectionMetaRepository
 from Repository import _RawTextRepository as RawTextRepository
 from Repository import _RawTextPairRepository as RawTextPairRepository
@@ -29,24 +30,54 @@ class DataImportationProcess(BaseProcess):
         print ('And I use these repositories:')
         print ('And I use these internals:')
 
+    def ImportTrainTestDataFromPanFiles(self,
+        testTextCollectionMeta, testFolderCompletePath, 
+        trainTextCollectionMeta, trainFolderCompletePath):
+        testTextCollectionMeta = self.ImportFromPanFiles(
+            textCollectionMeta = testTextCollectionMeta, 
+            folderCompletePath = testFolderCompletePath)
+        trainTextCollectionMeta = self.ImportFromPanFiles(
+            textCollectionMeta = trainTextCollectionMeta, 
+            folderCompletePath = trainFolderCompletePath)
+        self.AssociateTestTrainTextCollections(
+            testTextCollectionMeta, trainTextCollectionMeta)
+    
+    def AssociateTestTrainTextCollections(self, testTextCollectionMeta, trainTextCollectionMeta):
+        trainTextCollectionMeta.testTextCollectionMeta = testTextCollectionMeta
+        self.CheckPurposesOnTextCollectionMeta(testTextCollectionMeta, trainTextCollectionMeta)
+        self.SaveTextCollection(
+            textCollectionMeta = testTextCollectionMeta)
+        self.SaveTextCollection(
+            textCollectionMeta = trainTextCollectionMeta)
+    
+    def CheckPurposesOnTextCollectionMeta(self, testTextCollectionMeta, trainTextCollectionMeta):
+        errorMessages = ""
+        if(testTextCollectionMeta.purpose != TextCollectionMetaPurpose.test):
+            errorMessages += "\n wrong purpose detected, please send a 'test' collection meta in 'testTextCollectionMeta' parameter"
+        if(trainTextCollectionMeta.purpose != TextCollectionMetaPurpose.train):
+            errorMessages += "\n wrong purpose detected, please send a 'train' collection meta in 'trainTextCollectionMeta' parameter"
+        if(len(errorMessages) > 0):
+            raise Exception(errorMessages)
+
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
-        textCollectionMetaId = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+        textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
         rawTextList = self.GetRawTexts(
             folderCompletePath = folderCompletePath, 
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMetaId = textCollectionMeta.id)
         self.SaveRawTextList(rawTextList = rawTextList)
         rawTextPairList = self.GetRawTextPairList(
             folderCompletePath = folderCompletePath, 
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMetaId = textCollectionMeta.id)
         self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
         detectionList= self.ExtractDetectionList(
             folderCompletePath = folderCompletePath,
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMetaId = textCollectionMeta.id)
         self.SaveDetectionList(detectionList = detectionList)
+        return textCollectionMeta
 
     def SaveTextCollection(self, textCollectionMeta):
         self._textCollectionMetaRepository.Insert(textCollectionMeta)
-        return textCollectionMeta.id
+        return textCollectionMeta
 
     def GetRawTexts(self, folderCompletePath, textCollectionMetaId):
         suspiciousFilesFolderPath = os.path.join(folderCompletePath, PanFolderStructure.SUSPICIOUS_RAW_TEXT_FOLDER)

@@ -69,3 +69,8 @@ class EnumYesNo(enum.Enum):
         if (boolean is False):
             return EnumYesNo.no
         raise Exception('unknow YesNo value')
+
+class TextCollectionMetaPurpose(enum.Enum):
+    test = 1000
+    train = 2000
+    

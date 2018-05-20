@@ -8,7 +8,7 @@ from constant import TextCollectionMeta, PreProcessedData
 
 # _PreProcessingRawTextProcess().PreProcessing(
 #     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014)
-_SeedingProcess().SeedingProcessing(preProcessedDataId = PreProcessedData.ID_CURRENT)
+# _SeedingProcess().SeedingProcessing(preProcessedDataId = PreProcessedData.ID_CURRENT)
 
 # a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
 # _RawTextRepository().Insert(a)
