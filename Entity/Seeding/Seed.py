@@ -13,7 +13,7 @@ class Seed(EntityBase):
     sourceSentence              = relationship('Sentence', foreign_keys=[sourceSentenceId])
     rawTextPairId               = Column(Integer, ForeignKey('raw_text_pair.id'), nullable=False)
     rawTextPair                 = relationship('RawTextPair', foreign_keys=[rawTextPairId])
-    attributes                  = relationship("SeedAttributes", primaryjoin="Seed.id==SeedAttributes.seedId", uselist=False)
+    attributes                  = relationship("SeedAttributes", primaryjoin="Seed.id==SeedAttributes.seedId", uselist=False, lazy='joined')
 
     #unique identifier of the object
     def __repr__(self):
