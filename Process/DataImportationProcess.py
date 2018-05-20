@@ -17,6 +17,7 @@ from Repository import _RawTextExcerptLocationRepository as RawTextExcerptLocati
 from Repository import _DetectionRepository as DetectionRepository
 from Repository import _PanRepository as PanRepository
 from Process import _BaseProcess as BaseProcess
+from Process.Commom import _TextCollectionMetaCommom as TextCollectionMetaCommom
 import os
 import random
 from distutils.dir_util import copy_tree
@@ -39,25 +40,18 @@ class DataImportationProcess(BaseProcess):
         trainTextCollectionMeta = self.ImportFromPanFiles(
             textCollectionMeta = trainTextCollectionMeta, 
             folderCompletePath = trainFolderCompletePath)
+        # trainTextCollectionMeta = self._textCollectionMetaRepository.Get(id = 1)
+        # testTextCollectionMeta = self._textCollectionMetaRepository.Get(id = 2)
         self.AssociateTestTrainTextCollections(
             testTextCollectionMeta, trainTextCollectionMeta)
     
     def AssociateTestTrainTextCollections(self, testTextCollectionMeta, trainTextCollectionMeta):
         trainTextCollectionMeta.testTextCollectionMeta = testTextCollectionMeta
-        self.CheckPurposesOnTextCollectionMeta(testTextCollectionMeta, trainTextCollectionMeta)
+        TextCollectionMetaCommom.CheckPurposesTestTrain(testTextCollectionMeta, trainTextCollectionMeta)
         self.SaveTextCollection(
             textCollectionMeta = testTextCollectionMeta)
         self.SaveTextCollection(
             textCollectionMeta = trainTextCollectionMeta)
-    
-    def CheckPurposesOnTextCollectionMeta(self, testTextCollectionMeta, trainTextCollectionMeta):
-        errorMessages = ""
-        if(testTextCollectionMeta.purpose != TextCollectionMetaPurpose.test):
-            errorMessages += "\n wrong purpose detected, please send a 'test' collection meta in 'testTextCollectionMeta' parameter"
-        if(trainTextCollectionMeta.purpose != TextCollectionMetaPurpose.train):
-            errorMessages += "\n wrong purpose detected, please send a 'train' collection meta in 'trainTextCollectionMeta' parameter"
-        if(len(errorMessages) > 0):
-            raise Exception(errorMessages)
 
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
         textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
