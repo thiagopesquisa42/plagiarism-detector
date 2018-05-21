@@ -15,7 +15,7 @@ class RawTextType(enum.Enum):
 class PlagiarismObfuscation(enum.Enum):
     none = 1000
     random = 2000
-    translation = 3000
+    translationChain = 3000
     summary = 4000
 
     @staticmethod
@@ -24,19 +24,22 @@ class PlagiarismObfuscation(enum.Enum):
             return PlagiarismObfuscation.none
         if(string == 'random'):
             return PlagiarismObfuscation.random
-        if(string == 'translation'):
-            return PlagiarismObfuscation.random
+        if(string == 'translation-chain'):
+            return PlagiarismObfuscation.translationChain
         if(string == 'summary'):
-            return PlagiarismObfuscation.random
+            return PlagiarismObfuscation.summary
         raise Exception('unknow PlagiarismObfuscation value')
 
 class PlagiarismType(enum.Enum):
     artificial = 1000
+    translationChain = 2000
 
     @staticmethod
     def FromString(string):
         if(string == 'artificial'):
             return PlagiarismType.artificial
+        if(string == 'translation-chain'):
+            return PlagiarismType.translationChain
         raise Exception('unknow PlagiarismType value')
 
 class PlagiarismClass(enum.Enum):

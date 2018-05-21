@@ -12,18 +12,18 @@ class DataManager(object):
     def ImportPanDataBase(self):
         trainTextCollectionMeta = TextCollectionMeta(
             sourceUrl = None,
-            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1_train',
-            description = 'treino, base pan 2014-maio reduzida em 99%, amostragem aleatória',
-            creationDate = '2014-05-14',
+            name = 'pan13-text-alignment-training-corpus-2013-01-21_20180520_235434_p1',
+            description = 'treino, base pan 2013-jan reduzida em 99%, amostragem aleatória',
+            creationDate = '2013-01-21',
             purpose = TextCollectionMetaPurpose.train)
-        trainFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180516_133851_p1_train\\'
+        trainFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-training-corpus-2013-01-21_20180520_235434_p1\\'
         testTextCollectionMeta = TextCollectionMeta(
             sourceUrl = None,
-            name = 'pan14-text-alignment-test-corpus3-2014-05-14_20180520_091948_p1_test',
-            description = 'teste, base pan 2014-maio reduzida em 99%, amostragem aleatória',
-            creationDate = '2014-05-14',
+            name = 'pan13-text-alignment-test-corpus2-2013-01-21_20180520_235355_p1',
+            description = 'teste, base pan 2013-jan reduzida em 99%, amostragem aleatória',
+            creationDate = '2013-01-21',
             purpose = TextCollectionMetaPurpose.test)
-        testFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14_20180520_091948_p1_test\\'        
+        testFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus2-2013-01-21_20180520_235355_p1\\'        
         self._dataImportationProcess.ImportTrainTestDataFromPanFiles(
             testTextCollectionMeta = testTextCollectionMeta, 
             testFolderCompletePath = testFolderCompletePath, 

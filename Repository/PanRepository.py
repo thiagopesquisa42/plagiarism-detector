@@ -65,18 +65,25 @@ class PanRepository():
             hasSourceOffset = featureXml.hasAttribute(featureStruture.Attributes.SOURCE_OFFSET)
             hasSourceFileName = featureXml.hasAttribute(featureStruture.Attributes.SOURCE_REFERENCE)
             
-            panDetectionXmlPlain = PanDetectionXmlPlain(
-                name = featureXml.attributes[featureStruture.Attributes.NAME].value if hasName else None,
-                obfuscation = featureXml.attributes[featureStruture.Attributes.OBFUSCATION].value if hasObfuscation else None,
-                obfuscationDegree = float(featureXml.attributes[featureStruture.Attributes.OBFUSCATION_DEGREE].value) if hasObfuscationDegree else None,
-                _type = featureXml.attributes[featureStruture.Attributes.TYPE].value if hasType else None,
-                suspiciousLength = int(featureXml.attributes[featureStruture.Attributes.THIS_LENGTH].value) if hasSuspiciousLength else None,
-                suspiciousOffset = int(featureXml.attributes[featureStruture.Attributes.THIS_OFFSET].value) if hasSuspiciousOffset else None,
-                sourceLength = int(featureXml.attributes[featureStruture.Attributes.SOURCE_LENGTH].value) if hasSourceLength else None,
-                sourceOffset = int(featureXml.attributes[featureStruture.Attributes.SOURCE_OFFSET].value) if hasSourceOffset else None,
-                sourceFileName = featureXml.attributes[featureStruture.Attributes.SOURCE_REFERENCE].value if hasSourceFileName else None,
-                suspiciousFileName = _suspiciousFileName)
-            panDetectionXmlPlainList.append(panDetectionXmlPlain)
+            if(hasType and hasSuspiciousLength and
+                hasSuspiciousOffset and hasSourceLength and hasSourceOffset and
+                hasSourceFileName):
+                panDetectionXmlPlain = PanDetectionXmlPlain(
+                    name = featureXml.attributes[featureStruture.Attributes.NAME].value if hasName else None,
+                    obfuscation = featureXml.attributes[featureStruture.Attributes.OBFUSCATION].value if hasObfuscation else None,
+                    obfuscationDegree = float(featureXml.attributes[featureStruture.Attributes.OBFUSCATION_DEGREE].value) if hasObfuscationDegree else None,
+                    _type = featureXml.attributes[featureStruture.Attributes.TYPE].value if hasType else None,
+                    suspiciousLength = int(featureXml.attributes[featureStruture.Attributes.THIS_LENGTH].value) if hasSuspiciousLength else None,
+                    suspiciousOffset = int(featureXml.attributes[featureStruture.Attributes.THIS_OFFSET].value) if hasSuspiciousOffset else None,
+                    sourceLength = int(featureXml.attributes[featureStruture.Attributes.SOURCE_LENGTH].value) if hasSourceLength else None,
+                    sourceOffset = int(featureXml.attributes[featureStruture.Attributes.SOURCE_OFFSET].value) if hasSourceOffset else None,
+                    sourceFileName = featureXml.attributes[featureStruture.Attributes.SOURCE_REFERENCE].value if hasSourceFileName else None,
+                    suspiciousFileName = _suspiciousFileName)
+                if(panDetectionXmlPlain._type in 'translation-chain'):
+                    panDetectionXmlPlain.obfuscation = 'translation-chain'
+                panDetectionXmlPlainList.append(panDetectionXmlPlain)
+            else:
+                print('corrupted summary found')
         return panDetectionXmlPlainList
 
     def GetPanDetectionXmlPlainListFromDiretory(self, filesFolderPath):
