@@ -34,37 +34,34 @@ class SeedingClassifierProcess(BaseProcess):
             # self.logger.info('get seeds attributes')
             # seedAttributesList = self._seedAttributesRepository.GetListBySeedingData(seedingData)
 
-            # [7] salvar dataframe de treino and
             # # [2] transform in dataFrame
             # self.logger.info('get seeds attributes')
             # seedingDataFrame = self.TransformInSeedingDataFrame(seedAttributesList, seedingData)
-            # dataFrame = seedingDataFrame.getDataFrame()
  
-            # [3] attributes selection
+            # # [3] attributes selection
             # self.logger.info('attributes selection')
-            # dataFrame = self.SelectColumnsInDataFrame(dataFrame)
-            # self.UpdateSeedingDataFrame(seedingDataFrame, dataFrame)
+            # seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
 
-            # [4] dataframe cleaning
+            seedingDataFrame = self._seedingDataFrameRepository.Get(id = 3)
+            # # [4] dataframe cleaning
+            seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
 
-            seedingDataFrame = self._seedingDataFrameRepository.Get(id = 2)
-            dataFrame = seedingDataFrame.getDataFrame()
-            # [9] criar e salvar pickle do classificador treinado
-            # [6] salvar informações do classificador AdaBoost
-            # [5] setup AdaBoost classifier
-            self.logger.info('setup AdaBoost classifier')
-            classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+            # # [5] setup AdaBoost classifier
+            # self.logger.info('setup AdaBoost classifier')
+            # classifierMeta = self.CreateClassifierMeta(
+            #     classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
 
-            # [8] treinar classificador de sementes
-            
+            classifierMeta = self._classifierMetaRepository.Get(id = 2)
+            # [8] train classifier
+            self.logger.info('train classifier')
+            classifierMeta = self.TrainClassifier(classifierMeta, seedingDataFrame)
 
-            print('')
         except Exception as exception:
             self.logger.error('Train Seed Classifier failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Train Seed Classifier finished')
+            print('')
     
     def TransformInSeedingDataFrame(self, seedAttributesList, seedingData):
         seedAttributesDictionaryList = [
@@ -75,29 +72,58 @@ class SeedingClassifierProcess(BaseProcess):
         return seedingDataFrame
 
     def CreateSeedingDataFrame(self, dataFrame, seedingData):
-        seedingDataFrame = SeedingDataFrame(seedingData = seedingData)
-        seedingDataFrame.setPickleDataFrame(dataFrame)
+        descriptionDictionary = self.CreateDataFrameDescription(dataFrame)
+        seedingDataFrame = SeedingDataFrame(
+            seedingData = seedingData,
+            descriptionDictionary = descriptionDictionary)
+        seedingDataFrame = self.UpdateSeedingPickleDataFrame(seedingDataFrame, dataFrame)
         self._baseRepository.Insert(seedingDataFrame)
         return seedingDataFrame
     
-    def UpdateSeedingDataFrame(self, seedingDataFrame, dataFrame):
-        seedingDataFrame.setPickleDataFrame(dataFrame)
+    def CreateDataFrameDescription(self, dataFrame, removedAttributeNameList = []):
+        descriptionDictionary = {
+            'summary': str(dataFrame.describe()),
+            'removedAttributeNameList': removedAttributeNameList
+        }
+        return descriptionDictionary
+    
+    def UpdateSeedingPickleDataFrame(self, seedingDataFrame, dataFrame):
+        seedingDataFrame.SetPickleDataFrame(dataFrame)
+        return seedingDataFrame
+    
+    def UpdateStoreSeedingDataFrame(self, seedingDataFrame, dataFrame, removedAttributeNameList = []):
+        seedingDataFrame.descriptionDictionary = self.CreateDataFrameDescription(dataFrame, removedAttributeNameList)
+        seedingDataFrame = self.UpdateSeedingPickleDataFrame(seedingDataFrame, dataFrame)
         self._baseRepository.Insert(seedingDataFrame)
+        return seedingDataFrame
 
-    def SelectColumnsInDataFrame(self, dataFrame):
-        for attributeName in SeedAttributesNames.REMOVE_LIST:
+    def SelectColumnsInDataFrame(self, seedingDataFrame):
+        dataFrame = seedingDataFrame.GetDataFrame()
+        removeAttributeNameList = SeedAttributesNames.REMOVE_LIST
+        for attributeName in removeAttributeNameList:
             del dataFrame[attributeName]
-        return dataFrame
+        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame, 
+            removedAttributeNameList = removeAttributeNameList)
+        return seedingDataFrame
+    
+    def RemoveNoneValues(self, seedingDataFrame):
+        dataFrame = seedingDataFrame.GetDataFrame()
+        dataFrame = dataFrame.dropna(axis='index', how='any')
+        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame)
+        return seedingDataFrame
     
     def CreateClassifierMeta(self, classifierSetterMethod):
         definitionDictionary, classifier = classifierSetterMethod()
         classifierMeta = ClassifierMeta(definitionDictionary = definitionDictionary)
-        classifierMeta.setPickleClassifier(classifier)
+        classifierMeta.SetPickleClassifier(classifier)
         self._baseRepository.Insert(classifierMeta)
         return classifierMeta
 
     def SetupAdaboostClassifier():
         definitionDictionary = {
+            'type': 'emsemble estimator',
+            'name': 'AdaBoost',
+            'details': '',
             'baseEstimator': 'Decision Tree Classifier',
             'baseEstimatorDefinition': {
                 'splitter': 'random'
@@ -111,6 +137,19 @@ class SeedingClassifierProcess(BaseProcess):
             algorithm = definitionDictionary['algorithm'],
             n_estimators = definitionDictionary['numberEstimators'])
         return (definitionDictionary, adaBoostClassifier)
+
+    def TrainClassifier(self, classifierMeta, seedingDataFrame):
+        classifier = classifierMeta.GetClassifier()
+        dataFrame = seedingDataFrame.GetDataFrame()
+        targetClass = dataFrame[SeedAttributesNames.TARGET_CLASS]
+        del dataFrame[SeedAttributesNames.TARGET_CLASS]
+        trainAttributes = dataFrame
+        classifier.fit(X = trainAttributes, y = targetClass)
+
+        classifierMeta.SetPickleClassifier(classifier)
+        classifierMeta.seedingDataFrame = seedingDataFrame
+        self._baseRepository.Insert(classifierMeta)
+        return classifierMeta
 
     _baseRepository = BaseRepository()
     _seedingDataRepository = SeedingDataRepository()

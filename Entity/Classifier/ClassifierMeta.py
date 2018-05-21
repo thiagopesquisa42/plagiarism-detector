@@ -15,8 +15,8 @@ class ClassifierMeta(EntityBase):
     def __repr__(self):
         return "<ClassifierMeta (id='" + id + "'>"
 
-    def getClassifier(self):
+    def GetClassifier(self):
         return pickle.loads(self.pickleClassifier)
 
-    def setPickleClassifier(self, classifier):
+    def SetPickleClassifier(self, classifier):
         self.pickleClassifier = pickle.dumps(classifier)

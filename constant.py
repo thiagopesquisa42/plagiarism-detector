@@ -106,3 +106,5 @@ class SeedAttributesNames():
         Names.seedId,
         Names.percentualInDetection]
 
+    TARGET_CLASS = Names.plagiarismClass
+
