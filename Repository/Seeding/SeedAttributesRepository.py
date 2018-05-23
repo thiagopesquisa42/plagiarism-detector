@@ -3,6 +3,7 @@ from Repository.Seeding import _SeedRepository as SeedRepository
 from Entity.Seeding import _SeedAttributes as SeedAttributes
 from Entity.Seeding import _SeedingData as SeedingData
 from Entity.Seeding import _Seed as Seed
+from sqlalchemy.sql import select
 
 class SeedAttributesRepository(BaseRepository):
     def Get(self, seed):
@@ -16,10 +17,11 @@ class SeedAttributesRepository(BaseRepository):
 
     def GetRawListAllFieldsBySeedingData(self, seedingData):
         columns = SeedAttributes.GetColumnList()
-        rawList = self.engine.execute(
-            Seed.__table__.select(columns = columns, whereclause = "seedingDataId = " + str(seedingData.id))
-        ).fetchall()
         columnsNames = [column.name for column in columns]
+        query = select(columnsNames)
+        query = query.where("seedingDataId = " + str(seedingData.id))
+        query = query.select_from('seed_attributes JOIN seed ON seed.id = seed_attributes.seedId')
+        rawList = self.engine.execute(query).fetchall()
         return rawList, columnsNames
 
     def InsertDefaultListByRawSql(self, seedIdList):

@@ -32,11 +32,17 @@ class SeedingDataProcess(BaseProcess):
 
             self.logger.info('transform seeds attributes in DataFrame')
             seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
+
+            self.logger.info('attributes resample class none')
+            seedingDataFrame = self.Resample(seedingDataFrame, classToResample = 'none', numberOfSamples = 1000)
  
             self.logger.info('attributes selection')
             seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
 
+            self.logger.info('attributes remove none rows')
             seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
+            self._baseRepository.Insert(seedingDataFrame)
+
         except Exception as exception:
             self.logger.error('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
             raise exception
@@ -44,7 +50,7 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('Create Seeding DataFrame from Seeding Data finished')
             return seedingDataFrame
     
-    def TransformInSeedingDataFrame(self, seedAttributesList, seedingData):
+    def TransformSeedAttributesInSeedingDataFrame(self, seedingData):
         seedAttributesList, columnsNames = self._seedAttributesRepository.GetRawListAllFieldsBySeedingData(seedingData)
         dataFrame = pandas.DataFrame.from_records(columns = columnsNames, data = seedAttributesList)
         seedingDataFrame = self.CreateSeedingDataFrame(dataFrame, seedingData)
@@ -56,7 +62,7 @@ class SeedingDataProcess(BaseProcess):
             seedingData = seedingData,
             descriptionDictionary = descriptionDictionary)
         seedingDataFrame = self.UpdateSeedingPickleDataFrame(seedingDataFrame, dataFrame)
-        self._baseRepository.Insert(seedingDataFrame)
+        # self._baseRepository.Insert(seedingDataFrame)
         return seedingDataFrame
     
     def CreateDataFrameDescription(self, dataFrame, removedAttributeNameList = []):
@@ -73,7 +79,7 @@ class SeedingDataProcess(BaseProcess):
     def UpdateStoreSeedingDataFrame(self, seedingDataFrame, dataFrame, removedAttributeNameList = []):
         seedingDataFrame.descriptionDictionary = self.CreateDataFrameDescription(dataFrame, removedAttributeNameList)
         seedingDataFrame = self.UpdateSeedingPickleDataFrame(seedingDataFrame, dataFrame)
-        self._baseRepository.Insert(seedingDataFrame)
+        # self._baseRepository.Insert(seedingDataFrame)
         return seedingDataFrame
 
     def SelectColumnsInDataFrame(self, seedingDataFrame):
@@ -88,6 +94,18 @@ class SeedingDataProcess(BaseProcess):
     def RemoveNoneValues(self, seedingDataFrame):
         dataFrame = seedingDataFrame.GetDataFrame()
         dataFrame = dataFrame.dropna(axis='index', how='any')
+        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame)
+        return seedingDataFrame
+    
+    def Resample(self, seedingDataFrame, classToResample, numberOfSamples):
+        dataFrame = seedingDataFrame.GetDataFrame()
+        
+        dataFrameNoneClassOnly = dataFrame[(dataFrame.plagiarismClass == classToResample)]
+        dataFrameNoneClassOnlyResampled = dataFrameNoneClassOnly.sample(
+            n = numberOfSamples, replace = False, random_state = 42)
+        dataFrameWithoutNoneClass = dataFrame[(dataFrame.plagiarismClass != classToResample)]
+        dataFrame = pandas.concat([dataFrameWithoutNoneClass, dataFrameNoneClassOnlyResampled])
+        
         seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame
     #end_region [Create Seeding DataFrame from Seeding Data started]

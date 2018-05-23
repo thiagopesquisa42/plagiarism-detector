@@ -4,6 +4,7 @@ from Process import _PreProcessingRawTextProcess
 from Process import _SeedingProcess, _SeedingClassifierProcess, _SeedingDataProcess
 from Repository import _RawTextRepository
 from Repository.Seeding import _SeedingDataRepository
+from Repository.Classifier import _SeedingDataFrameRepository
 from Entity import _RawText as RawText, _TextCollectionMetaPurpose
 from constant import TextCollectionMeta, PreProcessedData, SeedingData
 
@@ -15,11 +16,18 @@ from constant import TextCollectionMeta, PreProcessedData, SeedingData
 # seedingData = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedData.id)
 # seedingDataTest = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedDataTest.id)
 
-# seedingDataFrame = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(seedingData.id, _TextCollectionMetaPurpose.train)
-# seedingDataFrameTest = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(seedingDataTest.id, _TextCollectionMetaPurpose.test)
+seedingDataFrame = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(
+    seedingDataId = 2, textCollectionMetaPurpose = _TextCollectionMetaPurpose.train)
+seedingDataFrameTest = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(
+    seedingDataId = 4, textCollectionMetaPurpose =_TextCollectionMetaPurpose.test)
 
-# classifierMeta = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrameId = 4) #= seedingDataFrame.id)
-classifierMetaTest = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrameId = 5, classifierMetaId = 12)#classifierMeta.id) #seedingDataFrameTest.id)
+_seedingDataFrameRepository = _SeedingDataFrameRepository()
+classifierMeta = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrame = _seedingDataFrameRepository.Get(id = 8))
+classifierMetaTest = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrame = _seedingDataFrameRepository.Get(id = 9), classifierMeta = classifierMeta)
+
+
+
+
 
 # from Process import _DataImportationProcess
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(

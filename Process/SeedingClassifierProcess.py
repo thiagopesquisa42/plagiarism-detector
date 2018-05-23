@@ -21,12 +21,12 @@ class SeedingClassifierProcess(BaseProcess):
         print ('Hello, I\'m the SeedingClassifierProcess')
 
     #region [Train Classifier]
-    def TrainSeedClassifier(self, seedingDataFrameId):
+    def TrainSeedClassifier(self, seedingDataFrame):
         try:
             self.logger.info('Train Seed Classifier started')
             
             self.logger.info('check data set reference')
-            seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
+            #seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
             seedingData = self._seedingDataRepository.Get(id = seedingDataFrame.seedingDataId)
             TextCollectionMetaCommom.CheckPurpose(
                 textCollectionMeta = seedingData.preProcessedData.textCollectionMeta,
@@ -35,7 +35,7 @@ class SeedingClassifierProcess(BaseProcess):
 
             self.logger.info('setup AdaBoost classifier')
             classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
 
             self.logger.info('train classifier')
             classifierMeta = self.TrainClassifier(classifierMeta, seedingDataFrame)
@@ -73,6 +73,15 @@ class SeedingClassifierProcess(BaseProcess):
             n_estimators = definitionDictionary['numberEstimators'])
         return (definitionDictionary, adaBoostClassifier)
 
+    def SetupDecisionTreeClassifier():
+        definitionDictionary = {
+            'type': 'estimator',
+            'name': 'Decision Tree',
+            'details': 'default values of sktlearn library'
+        }
+        decisionTreeClassifier = DecisionTreeClassifier()
+        return (definitionDictionary, decisionTreeClassifier)
+
     def TrainClassifier(self, classifierMeta, seedingDataFrame):
         classifier = classifierMeta.GetClassifier()
         dataFrame = seedingDataFrame.GetDataFrame()
@@ -83,17 +92,18 @@ class SeedingClassifierProcess(BaseProcess):
 
         classifierMeta.SetPickleClassifier(classifier)
         classifierMeta.seedingDataFrameId = seedingDataFrame.id
-        self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
+        self._baseRepository.Insert(classifierMeta)
+        # self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
         return classifierMeta
     #end_region [Train Classifier]
 
     #region [Test Classifier]
-    def TestSeedClassifier(self, seedingDataFrameId, classifierMetaId):
+    def TestSeedClassifier(self, seedingDataFrame, classifierMeta):
         try:
             self.logger.info('Test Classifier started')
             # [0] check data reference
             self.logger.info('check data set reference')
-            seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
+            #seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
             seedingData = self._seedingDataRepository.Get(id = seedingDataFrame.seedingDataId)
             TextCollectionMetaCommom.CheckPurpose(
                 textCollectionMeta = seedingData.preProcessedData.textCollectionMeta,
@@ -101,7 +111,7 @@ class SeedingClassifierProcess(BaseProcess):
             )
 
             self.logger.info('get AdaBoost classifier')
-            classifierMeta = self._classifierMetaRepository.Get(id = classifierMetaId)
+            #classifierMeta = self._classifierMetaRepository.Get(id = classifierMetaId)
 
             self.logger.info('test classifier')
             classifierMeta = self.TestClassifier(classifierMeta, seedingDataFrame)
@@ -130,7 +140,8 @@ class SeedingClassifierProcess(BaseProcess):
             y_pred = expectedPredictedDataFrame['predicted'])
         print( report )
         classifierMeta.SetPickleExpectedPredictedList(expectedPredictedDataFrame)
-        self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
+        self._baseRepository.Insert(classifierMeta)
+        # self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
         return classifierMeta
     #end_region [Test Classifier]
 
