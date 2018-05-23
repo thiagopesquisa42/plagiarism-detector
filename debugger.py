@@ -1,49 +1,39 @@
 #TODO: remove this 'debugger'
 import util
 from Process import _PreProcessingRawTextProcess
-from Process import _SeedingProcess, _SeedingClassifierProcess
+from Process import _SeedingProcess, _SeedingClassifierProcess, _SeedingDataProcess
 from Repository import _RawTextRepository
-from Entity import _RawText as RawText
+from Repository.Seeding import _SeedingDataRepository
+from Entity import _RawText as RawText, _TextCollectionMetaPurpose
 from constant import TextCollectionMeta, PreProcessedData, SeedingData
 
-# _PreProcessingRawTextProcess().PreProcessing(
-#     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2014_TRAIN)
-# _SeedingProcess().SeedingProcessing(preProcessedDataId = PreProcessedData.ID_CURRENT)
-# _SeedingClassifierProcess().TrainSeedClassifier(seedingDataId = SeedingData.IDS.CURRENT_TRAIN_ID)
+# preProcessedData = _PreProcessingRawTextProcess().PreProcessing(
+#      textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2013_TRAIN)
+# preProcessedDataTest = _PreProcessingRawTextProcess().PreProcessing(
+#     textCollectionMetaId = TextCollectionMeta.ID_ONE_PERCENT_PAN_2013_TEST)
 
-# a = RawText(textCollectionMetaId = 24, text = "test insert functions heritage.", fileName = 'sem arquivo')
-# _RawTextRepository().Insert(a)
-# print(a.id)
+# seedingData = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedData.id)
+# seedingDataTest = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedDataTest.id)
 
-# from Entity.PreProcessing import _PreProcessStep
-# from Entity.PreProcessing.Algorithm import _Tokenization
-# from Entity.PreProcessing.Algorithm import _TokenizationAlgorithm
-# from Entity.PreProcessing.Algorithm import _TokenizationType
-# from Repository.PreProcessing import _PreProcessStepRepository
+# seedingDataFrame = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(seedingData.id, _TextCollectionMetaPurpose.train)
+# seedingDataFrameTest = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(seedingDataTest.id, _TextCollectionMetaPurpose.test)
 
-# algorithm = _Tokenization(
-#     _type = _TokenizationType.SENTENCE,
-#     algorithm = _TokenizationAlgorithm.PUNKT_EN,
-#     description='teste'
-# )
-# step = _PreProcessStep(algorithm = algorithm)
-# #step = _PreProcessStep(algorithm = algorithm.ToDictionary())
+# classifierMeta = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrameId = 4) #= seedingDataFrame.id)
+classifierMetaTest = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrameId = 5, classifierMetaId = 12)#classifierMeta.id) #seedingDataFrameTest.id)
 
-# _PreProcessStepRepository().Insert(step)
-
-from Process import _DataImportationProcess
+# from Process import _DataImportationProcess
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.8,
     # folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan14-text-alignment-test-corpus3-2014-05-14\\')
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.8,
 #     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus1-2013-03-08\\')
-_DataImportationProcess().DecreasePanDataBaseInNewFolder(
-    decreasePercentage = 0.99,
-    folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus2-2013-01-21\\')
-_DataImportationProcess().DecreasePanDataBaseInNewFolder(
-    decreasePercentage = 0.99,
-    folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-training-corpus-2013-01-21\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.99,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-test-corpus2-2013-01-21\\')
+# _DataImportationProcess().DecreasePanDataBaseInNewFolder(
+#     decreasePercentage = 0.99,
+#     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan13-text-alignment-training-corpus-2013-01-21\\')
 # _DataImportationProcess().DecreasePanDataBaseInNewFolder(
 #     decreasePercentage = 0.8,
 #     folderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\pan12-text-alignment-training-corpus-2012-03-16\\') #-> failed, 2012 doesn't have pair file in the root!!

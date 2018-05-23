@@ -54,3 +54,24 @@ class SeedAttributes(EntityBase):
             'verticalDiceMaxMeasure':       self.verticalDiceMaxMeasure,
             'lengthRatio':                  self.lengthRatio
         }
+
+    def GetColumnList():
+        return [
+            SeedAttributes.seedId,
+            SeedAttributes.plagiarismClass,
+            SeedAttributes.percentualInDetection,
+            SeedAttributes.cosine,
+            SeedAttributes.dice,
+            SeedAttributes.isMaxCosine,
+            SeedAttributes.maxCosineDiff,
+            SeedAttributes.meanMaxCosineDiff,
+            SeedAttributes.maxCosineNeighbour,
+            SeedAttributes.verticalCosineMaxDistance,
+            SeedAttributes.verticalCosineMaxMeasure,
+            SeedAttributes.isMaxDice,
+            SeedAttributes.maxDiceDiff,
+            SeedAttributes.meanMaxDiceDiff,
+            SeedAttributes.maxDiceNeighbour,
+            SeedAttributes.verticalDiceMaxDistance,
+            SeedAttributes.verticalDiceMaxMeasure,
+            SeedAttributes.lengthRatio]

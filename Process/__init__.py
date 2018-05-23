@@ -8,3 +8,5 @@ from Process import SeedingProcess
 _SeedingProcess = SeedingProcess.SeedingProcess
 from Process import SeedingClassifierProcess
 _SeedingClassifierProcess = SeedingClassifierProcess.SeedingClassifierProcess
+from Process import SeedingDataProcess
+_SeedingDataProcess = SeedingDataProcess.SeedingDataProcess

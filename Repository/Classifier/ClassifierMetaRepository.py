@@ -5,6 +5,12 @@ class ClassifierMetaRepository(BaseRepository):
     def Get(self, id):
         return self.session.query(ClassifierMeta).filter(ClassifierMeta.id == id).first()
 
+    def UpdateByRawSql(self, classifierMeta):
+        self.engine.execute(
+            ClassifierMeta.__table__.update(
+                whereclause = "id = " + str(classifierMeta.id)),
+                [classifierMeta.ToDictionary()])
+
     def Hello(self):
         print ('Hello, I\'m a repository')
 

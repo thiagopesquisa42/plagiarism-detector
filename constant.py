@@ -51,6 +51,8 @@ class Threshold():
 class TextCollectionMeta():
     ID_ONE_PERCENT_PAN_2014_TRAIN = 1
     ID_ONE_PERCENT_PAN_2014_TEST = 2
+    ID_ONE_PERCENT_PAN_2013_TRAIN = 5
+    ID_ONE_PERCENT_PAN_2013_TEST = 4
 
 class PreProcessedData():
     ID_CURRENT = 1

@@ -12,6 +12,7 @@ from Repository.PreProcessing.TextStructure import _SentenceListRepository as Se
 from Repository import _RawTextPairRepository as RawTextPairRepository
 from Repository.Seeding import _SeedRepository as SeedRepository
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
+from Repository.Seeding import _SeedAttributesRepository as SeedAttributesRepository
 from Repository import _DetectionRepository as DetectionRepository
 from constant import Threshold
 
@@ -31,31 +32,28 @@ class SeedingProcess(BaseProcess):
 
             self.logger.info('create seeds candidates')
             rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            seedCandidateList = self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
+            self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
 
-            
             # [0] Create seeds candidates from 
             #   all possible sentences suspicious-source-pairs in preprocessedData
             self.logger.info('create seeds attributes registers')
             self.CreateAttributesDefaultRegisterForSeeds(
-                seedList = seedCandidateList)
+                seedingData = seedingData)
             
             # [1] Fill class (no-plag, obfuscated-plag...)
             self.logger.info('label seeds detected')
             self.LabelSeedList(seedingData, rawTextPairList)
 
-            # seedingData = self._seedingDataRepository.Get(id = 1)
-            # rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            # seedCandidateList = self._seedRepository.GetListBySeedingData(seedingData)
             # [2] Calculate attributes over bag-of-words and locations from both sentences
             self.logger.info('calculate seeds attributes')
-            self.CalculateAttributesSeeedList(seedingData, rawTextPairList)
+            self.CalculateAttributesSeedList(seedingData, rawTextPairList)
 
         except Exception as exception:
             self.logger.info('Seeding Processing failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Seeding Processing finished')
+            return seedingData
     
     #region [Create seeding data]
     def CreateSeedingData(self, preProcessedData):
@@ -85,14 +83,11 @@ class SeedingProcess(BaseProcess):
                 rawTextPair = rawTextPair)
             for suspiciousSentence in suspiciousSentenceList.sentences
             for sourceSentence in sourceSentenceList.sentences]
-        self._baseRepository.InsertList(seedCandidateList)
-        return seedCandidateList
+        self._seedRepository.InsertByRawSql(seedCandidateList)
 
-    def CreateAttributesDefaultRegisterForSeeds(self, seedList):
-        seedAttributesList = [
-            SeedAttributes(seed = seed)
-            for seed in seedList]
-        self._baseRepository.InsertList(seedAttributesList)
+    def CreateAttributesDefaultRegisterForSeeds(self, seedingData):
+        seedIdList = self._seedRepository.GetRawListIdsBySeedingData(seedingData)
+        self._seedAttributesRepository.InsertDefaultListByRawSql(seedIdList = seedIdList)
     #end_region [Create seeds candidates]
 
     #region [Fill seeds plagiarism class]
@@ -196,7 +191,7 @@ class SeedingProcess(BaseProcess):
     #end_region [Fill seeds plagiarism class]    
 
     #region [Calculate attributes over seeds candidates]
-    def CalculateAttributesSeeedList(self, seedingData, rawTextPairList):
+    def CalculateAttributesSeedList(self, seedingData, rawTextPairList):
         commitList = []
         for rawTextPair in rawTextPairList:
             seedList = self._seedRepository.GetListByRawTextPair(rawTextPair, seedingData)
@@ -362,6 +357,7 @@ class SeedingProcess(BaseProcess):
     _seedRepository = SeedRepository()
     _detectionRepository = DetectionRepository()
     _seedingDataRepository = SeedingDataRepository()
+    _seedAttributesRepository = SeedAttributesRepository()
 
     def __init__(self):
         super().__init__()

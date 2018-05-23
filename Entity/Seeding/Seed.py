@@ -18,3 +18,12 @@ class Seed(EntityBase):
     #unique identifier of the object
     def __repr__(self):
         return "<Seed (id='" + id + "'>"
+
+    def ToDictionary(self):
+        return {
+            'id'                   : self.id,
+            'seedingDataId'        : self.seedingDataId,
+            'suspiciousSentenceId' : self.suspiciousSentenceId,
+            'sourceSentenceId'     : self.sourceSentenceId,
+            'rawTextPairId'        : self.rawTextPairId
+        }

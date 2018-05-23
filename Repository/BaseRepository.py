@@ -8,13 +8,14 @@ import logging
 
 class BaseRepository(object):
     session = None
+    engine = None
     
     @staticmethod
     def InitSession():
         # Create an engine to the census database
-        engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
+        BaseRepository.engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
             SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
-        BaseRepository.session = sessionmaker(bind=engine)()
+        BaseRepository.session = sessionmaker(bind=BaseRepository.engine)()
 
     @staticmethod
     def SetLogger():

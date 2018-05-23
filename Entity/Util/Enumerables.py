@@ -57,7 +57,7 @@ class PlagiarismClass(enum.Enum):
             return PlagiarismClass.obfuscatedRandom
         if(plagiarismObfuscation == PlagiarismObfuscation.summary):
             return PlagiarismClass.obfuscatedSummary
-        if(plagiarismObfuscation == PlagiarismObfuscation.translation):
+        if(plagiarismObfuscation == PlagiarismObfuscation.translationChain):
             return PlagiarismClass.obfuscatedTranslation
         raise Exception('impossible cast this PlagiarismObfuscation to PlagiarismClass')
 

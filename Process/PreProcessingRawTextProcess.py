@@ -67,6 +67,7 @@ class PreProcessingRawTextProcess(BaseProcess):
             raise exception
         else:
             self.logger.info('PreProcessing finished')
+            return preProcessedData
 
     def CreatePreProcessedDataIdentifier(self, textCollectionMetaId):
         preProcessedData = PreProcessedData(textCollectionMetaId = textCollectionMetaId)
