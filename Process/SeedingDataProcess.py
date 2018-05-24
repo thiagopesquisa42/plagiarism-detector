@@ -34,8 +34,12 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('transform seeds attributes in DataFrame')
             seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
 
+            self.logger.info('binarize target classes')
+            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none.name)
+
             self.logger.info('attributes resample class none')
-            seedingDataFrame = self.Resample(seedingDataFrame, classToResample = 'none', numberOfSamples = 1000)
+            # seedingDataFrame = self.Resample(seedingDataFrame, classToResample = 'none', numberOfSamples = 1000)
+            seedingDataFrame = self.BalanceByResample(seedingDataFrame)
  
             self.logger.info('attributes selection')
             seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
@@ -97,15 +101,30 @@ class SeedingDataProcess(BaseProcess):
         seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame
     
+    def BalanceByResample(self, seedingDataFrame):
+        dataFrame = seedingDataFrame.GetDataFrame()
+        classesLengths = dataFrame.plagiarismClass.value_counts()
+        minLength = min(classesLengths)
+        maxLength = max(classesLengths)
+
+        if(minLength != maxLength):
+            balancedDataFrame = pandas.DataFrame()
+            classes = dataFrame.plagiarismClass.unique()
+            for thisClass in classes:
+                dataFrameThisClassOnly = dataFrame[(dataFrame.plagiarismClass == thisClass)]
+                dataFrameThisClassOnlyResampled = dataFrameThisClassOnly.sample(
+                    n = minLength, replace = False, random_state = 42)
+                balancedDataFrame = pandas.concat([balancedDataFrame, dataFrameThisClassOnlyResampled])                
+            seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, balancedDataFrame)
+        return seedingDataFrame
+
     def Resample(self, seedingDataFrame, classToResample, numberOfSamples):
         dataFrame = seedingDataFrame.GetDataFrame()
-        
         dataFrameNoneClassOnly = dataFrame[(dataFrame.plagiarismClass == classToResample)]
         dataFrameNoneClassOnlyResampled = dataFrameNoneClassOnly.sample(
             n = numberOfSamples, replace = False, random_state = 42)
         dataFrameWithoutNoneClass = dataFrame[(dataFrame.plagiarismClass != classToResample)]
         dataFrame = pandas.concat([dataFrameWithoutNoneClass, dataFrameNoneClassOnlyResampled])
-        
         seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame
     #end_region [Create Seeding DataFrame from Seeding Data started]
@@ -117,9 +136,9 @@ class SeedingDataProcess(BaseProcess):
             
             self.logger.info('clone DataFrame')
             seedingDataFrame = self.CloneSeedingDataFrame(seedingDataFrame)
-
+            
             self.logger.info('binarize target classes')
-            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classTrue = PlagiarismClass.none.name)
+            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none.name)
             
             self._baseRepository.Insert(seedingDataFrame)
         except Exception as exception:
@@ -137,9 +156,14 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrameClone, dataFrame)
         return seedingDataFrameClone
 
-    def BinarizeTargetClass(self, seedingDataFrame, classTrue):
+    def BinarizeTargetClass(self, seedingDataFrame, classTrue = None, classFalse = None):
+        if((classTrue is not None) and (classFalse is not None)):
+            raise Exception(r"\
+                To binarize specify only one of the boolean values, \
+                the class to be treated as classTrue or \
+                the class to be treated as classFalse")
         dataFrame = seedingDataFrame.GetDataFrame()
-        dataFrameBinaryPlagiarismClass = (dataFrame.plagiarismClass == classTrue)
+        dataFrameBinaryPlagiarismClass = (dataFrame.plagiarismClass == classTrue) if classTrue is not None else (dataFrame.plagiarismClass != classFalse)
         dataFrame['plagiarismClass'] = dataFrameBinaryPlagiarismClass
         seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame

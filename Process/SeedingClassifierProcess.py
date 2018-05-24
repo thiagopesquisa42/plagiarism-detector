@@ -35,7 +35,7 @@ class SeedingClassifierProcess(BaseProcess):
 
             self.logger.info('setup AdaBoost classifier')
             classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
 
             self.logger.info('train classifier')
             classifierMeta = self.TrainClassifier(classifierMeta, seedingDataFrame)
