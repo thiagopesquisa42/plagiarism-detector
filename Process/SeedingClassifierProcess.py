@@ -11,7 +11,7 @@ from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from constant import SeedAttributesNames
 import pandas
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import classification_report
 
 class SeedingClassifierProcess(BaseProcess):
@@ -35,7 +35,7 @@ class SeedingClassifierProcess(BaseProcess):
 
             self.logger.info('setup AdaBoost classifier')
             classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
 
             self.logger.info('train classifier')
             classifierMeta = self.TrainClassifier(classifierMeta, seedingDataFrame)
@@ -64,7 +64,7 @@ class SeedingClassifierProcess(BaseProcess):
                 'splitter': 'random'
             },
             'algorithm': 'SAMME',
-            'numberEstimators': 200
+            'numberEstimators': 100
         }
         adaBoostClassifier = AdaBoostClassifier(
             DecisionTreeClassifier(
@@ -81,6 +81,20 @@ class SeedingClassifierProcess(BaseProcess):
         }
         decisionTreeClassifier = DecisionTreeClassifier()
         return (definitionDictionary, decisionTreeClassifier)
+
+    def SetupRandomForestClassifier():
+        definitionDictionary = {
+            'type': 'emsemble estimator',
+            'name': 'Random Forest',
+            'details': 'default settings',
+            'baseEstimator': 'Decision Tree',
+            'baseEstimatorDefinition': {
+                'details': 'default values'
+            },
+            'numberEstimators': 100
+        }
+        randomForestClassifier = RandomForestClassifier(n_estimators = definitionDictionary['numberEstimators'])
+        return (definitionDictionary, randomForestClassifier)
 
     def TrainClassifier(self, classifierMeta, seedingDataFrame):
         classifier = classifierMeta.GetClassifier()
@@ -110,7 +124,7 @@ class SeedingClassifierProcess(BaseProcess):
                 purpose = TextCollectionMetaPurpose.test
             )
 
-            self.logger.info('get AdaBoost classifier')
+            # self.logger.info('get AdaBoost classifier')
             #classifierMeta = self._classifierMetaRepository.Get(id = classifierMetaId)
 
             self.logger.info('test classifier')

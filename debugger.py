@@ -21,12 +21,13 @@ from constant import TextCollectionMeta, PreProcessedData, SeedingData
 # seedingDataFrameTest = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(
 #     seedingDataId = 4, textCollectionMetaPurpose =_TextCollectionMetaPurpose.test)
 
-_seedingDataFrameRepository = _SeedingDataFrameRepository()
-seedingDataFrameTrain = _SeedingDataProcess().AlterSeedingData(seedingDataFrame = _seedingDataFrameRepository.Get(id = 8))
-seedingDataFrameTest = _SeedingDataProcess().AlterSeedingData(seedingDataFrame = _seedingDataFrameRepository.Get(id = 9))
+# _seedingDataFrameRepository = _SeedingDataFrameRepository()
+# seedingDataFrameTrain = _SeedingDataProcess().AlterSeedingData(seedingDataFrame = _seedingDataFrameRepository.Get(id = 8))
+# seedingDataFrameTest = _SeedingDataProcess().AlterSeedingData(seedingDataFrame = _seedingDataFrameRepository.Get(id = 9))
 
-classifierMeta = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrame = seedingDataFrameTrain)
-classifierMetaTest = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrame = seedingDataFrameTest, classifierMeta = classifierMeta)
+_seedingDataFrameRepository = _SeedingDataFrameRepository()
+classifierMeta = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrame = _seedingDataFrameRepository.Get(id = 13))
+classifierMetaTest = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrame = _seedingDataFrameRepository.Get(id = 14), classifierMeta = classifierMeta)
 
 
 
