@@ -1,3 +1,0 @@
-from Repository import _OptimizationTestRepository
-
-_OptimizationTestRepository().GetOptimizedSeedList()

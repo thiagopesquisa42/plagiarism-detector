@@ -8,6 +8,7 @@ from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRep
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
+from Entity import _PlagiarismClass as PlagiarismClass
 from constant import SeedAttributesNames
 import pandas
 from sklearn.tree import DecisionTreeClassifier
@@ -76,10 +77,9 @@ class SeedingDataProcess(BaseProcess):
         seedingDataFrame.SetPickleDataFrame(dataFrame)
         return seedingDataFrame
     
-    def UpdateStoreSeedingDataFrame(self, seedingDataFrame, dataFrame, removedAttributeNameList = []):
+    def UpdateDescriptionAndPickleSeedingDataFrame(self, seedingDataFrame, dataFrame, removedAttributeNameList = []):
         seedingDataFrame.descriptionDictionary = self.CreateDataFrameDescription(dataFrame, removedAttributeNameList)
         seedingDataFrame = self.UpdateSeedingPickleDataFrame(seedingDataFrame, dataFrame)
-        # self._baseRepository.Insert(seedingDataFrame)
         return seedingDataFrame
 
     def SelectColumnsInDataFrame(self, seedingDataFrame):
@@ -87,14 +87,14 @@ class SeedingDataProcess(BaseProcess):
         removeAttributeNameList = SeedAttributesNames.REMOVE_LIST
         for attributeName in removeAttributeNameList:
             del dataFrame[attributeName]
-        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame, 
+        seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame, 
             removedAttributeNameList = removeAttributeNameList)
         return seedingDataFrame
     
     def RemoveNoneValues(self, seedingDataFrame):
         dataFrame = seedingDataFrame.GetDataFrame()
         dataFrame = dataFrame.dropna(axis='index', how='any')
-        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame)
+        seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame
     
     def Resample(self, seedingDataFrame, classToResample, numberOfSamples):
@@ -106,9 +106,45 @@ class SeedingDataProcess(BaseProcess):
         dataFrameWithoutNoneClass = dataFrame[(dataFrame.plagiarismClass != classToResample)]
         dataFrame = pandas.concat([dataFrameWithoutNoneClass, dataFrameNoneClassOnlyResampled])
         
-        seedingDataFrame = self.UpdateStoreSeedingDataFrame(seedingDataFrame, dataFrame)
+        seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
         return seedingDataFrame
     #end_region [Create Seeding DataFrame from Seeding Data started]
+
+    #region [Alter Seeding DataFrame and store in new register]
+    def AlterSeedingData(self, seedingDataFrame):
+        try:
+            self.logger.info('[Alter Seeding DataFrame and store in new register]')
+            
+            self.logger.info('clone DataFrame')
+            seedingDataFrame = self.CloneSeedingDataFrame(seedingDataFrame)
+
+            self.logger.info('binarize target classes')
+            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classTrue = PlagiarismClass.none.name)
+            
+            self._baseRepository.Insert(seedingDataFrame)
+        except Exception as exception:
+            self.logger.error('[Alter Seeding DataFrame and store in new register] failure: ' + str(exception))
+            raise exception
+        else:
+            self.logger.info('[Alter Seeding DataFrame and store in new register] finish')
+            return seedingDataFrame
+
+    def CloneSeedingDataFrame(self, seedingDataFrame):
+        seedingDataFrameClone = SeedingDataFrame(
+            seedingData = seedingDataFrame.seedingData)
+        dataFrame = seedingDataFrame.GetDataFrame()
+        seedingDataFrameClone = self.UpdateDescriptionAndPickleSeedingDataFrame(
+            seedingDataFrameClone, dataFrame)
+        return seedingDataFrameClone
+
+    def BinarizeTargetClass(self, seedingDataFrame, classTrue):
+        dataFrame = seedingDataFrame.GetDataFrame()
+        dataFrameBinaryPlagiarismClass = (dataFrame.plagiarismClass == classTrue)
+        dataFrame['plagiarismClass'] = dataFrameBinaryPlagiarismClass
+        seedingDataFrame = self.UpdateDescriptionAndPickleSeedingDataFrame(seedingDataFrame, dataFrame)
+        return seedingDataFrame
+
+    #end_region [Alter Seeding DataFrame and store in new register]
 
     _baseRepository = BaseRepository()
     _seedingDataRepository = SeedingDataRepository()
