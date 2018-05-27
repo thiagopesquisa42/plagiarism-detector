@@ -44,6 +44,7 @@ class DataImportationProcess(BaseProcess):
         # testTextCollectionMeta = self._textCollectionMetaRepository.Get(id = 2)
         self.AssociateTestTrainTextCollections(
             testTextCollectionMeta, trainTextCollectionMeta)
+        return trainTextCollectionMeta, testTextCollectionMeta
     
     def AssociateTestTrainTextCollections(self, testTextCollectionMeta, trainTextCollectionMeta):
         trainTextCollectionMeta.testTextCollectionMeta = testTextCollectionMeta
@@ -231,8 +232,9 @@ class DataImportationProcess(BaseProcess):
     
     def CreateNewDirectoryDecreasedDataBase(folderCompletePath, percentage):
         dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
+        path, folderName = DataImportationProcess.GetTuple_Path_LastFolderName(folderCompletePath)
         newFolderCompletePath =\
-            os.path.dirname(folderCompletePath) +\
+            os.path.join(path, folderName) +\
             '_' + dateTimeString +\
             '_p' +\
             "{:.0f}".format(100 * percentage)
@@ -242,6 +244,12 @@ class DataImportationProcess(BaseProcess):
             folder = folderCompletePath, 
             newFolderPath = newFolderCompletePath)
         return newFolderCompletePath
+    
+    def GetTuple_Path_LastFolderName(folderPath):
+        path, folder = os.path.split(folderPath)
+        if(folder == ''):
+            path, folder = os.path.split(path)
+        return path, folder
 
     def CopyEntireFolder(folder, newFolderPath):
         # External source code from here: https://stackoverflow.com/questions/15034151/copy-directory-contents-into-a-directory-with-python

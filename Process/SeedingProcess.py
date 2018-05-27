@@ -22,23 +22,23 @@ class SeedingProcess(BaseProcess):
         self.logger.info('Testing from SeedingProcess')
         print ('Hello, I\'m the SeedingProcess')
 
-    def SeedingProcessing(self, preProcessedDataId):
+    def SeedingProcessing(self, preProcessedDataId, seedingData):
         try:
             self.logger.info('Seeding Processing started')
 
-            self.logger.info('create Seeding Data Instance')
-            preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
-            seedingData = self.CreateSeedingData(preProcessedData)
+            # self.logger.info('create Seeding Data Instance')
+            # preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
+            # seedingData = self.CreateSeedingData(preProcessedData)
 
-            self.logger.info('create seeds candidates')
+            # self.logger.info('create seeds candidates')
             rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
+            # self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
 
             # [0] Create seeds candidates from 
             #   all possible sentences suspicious-source-pairs in preprocessedData
-            self.logger.info('create seeds attributes registers')
-            self.CreateAttributesDefaultRegisterForSeeds(
-                seedingData = seedingData)
+            # self.logger.info('create seeds attributes registers')
+            # self.CreateAttributesDefaultRegisterForSeeds(
+            #     seedingData = seedingData)
             
             # [1] Fill class (no-plag, obfuscated-plag...)
             self.logger.info('label seeds detected')
@@ -77,10 +77,10 @@ class SeedingProcess(BaseProcess):
             rawText = rawTextPair.sourceRawText, 
             preProcessedData = seedingData.preProcessedData)
         seedCandidateList = [
-            Seed(seedingData = seedingData,
-                suspiciousSentence = suspiciousSentence,
-                sourceSentence = sourceSentence,
-                rawTextPair = rawTextPair)
+            Seed(seedingDataId = seedingData.id,
+                suspiciousSentenceId = suspiciousSentence.id,
+                sourceSentenceId = sourceSentence.id,
+                rawTextPairId = rawTextPair.id)
             for suspiciousSentence in suspiciousSentenceList.sentences
             for sourceSentence in sourceSentenceList.sentences]
         self._seedRepository.InsertByRawSql(seedCandidateList)

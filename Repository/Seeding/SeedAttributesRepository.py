@@ -26,7 +26,7 @@ class SeedAttributesRepository(BaseRepository):
 
     def InsertDefaultListByRawSql(self, seedIdList):
         self.engine.execute(
-            Seed.__table__.insert(),
+            SeedAttributes.__table__.insert(),
             [{'seedId': seedId} for seedId in seedIdList])
 
     def Hello(self):

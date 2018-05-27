@@ -18,15 +18,22 @@ _classifierMetaRepository = _ClassifierMetaRepository()
 # seedingData = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedData.id)
 # seedingDataTest = _SeedingProcess().SeedingProcessing(preProcessedDataId = preProcessedDataTest.id)
 
+
+
+
 # seedingDataFrameTrain = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(
 #     seedingDataId = 2, textCollectionMetaPurpose = _TextCollectionMetaPurpose.train)
 # seedingDataFrameTest = _SeedingDataProcess().CreateSeedingDataFrameFromSeedingData(
 #     seedingDataId = 4, textCollectionMetaPurpose =_TextCollectionMetaPurpose.test)
 
-seedingDataFrameTrain = _seedingDataFrameRepository.Get(id = 15)
-seedingDataFrameTest = _seedingDataFrameRepository.Get(id = 16)
-classifierMetaTrained = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrame = seedingDataFrameTrain)
-classifierMetaTested = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrame = seedingDataFrameTest, classifierMeta = classifierMetaTrained)
+# seedingDataFrameTrain = _seedingDataFrameRepository.Get(id = 15)
+# seedingDataFrameTest = _seedingDataFrameRepository.Get(id = 16)
+# classifierMetaTrained = _SeedingClassifierProcess().TrainSeedClassifier(seedingDataFrame = seedingDataFrameTrain)
+# classifierMetaTested = _SeedingClassifierProcess().TestSeedClassifier(seedingDataFrame = seedingDataFrameTest, classifierMeta = classifierMetaTrained)
+
+
+
+
 
 
 # seedingDataFrameTrain = _SeedingDataProcess().AlterSeedingData(seedingDataFrame = _seedingDataFrameRepository.Get(id = 8))

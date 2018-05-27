@@ -1,5 +1,6 @@
 from Repository import _BaseRepository as BaseRepository
 from Entity.Seeding import _Seed as Seed, _SeedingData as SeedingData
+from sqlalchemy import select
 
 class SeedRepository(BaseRepository):
 
@@ -17,9 +18,11 @@ class SeedRepository(BaseRepository):
             filter(Seed.seedingData == seedingData).all()
 
     def GetRawListIdsBySeedingData(self, seedingData):
+        query = select(columns = ['id'], from_obj = Seed,
+            whereclause = "seedingDataId = " + str(seedingData.id))
         rawListId = self.engine.execute(
-            Seed.__table__.select(whereclause = "seedingDataId = " + str(seedingData.id))
-        ).fetchall()
+            query).fetchall()
+        rawListId = list(list(zip(*rawListId))[0])
         return rawListId
 
     def InsertByRawSql(self, seedList):
