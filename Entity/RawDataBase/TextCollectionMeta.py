@@ -1,20 +1,17 @@
-from sqlalchemy import Column, Integer, String, DateTime, Enum, ForeignKey
-from sqlalchemy.orm import relationship
-from Entity import _EntityBase as EntityBase
-from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 
-class TextCollectionMeta(EntityBase):
-    __tablename__ = 'text_collection_meta'
-    id                          =   Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-    creationDate                =   Column(DateTime, nullable=False)
-    name                        =   Column(Integer, nullable=False)
-    sourceUrl                   =   Column(String, nullable=True)
-    description                 =   Column(String, nullable=False)
+class TextCollectionMeta():
+    def __init__(self,
+        creationDate,
+        name,
+        sourceUrl,
+        description,
+        textCollectionMetaPurpose):
+        self.creationDate = creationDate
+        self.name  = name 
+        self.sourceUrl = sourceUrl
+        self.description = description
+        self.purpose = textCollectionMetaPurpose
+        self.testTextCollectionMeta = None
+        self.rawTextPairList = []
+        self.detectionList = []
 
-    purpose                     = Column(Enum(TextCollectionMetaPurpose), nullable=False)
-    testTextCollectionMetaId    = Column(Integer, ForeignKey('text_collection_meta.id'), nullable=True)
-    testTextCollectionMeta      = relationship('TextCollectionMeta', remote_side=[id])
-
-    #unique identifier of the object
-    def __repr__(self):
-        return "<TextCollectionMeta (id='" + id + "'>"

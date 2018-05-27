@@ -1,62 +1,71 @@
-import Repository.DataBaseConfiguration as DataBaseConfiguration
 from constant import LoggerConstant
-# Import create_engine function
-from sqlalchemy import create_engine
-# the Session class 
-from sqlalchemy.orm import sessionmaker
+import settings
+import util
 import logging
+import pickle
+import os
 
 class BaseRepository(object):
-    session = None
-    engine = None
-    
-    @staticmethod
-    def InitSession():
-        # Create an engine to the census database
-        BaseRepository.engine = create_engine(DataBaseConfiguration.CONSTANTS_CONFIGURATIONS.
-            SQLALCHEMY_CONNECTION_STRING_DATA_BASE)
-        BaseRepository.session = sessionmaker(bind=BaseRepository.engine)()
+    rootLocation = settings.rootLocation
+    name = 'BaseRepository'
+    logger = None
 
     @staticmethod
     def SetLogger():
-        init = "\n"
-        ascTime = "%(asctime)s ";
-        levelName = "%(levelname)s ";
-        pathName = "%(pathname)s \n";
-        module = "%(module)s ";
-        functionName = "%(funcName)s ";
-        lineNumber = "%(lineno)d \n";
-        message = "%(message)s \n";
-
-        logFormat = init + ascTime + levelName + pathName + module + functionName + lineNumber + message
-        logging.basicConfig(filename = LoggerConstant.File.REPOSITORY_SQLALCHEMY, format = logFormat)
-        logger = logging.getLogger(name = LoggerConstant.Name.REPOSITORY_SQLALCHEMY)
+        if(isinstance(BaseRepository.logger, logging.Logger)):
+            return
+        logFormat = util.LoggerUtil.GetLoggerFormat()
+        logger = logging.getLogger(name = LoggerConstant.Name.PROCESS)
+        fileHandler = logging.FileHandler(filename = LoggerConstant.File.PROCESS)
+        formatter = logging.Formatter(logFormat)
+        fileHandler.setFormatter(formatter)
+        logger.addHandler(fileHandler) 
         logger.setLevel(logging.INFO)
                 
-        infoLogStruct = "\n ascTime levelName pathName \n module funcName lineNumber \n message \n"
+        infoLogStruct = "\n ascTime levelName module funcName lineNumber \n message \n"
         logger.info("This log has the struct: " + infoLogStruct)
+        BaseRepository.logger = logger
 
-    def Insert(self, item):
-        if(item == None):
-            return
-        self.session.add(item)
-        self.session.commit()
-
-    def InsertList(self, itemList):
-        if(itemList == None or len(itemList) == 0):
-            return
-        for item in itemList:
-            self.session.add(item)
-        self.session.commit()
-
-    def Update(self, item):
-        self.Insert(item)
+    def CheckRootLocation(self):
+        if(not os.path.exists(self.rootLocation)):
+            os.makedirs(self.rootLocation)
     
-    def UpdateList(self, itemList):
-        self.InsertList(itemList)
+    def SetRootLocation(self, newRootLocation):
+        self.rootLocation = newRootLocation
+        self.CheckRootLocation()
+
+    def GetPickleName(self):
+        return os.path.join(self.rootLocation, self.name + '.pickle')
+
+    def GetPickleFileReader(self):
+        pickleName = self.GetPickleName()
+        return open(pickleName, 'rb')
+
+    def GetPickleFileWriter(self):
+        pickleName = self.GetPickleName()
+        return open(pickleName, 'wb')
+
+    def Store(self, item):
+        try:
+            fileWriter = self.GetPickleFileWriter()
+            pickle.dump(item, fileWriter)
+        except Exception as exception:
+            self.logger.info('failure when storing item, error ' + exception)
+        else:
+            self.logger.info('item stored')
+        
+    def Get(self):
+        try:
+            fileReader = self.GetPickleFileReader()
+            item = pickle.load(fileReader)
+        except Exception as exception:
+            self.logger.info('failure when retrieving item, error ' + exception)
+        else:
+            self.logger.info('item retrieved')
+            return item
 
     def __init__(self):
-        self.session = BaseRepository.session
+        self.logger = BaseRepository.logger
+        self.CheckRootLocation()
 
 BaseRepository.SetLogger()
-BaseRepository.InitSession()

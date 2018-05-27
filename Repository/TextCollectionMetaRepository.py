@@ -1,13 +1,9 @@
 from Repository import _BaseRepository as BaseRepository
-from Entity import _TextCollectionMeta as TextCollectionMeta
+import os
 
 class TextCollectionMetaRepository(BaseRepository):
-
-    def Get(self, id):
-        return self.session.query(TextCollectionMeta).filter(TextCollectionMeta.id == id).first()
-
-    def Hello(self):
-        print ('Hello, I\'m a repository')
+    name = 'TextCollectionMetaRepository'
 
     def __init__(self):
         super().__init__()
+        rootLocation = os.path.join(self.rootLocation, self.name)
