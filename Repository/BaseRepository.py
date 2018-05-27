@@ -65,6 +65,10 @@ class BaseRepository(object):
             self.logger.info('item retrieved')
             return item
 
+    def StoreAndGet(self, item):
+        self.Store(item)
+        return self.Get()
+
     def __init__(self):
         self.logger = BaseRepository.logger
         self.CheckRootLocation()

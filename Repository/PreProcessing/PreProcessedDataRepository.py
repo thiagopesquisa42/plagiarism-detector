@@ -1,13 +1,9 @@
 from Repository import _BaseRepository as BaseRepository
-from Entity.PreProcessing import _PreProcessedData as PreProcessedData
+import os
 
 class PreProcessedDataRepository(BaseRepository):
-
-    def Get(self, id):
-        return self.session.query(PreProcessedData).filter(PreProcessedData.id == id).first()
-
-    def Hello(self):
-        print ('Hello, I\'m a repository')
+    name = 'PreProcessedDataRepository'
 
     def __init__(self):
         super().__init__()
+        rootLocation = os.path.join(self.rootLocation, self.name)

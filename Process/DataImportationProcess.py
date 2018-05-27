@@ -24,20 +24,24 @@ class DataImportationProcess(BaseProcess):
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
         try:
             self.logger.info('start ImportFromPanFiles')
+            
             self.logger.info('create textCollectionMeta instance')
             textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+
             self.logger.info('import raw texts')
             rawTextList = self.GetRawTexts(
                 folderCompletePath = folderCompletePath, 
                 textCollectionMeta = textCollectionMeta)
             textCollectionMeta.rawTextList = rawTextList
             textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+            
             self.logger.info('import raw texts pairs')
             rawTextPairList = self.GetRawTextPairList(
                 folderCompletePath = folderCompletePath, 
                 rawTextList = rawTextList)
             textCollectionMeta.rawTextPairList = rawTextPairList
             textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+            
             self.logger.info('import detections')
             detectionList = self.ExtractDetectionList(
                 folderCompletePath = folderCompletePath,
@@ -322,7 +326,6 @@ class DataImportationProcess(BaseProcess):
             for detectionFileName in detectionFileNameList]
         DataImportationProcess.RemoveFiles(
             filePathListOrSet = detectionFilePathList)
-
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
     _panRepository = PanRepository()
