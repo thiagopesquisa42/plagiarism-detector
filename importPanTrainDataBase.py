@@ -13,11 +13,11 @@ def GetLastFolderName(folderPath = ''):
         path, folder = os.path.split(path)
     return folder
 
-trainFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\panDatabases\\2013-train-january\\pan13-text-alignment-training-corpus-2013-01-21_20180520_235434_p1'
+trainFolderCompletePath = 'C:\\Users\\thiagopesquisa42\\Desktop\\panDatabases\\2013-train-january\\pan13-text-alignment-training-corpus-2013-01-21'
 trainTextCollectionMeta = TextCollectionMeta(
     sourceUrl = None,
     name = GetLastFolderName(trainFolderCompletePath),
-    description = 'treino, base pan 2013-jan reduzida em 95%, amostragem aleatória',
+    description = 'treino, base pan 2013-jan 100%',
     creationDate = '2013-01-21',
     textCollectionMetaPurpose = TextCollectionMetaPurpose.train)
 trainTextCollectionMeta = _dataImportationProcess.ImportFromPanFiles(
