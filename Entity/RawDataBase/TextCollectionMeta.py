@@ -12,6 +12,7 @@ class TextCollectionMeta():
         self.description = description
         self.purpose = textCollectionMetaPurpose
         self.testTextCollectionMeta = None
+        self.rawTextList = []
         self.rawTextPairList = []
         self.detectionList = []
 

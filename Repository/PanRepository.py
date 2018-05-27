@@ -13,7 +13,7 @@ class PanRepository():
             text = _file.read().encode(encoding='UTF-8',errors='namereplace')
             return text
     
-    def GetRawTextListFromDirectoryOfTexts(self, filesFolderPath, rawTextType, textCollectionMetaId):
+    def GetRawTextListFromDirectoryOfTexts(self, filesFolderPath, rawTextType, textCollectionMeta):
         textFilesNames = []
         for _file in os.listdir(filesFolderPath):
             if _file.endswith(".txt"):
@@ -24,7 +24,7 @@ class PanRepository():
             text = self.GetTextFromFile(filePath = textFilePath)
             rawText = RawText(
                 _type = rawTextType,
-                textCollectionMetaId = textCollectionMetaId, 
+                textCollectionMeta = textCollectionMeta, 
                 fileName = textFileName, 
                 text = text)
             rawTextList.append(rawText)
@@ -83,7 +83,7 @@ class PanRepository():
                     panDetectionXmlPlain.obfuscation = 'translation-chain'
                 panDetectionXmlPlainList.append(panDetectionXmlPlain)
             else:
-                print('corrupted summary found')
+                print('corrupted detection entry found, it was ignored')
         return panDetectionXmlPlainList
 
     def GetPanDetectionXmlPlainListFromDiretory(self, filesFolderPath):

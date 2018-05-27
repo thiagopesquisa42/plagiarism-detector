@@ -53,6 +53,7 @@ class BaseRepository(object):
             self.logger.info('failure when storing item, error ' + exception)
         else:
             self.logger.info('item stored')
+            return fileWriter.name
         
     def Get(self):
         try:

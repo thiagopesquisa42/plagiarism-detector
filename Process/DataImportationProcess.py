@@ -11,10 +11,6 @@ from Entity import _PanDetectionXmlPlain as PanDetectionXmlPlain
 from Entity import _PanFolderStructure as PanFolderStructure
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Repository import _TextCollectionMetaRepository as TextCollectionMetaRepository
-from Repository import _RawTextRepository as RawTextRepository
-from Repository import _RawTextPairRepository as RawTextPairRepository
-from Repository import _RawTextExcerptLocationRepository as RawTextExcerptLocationRepository
-from Repository import _DetectionRepository as DetectionRepository
 from Repository import _PanRepository as PanRepository
 from Process import _BaseProcess as BaseProcess
 from Process.Commom import _TextCollectionMetaCommom as TextCollectionMetaCommom
@@ -25,86 +21,70 @@ from datetime import datetime
 
 class DataImportationProcess(BaseProcess):
 
-    def Hello(self):
-        self.logger.info('Testing from DataImportationProcess')
-        print ('Hello, I\'m the DataImportationProcess')
-        print ('And I use these repositories:')
-        print ('And I use these internals:')
-
-    def ImportTrainTestDataFromPanFiles(self,
-        testTextCollectionMeta, testFolderCompletePath, 
-        trainTextCollectionMeta, trainFolderCompletePath):
-        testTextCollectionMeta = self.ImportFromPanFiles(
-            textCollectionMeta = testTextCollectionMeta, 
-            folderCompletePath = testFolderCompletePath)
-        trainTextCollectionMeta = self.ImportFromPanFiles(
-            textCollectionMeta = trainTextCollectionMeta, 
-            folderCompletePath = trainFolderCompletePath)
-        # trainTextCollectionMeta = self._textCollectionMetaRepository.Get(id = 1)
-        # testTextCollectionMeta = self._textCollectionMetaRepository.Get(id = 2)
-        self.AssociateTestTrainTextCollections(
-            testTextCollectionMeta, trainTextCollectionMeta)
-        return trainTextCollectionMeta, testTextCollectionMeta
-    
-    def AssociateTestTrainTextCollections(self, testTextCollectionMeta, trainTextCollectionMeta):
-        trainTextCollectionMeta.testTextCollectionMeta = testTextCollectionMeta
-        TextCollectionMetaCommom.CheckPurposesTestTrain(testTextCollectionMeta, trainTextCollectionMeta)
-        self.SaveTextCollection(
-            textCollectionMeta = testTextCollectionMeta)
-        self.SaveTextCollection(
-            textCollectionMeta = trainTextCollectionMeta)
-
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
-        textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
-        rawTextList = self.GetRawTexts(
-            folderCompletePath = folderCompletePath, 
-            textCollectionMetaId = textCollectionMeta.id)
-        self.SaveRawTextList(rawTextList = rawTextList)
-        rawTextPairList = self.GetRawTextPairList(
-            folderCompletePath = folderCompletePath, 
-            textCollectionMetaId = textCollectionMeta.id)
-        self.SaveRawTextPairList(rawTextPairList = rawTextPairList)
-        detectionList= self.ExtractDetectionList(
-            folderCompletePath = folderCompletePath,
-            textCollectionMetaId = textCollectionMeta.id)
-        self.SaveDetectionList(detectionList = detectionList)
-        return textCollectionMeta
-
+        try:
+            self.logger.info('start ImportFromPanFiles')
+            self.logger.info('create textCollectionMeta instance')
+            textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+            self.logger.info('import raw texts')
+            rawTextList = self.GetRawTexts(
+                folderCompletePath = folderCompletePath, 
+                textCollectionMeta = textCollectionMeta)
+            textCollectionMeta.rawTextList = rawTextList
+            textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+            self.logger.info('import raw texts pairs')
+            rawTextPairList = self.GetRawTextPairList(
+                folderCompletePath = folderCompletePath, 
+                rawTextList = rawTextList)
+            textCollectionMeta.rawTextPairList = rawTextPairList
+            textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+            self.logger.info('import detections')
+            detectionList = self.ExtractDetectionList(
+                folderCompletePath = folderCompletePath,
+                textCollectionMeta = textCollectionMeta)
+            textCollectionMeta.detectionList = detectionList
+            textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
+        except Exception as exception:
+            self.logger.error('ImportFromPanFiles failure: ' + str(exception))
+            raise exception
+        else:
+            self.logger.info('ImportFromPanFiles finished')
+            return textCollectionMeta
+        
     def SaveTextCollection(self, textCollectionMeta):
-        self._textCollectionMetaRepository.Insert(textCollectionMeta)
-        return textCollectionMeta
+        self._textCollectionMetaRepository.Store(textCollectionMeta)
+        return self._textCollectionMetaRepository.Get()
 
-    def GetRawTexts(self, folderCompletePath, textCollectionMetaId):
+    def GetRawTexts(self, folderCompletePath, textCollectionMeta):
         suspiciousFilesFolderPath = os.path.join(folderCompletePath, PanFolderStructure.SUSPICIOUS_RAW_TEXT_FOLDER)
         suspiciousRawTextList = self._panRepository.GetRawTextListFromDirectoryOfTexts(
             filesFolderPath = suspiciousFilesFolderPath,
             rawTextType = RawTextType.suspicious,
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMeta = textCollectionMeta)
         sourceFilesFolderPath = os.path.join(folderCompletePath, PanFolderStructure.SOURCE_RAW_TEXTS_FOLDER)
         sourceRawTextList = self._panRepository.GetRawTextListFromDirectoryOfTexts(
             filesFolderPath = sourceFilesFolderPath,
             rawTextType = RawTextType.source,
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMeta = textCollectionMeta)
         rawTextList = suspiciousRawTextList + sourceRawTextList
         return rawTextList
         
     def SaveRawTextList(self, rawTextList):
         self._rawTextRepository.InsertList(rawTextList)
 
-    def GetRawTextPairList(self, folderCompletePath, textCollectionMetaId):
+    def GetRawTextPairList(self, folderCompletePath, rawTextList):
         pairsFilePath = os.path.join(folderCompletePath, PanFolderStructure.PAIRS_FILE_NAME)
         tupleFileNameSuspiciousSourceList = self._panRepository.GetTupleFileNameSuspiciousSourceList(
             pairsFilePath = pairsFilePath)
         rawTextPairList = []
         for tupleFileNameSuspiciousSource in tupleFileNameSuspiciousSourceList:
-            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
-                tupleFileNameSuspiciousSource = tupleFileNameSuspiciousSource,
-                textCollectionMetaId = textCollectionMetaId)
-            if(tupleRawTextIdsSuspiciousSource is None):
+            suspiciousRawText = next((rawText for rawText in rawTextList if rawText.fileName == tupleFileNameSuspiciousSource[0]), None)
+            sourceRawText = next((rawText for rawText in rawTextList if rawText.fileName == tupleFileNameSuspiciousSource[1]), None)
+            if(suspiciousRawText is None or sourceRawText is None):
                 continue
             rawTextPair = RawTextPair(
-                suspiciousRawTextId = tupleRawTextIdsSuspiciousSource[0], 
-                sourceRawTextId = tupleRawTextIdsSuspiciousSource[1])
+                sourceRawText = sourceRawText,
+                suspiciousRawText = suspiciousRawText)
             rawTextPairList.append(rawTextPair)
         return rawTextPairList
     
@@ -125,55 +105,32 @@ class DataImportationProcess(BaseProcess):
         detectionFolderPathList = list(filter(lambda folderPath: os.path.isdir(folderPath), detectionFolderPathList))
         return detectionFolderPathList
 
-    def ExtractRawTextExcerptLocationDistinctList(self, panDetectionXmlPlainList, textCollectionMetaId):
-        rawTextExcerptLocationList = []
+    def GetDetectionList(self, panDetectionXmlPlainList, textCollectionMeta):
+        rawTextPairList = textCollectionMeta.rawTextPairList
+        detectionList = []
         for panDetectionXmlPlain in panDetectionXmlPlainList:
-            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
-                tupleFileNameSuspiciousSource = (panDetectionXmlPlain.suspiciousFileName, panDetectionXmlPlain.sourceFileName), 
-                textCollectionMetaId = textCollectionMetaId)
+            rawTextPair = next(
+                (rawTextPair 
+                    for rawTextPair in rawTextPairList 
+                    if ((rawTextPair.suspiciousRawText.fileName == panDetectionXmlPlain.suspiciousFileName)
+                        and (rawTextPair.sourceRawText.fileName == panDetectionXmlPlain.sourceFileName))), 
+                None)
+            if(rawTextPair is None):
+                continue
             suspiciousRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.suspiciousLength,
                 firstCharacterPosition = panDetectionXmlPlain.suspiciousOffset,
                 lastCharacterPosition = panDetectionXmlPlain.suspiciousOffset + panDetectionXmlPlain.suspiciousLength,
-                rawTextId = tupleRawTextIdsSuspiciousSource[0])
+                rawText = rawTextPair.suspiciousRawText)
             sourceRawTextExcerptLocation = RawTextExcerptLocation(
                 stringLength = panDetectionXmlPlain.sourceLength,
                 firstCharacterPosition = panDetectionXmlPlain.sourceOffset,
                 lastCharacterPosition = panDetectionXmlPlain.sourceOffset + panDetectionXmlPlain.sourceLength,
-                rawTextId = tupleRawTextIdsSuspiciousSource[1])
-            rawTextExcerptLocationList.append(suspiciousRawTextExcerptLocation)
-            rawTextExcerptLocationList.append(sourceRawTextExcerptLocation)
-        rawTextExcerptLocationDistinctList = list(set(rawTextExcerptLocationList))
-        return rawTextExcerptLocationDistinctList
-
-    def FillIdsRawTextExcerptLocationList(self, rawTextExcerptLocationList):
-        self._rawTextExcerptLocationRepository.InsertList(rawTextExcerptLocationList)
-        return rawTextExcerptLocationList
-
-    def GetDetectionList(self, panDetectionXmlPlainList, rawTextExcerptLocationList,
-        textCollectionMetaId):
-        detectionList = []
-        for panDetectionXmlPlain in panDetectionXmlPlainList:
-            tupleRawTextIdsSuspiciousSource = self._rawTextRepository.GetTupleRawTextIdsSuspiciousSource(
-                tupleFileNameSuspiciousSource = (panDetectionXmlPlain.suspiciousFileName, panDetectionXmlPlain.sourceFileName), 
-                textCollectionMetaId = textCollectionMetaId)
-            rawTextPair = self._rawTextPairRepository.GetBySuspiciousSourceRawTextsIds(
-                suspiciousRawTextId = tupleRawTextIdsSuspiciousSource[0], 
-                sourceRawTextId = tupleRawTextIdsSuspiciousSource[1])
-            _rawTextSuspiciousLocation = next(
-                item for item in rawTextExcerptLocationList if (
-                    item.rawTextId == tupleRawTextIdsSuspiciousSource[0] and
-                    item.firstCharacterPosition == panDetectionXmlPlain.suspiciousOffset and
-                    item.stringLength == panDetectionXmlPlain.suspiciousLength))
-            _rawTextSourceLocation = next(
-                item for item in rawTextExcerptLocationList if (
-                    item.rawTextId == tupleRawTextIdsSuspiciousSource[1] and
-                    item.firstCharacterPosition == panDetectionXmlPlain.sourceOffset and
-                    item.stringLength == panDetectionXmlPlain.sourceLength))
+                rawText = rawTextPair.sourceRawText)
             detection = Detection(
-                textCollectionMetaId = textCollectionMetaId,
-                rawTextSuspiciousLocation = _rawTextSuspiciousLocation, 
-                rawTextSourceLocation = _rawTextSourceLocation,
+                textCollectionMeta = textCollectionMeta,
+                rawTextSuspiciousLocation = suspiciousRawTextExcerptLocation, 
+                rawTextSourceLocation = sourceRawTextExcerptLocation,
                 _type = PlagiarismType.FromString(panDetectionXmlPlain._type),
                 obfuscationDegree = panDetectionXmlPlain.obfuscationDegree,
                 obfuscation = PlagiarismObfuscation.FromString(panDetectionXmlPlain.obfuscation),
@@ -184,21 +141,12 @@ class DataImportationProcess(BaseProcess):
             detectionList.append(detection)
         return detectionList
 
-    def ExtractDetectionList(self, folderCompletePath, textCollectionMetaId):
+    def ExtractDetectionList(self, folderCompletePath, textCollectionMeta):
         panDetectionXmlPlainList = self.GetPanDetectionXmlPlainList(folderCompletePath = folderCompletePath)
-        rawTextExcerptLocationList = self.ExtractRawTextExcerptLocationDistinctList(
-            panDetectionXmlPlainList = panDetectionXmlPlainList, 
-            textCollectionMetaId = textCollectionMetaId)
-        rawTextExcerptLocationList = self.FillIdsRawTextExcerptLocationList(
-            rawTextExcerptLocationList = rawTextExcerptLocationList)
         detectionList = self.GetDetectionList(
             panDetectionXmlPlainList = panDetectionXmlPlainList, 
-            rawTextExcerptLocationList = rawTextExcerptLocationList,
-            textCollectionMetaId = textCollectionMetaId)
+            textCollectionMeta = textCollectionMeta)
         return detectionList
-
-    def SaveDetectionList(self, detectionList):
-        self._detectionRepository.InsertList(detectionList) 
 
     def DecreasePanDataBaseInNewFolder(self, decreasePercentage, folderCompletePath):
         remainingPercentage = 1 - decreasePercentage
@@ -377,10 +325,6 @@ class DataImportationProcess(BaseProcess):
 
 
     _textCollectionMetaRepository = TextCollectionMetaRepository()
-    _rawTextRepository = RawTextRepository()
-    _rawTextPairRepository = RawTextPairRepository()
-    _rawTextExcerptLocationRepository = RawTextExcerptLocationRepository()
-    _detectionRepository = DetectionRepository()
     _panRepository = PanRepository()
 
     def __init__(self):

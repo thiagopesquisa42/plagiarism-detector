@@ -1,6 +1,6 @@
 
 class RawTextPair():
-    def __init__(
+    def __init__(self,
         sourceRawText,
         suspiciousRawText):
         self.sourceRawText = sourceRawText

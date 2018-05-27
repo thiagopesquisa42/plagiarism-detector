@@ -1,3 +1,4 @@
+from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Repository import _BaseRepository as BaseRepository
 import os
 
