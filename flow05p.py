@@ -74,8 +74,7 @@ def GetPickleFileWriter():
 # pickle.dump(tupleTrainTestPreProcessedDataIds, GetPickleFileWriter())
 tupleTrainTestPreProcessedDataIds = pickle.load(GetPickleFileReader())
 
-seedingDataTrain = _seedingProcess._seedingDataRepository.Get(id = 7)
-seedingDataTrain = _seedingProcess.SeedingProcessing(preProcessedDataId = tupleTrainTestPreProcessedDataIds[0], seedingData = seedingDataTrain)
+# seedingDataTrain = _seedingProcess.SeedingProcessing(preProcessedDataId = tupleTrainTestPreProcessedDataIds[0])
 seedingDataTest = _seedingProcess.SeedingProcessing(preProcessedDataId = tupleTrainTestPreProcessedDataIds[1])
 
 tupleTrainTestSeedingDataIds = seedingDataTrain.id, seedingDataTest.id

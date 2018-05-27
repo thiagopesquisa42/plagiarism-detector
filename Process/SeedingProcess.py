@@ -22,29 +22,25 @@ class SeedingProcess(BaseProcess):
         self.logger.info('Testing from SeedingProcess')
         print ('Hello, I\'m the SeedingProcess')
 
-    def SeedingProcessing(self, preProcessedDataId, seedingData):
+    def SeedingProcessing(self, preProcessedDataId):
         try:
             self.logger.info('Seeding Processing started')
 
-            # self.logger.info('create Seeding Data Instance')
-            # preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
-            # seedingData = self.CreateSeedingData(preProcessedData)
+            self.logger.info('create Seeding Data Instance')
+            preProcessedData = self._preProcessedDataRepository.Get(id = preProcessedDataId)
+            seedingData = self.CreateSeedingData(preProcessedData)
 
-            # self.logger.info('create seeds candidates')
+            self.logger.info('create seeds candidates')
             rawTextPairList = self._rawTextPairRepository.GetListByTextCollectionMeta(seedingData.preProcessedData.textCollectionMeta)
-            # self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
+            self.CreateSeedCandidateListFromRawTextPairList(seedingData, rawTextPairList)
 
-            # [0] Create seeds candidates from 
-            #   all possible sentences suspicious-source-pairs in preprocessedData
-            # self.logger.info('create seeds attributes registers')
-            # self.CreateAttributesDefaultRegisterForSeeds(
-            #     seedingData = seedingData)
+            self.logger.info('create seeds attributes registers')
+            self.CreateAttributesDefaultRegisterForSeeds(
+                seedingData = seedingData)
             
-            # [1] Fill class (no-plag, obfuscated-plag...)
             self.logger.info('label seeds detected')
             self.LabelSeedList(seedingData, rawTextPairList)
 
-            # [2] Calculate attributes over bag-of-words and locations from both sentences
             self.logger.info('calculate seeds attributes')
             self.CalculateAttributesSeedList(seedingData, rawTextPairList)
 
