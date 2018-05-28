@@ -120,8 +120,7 @@ class SeedingProcess(BaseProcess):
         return detectionListPerRawTextPair
 
     def GetSeedsInsideAnyDetection(self, detectionList, seedList):
-        seedSortedList = self.SortSeedListBySuspiciousSourceLocation(seedList)
-        seedMatrixLineSuspiciousColumnSource = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedSortedList)
+        seedMatrixLineSuspiciousColumnSource = SeedingProcess.GetMatrixLineSuspiciousColumnSource(seedList)
         seedDetectedSet = set()
         for detection in detectionList:
             seedDetectedList = self.GetSeedListInDetection(
@@ -132,7 +131,7 @@ class SeedingProcess(BaseProcess):
             seedDetectedSet.update(seedDetectedList)
         return seedDetectedSet
 
-    def SortSeedListBySuspiciousSourceLocation(self, seedList):
+    def SortSeedListBySuspiciousSourceLocation(seedList):
         return sorted(seedList, 
             key = lambda seed:
                 (
@@ -148,6 +147,7 @@ class SeedingProcess(BaseProcess):
             seed.sourceSentence.rawTextExcerptLocation.lastCharacterPosition)
 
     def GetMatrixLineSuspiciousColumnSource(seedList):
+        seedSortedList = SeedingProcess.SortSeedListBySuspiciousSourceLocation(seedList)        
         seedMatrixLineSuspiciousColumnSource = [
             (
                 location[0], 
@@ -156,7 +156,7 @@ class SeedingProcess(BaseProcess):
                     seed.sourceSentence.rawTextExcerptLocation.firstCharacterPosition, 
                     seed.sourceSentence.rawTextExcerptLocation.lastCharacterPosition, 
                     seed) for seed in seedListIterator])
-            for location, seedListIterator in groupby(seedList, SeedingProcess.GetSuspiciousLocation)]
+            for location, seedListIterator in groupby(seedSortedList, SeedingProcess.GetSuspiciousLocation)]
         return seedMatrixLineSuspiciousColumnSource
 
     def GetSeedListInDetection(self, seedMatrixLineSuspiciousColumnSource, detection):
