@@ -1,13 +1,9 @@
 from Repository import _BaseRepository as BaseRepository
-from Entity.Seeding import _SeedingData as SeedingData
+import os
 
 class SeedingDataRepository(BaseRepository):
-
-    def Get(self, id):
-        return self.session.query(SeedingData).filter(SeedingData.id == id).first()
-
-    def Hello(self):
-        print ('Hello, I\'m a repository')
+    name = 'SeedingDataRepository'
 
     def __init__(self):
         super().__init__()
+        rootLocation = os.path.join(self.rootLocation, self.name)

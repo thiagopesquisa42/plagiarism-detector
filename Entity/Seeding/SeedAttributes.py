@@ -1,77 +1,24 @@
-from sqlalchemy import Column, Integer, ForeignKey, Float, Enum
-from sqlalchemy.orm import relationship
-from Entity import _EntityBase as EntityBase
-from Entity import _PlagiarismClass as PlagiarismClass
 
-class SeedAttributes(EntityBase):
-    __tablename__               = 'seed_attributes'
-    seedId                      = Column(Integer, ForeignKey('seed.id'), primary_key=True, nullable=False)
-    seed                        = relationship('Seed', foreign_keys=[seedId])
-    plagiarismClass             = Column(Enum(PlagiarismClass))
-    percentualInDetection       = Column(Float)
-    
-    cosine                      = Column(Float)
-    dice                        = Column(Float)
-    
-    isMaxCosine                 = Column(Float)
-    maxCosineDiff               = Column(Float)
-    meanMaxCosineDiff           = Column(Float)
-    maxCosineNeighbour          = Column(Float)
-    verticalCosineMaxDistance   = Column(Float)
-    verticalCosineMaxMeasure    = Column(Float)
+class SeedAttributes():
+    def __init__(self):
+        self.plagiarismClass             = None
+        self.percentualInDetection       = None
+        
+        self.cosine                      = None
+        self.dice                        = None
+        
+        self.isMaxCosine                 = None
+        self.maxCosineDiff               = None
+        self.meanMaxCosineDiff           = None
+        self.maxCosineNeighbour          = None
+        self.verticalCosineMaxDistance   = None
+        self.verticalCosineMaxMeasure    = None
 
-    isMaxDice                   = Column(Float)
-    maxDiceDiff                 = Column(Float)
-    meanMaxDiceDiff             = Column(Float)
-    maxDiceNeighbour            = Column(Float)
-    verticalDiceMaxDistance     = Column(Float)
-    verticalDiceMaxMeasure      = Column(Float)
+        self.isMaxDice                   = None
+        self.maxDiceDiff                 = None
+        self.meanMaxDiceDiff             = None
+        self.maxDiceNeighbour            = None
+        self.verticalDiceMaxDistance     = None
+        self.verticalDiceMaxMeasure      = None
 
-    lengthRatio                 = Column(Float)
-
-    #unique identifier of the object
-    def __repr__(self):
-        return "<SeedAttributes (seedId='" + seedId + "'>"
-
-    def ToDictionary(self):
-        return {
-            'seedId':                       self.seedId,
-            'plagiarismClass':              self.plagiarismClass.name,
-            'percentualInDetection':        self.percentualInDetection,
-            'cosine':                       self.cosine,
-            'dice':                         self.dice,
-            'isMaxCosine':                  self.isMaxCosine,
-            'maxCosineDiff':                self.maxCosineDiff,
-            'meanMaxCosineDiff':            self.meanMaxCosineDiff,
-            'maxCosineNeighbour':           self.maxCosineNeighbour,
-            'verticalCosineMaxDistance':    self.verticalCosineMaxDistance,
-            'verticalCosineMaxMeasure':     self.verticalCosineMaxMeasure,
-            'isMaxDice':                    self.isMaxDice,
-            'maxDiceDiff':                  self.maxDiceDiff,
-            'meanMaxDiceDiff':              self.meanMaxDiceDiff,
-            'maxDiceNeighbour':             self.maxDiceNeighbour,
-            'verticalDiceMaxDistance':      self.verticalDiceMaxDistance,
-            'verticalDiceMaxMeasure':       self.verticalDiceMaxMeasure,
-            'lengthRatio':                  self.lengthRatio
-        }
-
-    def GetColumnList():
-        return [
-            SeedAttributes.seedId,
-            SeedAttributes.plagiarismClass,
-            SeedAttributes.percentualInDetection,
-            SeedAttributes.cosine,
-            SeedAttributes.dice,
-            SeedAttributes.isMaxCosine,
-            SeedAttributes.maxCosineDiff,
-            SeedAttributes.meanMaxCosineDiff,
-            SeedAttributes.maxCosineNeighbour,
-            SeedAttributes.verticalCosineMaxDistance,
-            SeedAttributes.verticalCosineMaxMeasure,
-            SeedAttributes.isMaxDice,
-            SeedAttributes.maxDiceDiff,
-            SeedAttributes.meanMaxDiceDiff,
-            SeedAttributes.maxDiceNeighbour,
-            SeedAttributes.verticalDiceMaxDistance,
-            SeedAttributes.verticalDiceMaxMeasure,
-            SeedAttributes.lengthRatio]
+        self.lengthRatio                 = None

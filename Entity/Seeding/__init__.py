@@ -6,3 +6,6 @@ _Seed = Seed.Seed
 
 from Entity.Seeding import SeedAttributes
 _SeedAttributes = SeedAttributes.SeedAttributes
+
+from Entity.Seeding import SeedListPerRawTextPair
+_SeedListPerRawTextPair = SeedListPerRawTextPair.SeedListPerRawTextPair
