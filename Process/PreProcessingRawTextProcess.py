@@ -298,12 +298,11 @@ class PreProcessingRawTextProcess(BaseProcess):
         return sentences
 
     def StemsBagOfWordsByPorter(self, bagOfWords):
+        wordSimpleList = self.WordOccurenceDictionaryToWordList(
+            bagOfWords.wordOccurenceDictionary)
         stemmer = nltk.stem.porter.PorterStemmer()
-        wordOccurenceDictionary = Counter()
-        for word, occurence in bagOfWords.wordOccurenceDictionary.items():
-            word = stemmer.stem(word)
-            wordOccurenceDictionary.update({word: occurence})
-        bagOfWords.wordOccurenceDictionary = wordOccurenceDictionary
+        wordSimpleList = [stemmer.stem(word) for word in wordSimpleList]
+        bagOfWords.wordOccurenceDictionary = Counter(wordSimpleList)
         return bagOfWords
     #end_region [stem words in bag-of-words]
 
