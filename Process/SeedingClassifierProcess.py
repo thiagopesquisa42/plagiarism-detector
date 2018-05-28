@@ -1,12 +1,6 @@
 from Process import _BaseProcess as BaseProcess
-from Process.Commom import _TextCollectionMetaCommom as TextCollectionMetaCommom
-from Repository import _BaseRepository as BaseRepository
-from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
-from Repository.Seeding import _SeedAttributesRepository as SeedAttributesRepository
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
 from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRepository
-from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
-from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from constant import SeedAttributesNames
 import pandas
@@ -21,24 +15,21 @@ class SeedingClassifierProcess(BaseProcess):
         print ('Hello, I\'m the SeedingClassifierProcess')
 
     #region [Train Classifier]
-    def TrainSeedClassifier(self, seedingDataFrame):
+    def TrainSeedClassifier(self):
         try:
             self.logger.info('Train Seed Classifier started')
             
-            self.logger.info('check data set reference')
-            #seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
-            seedingData = self._seedingDataRepository.Get(id = seedingDataFrame.seedingDataId)
-            TextCollectionMetaCommom.CheckPurpose(
-                textCollectionMeta = seedingData.preProcessedData.textCollectionMeta,
-                purpose = TextCollectionMetaPurpose.train
-            )
-
-            self.logger.info('setup AdaBoost classifier')
+            self.logger.info('getting seeding-data-frame')
+            seedingDataFrame = self._seedingDataFrameRepository.Get()
+            
+            self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
                 classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
+            classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
             self.logger.info('train classifier')
             classifierMeta = self.TrainClassifier(classifierMeta, seedingDataFrame)
+            classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
         except Exception as exception:
             self.logger.error('Train Seed Classifier failure: ' + str(exception))
@@ -48,10 +39,11 @@ class SeedingClassifierProcess(BaseProcess):
             return classifierMeta
     
     def CreateClassifierMeta(self, classifierSetterMethod):
+        self.logger.info('classifier: ' + str(classifierSetterMethod.__name__))
         definitionDictionary, classifier = classifierSetterMethod()
-        classifierMeta = ClassifierMeta(definitionDictionary = definitionDictionary)
-        classifierMeta.SetPickleClassifier(classifier)
-        self._baseRepository.Insert(classifierMeta)
+        classifierMeta = ClassifierMeta(
+            classifier = classifier,
+            definitionDictionary = definitionDictionary)
         return classifierMeta
 
     def SetupAdaboostClassifier():
@@ -97,38 +89,38 @@ class SeedingClassifierProcess(BaseProcess):
         return (definitionDictionary, randomForestClassifier)
 
     def TrainClassifier(self, classifierMeta, seedingDataFrame):
-        classifier = classifierMeta.GetClassifier()
-        dataFrame = seedingDataFrame.GetDataFrame()
+        classifier = classifierMeta.classifier
+        dataFrame = seedingDataFrame.dataFrame
         targetClass = dataFrame[SeedAttributesNames.TARGET_CLASS]
         del dataFrame[SeedAttributesNames.TARGET_CLASS]
         trainAttributes = dataFrame
         classifier.fit(X = trainAttributes, y = targetClass)
-
-        classifierMeta.SetPickleClassifier(classifier)
-        classifierMeta.seedingDataFrameId = seedingDataFrame.id
-        self._baseRepository.Insert(classifierMeta)
-        # self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
+        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
+            appendToDefinition = {
+                'train-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
         return classifierMeta
     #end_region [Train Classifier]
 
+    def UpdateDescriptionAndClassifier(self, classifierMeta, classifier, appendToDefinition = None):
+        classifierMeta.classifier = classifier
+        if(appendToDefinition is not None):
+            classifierMeta.definitionDictionary.update(appendToDefinition)
+        return classifierMeta
+
     #region [Test Classifier]
-    def TestSeedClassifier(self, seedingDataFrame, classifierMeta):
+    def TestSeedClassifier(self):
         try:
             self.logger.info('Test Classifier started')
-            # [0] check data reference
-            self.logger.info('check data set reference')
-            #seedingDataFrame = self._seedingDataFrameRepository.GetByRawSql(id = seedingDataFrameId)
-            seedingData = self._seedingDataRepository.Get(id = seedingDataFrame.seedingDataId)
-            TextCollectionMetaCommom.CheckPurpose(
-                textCollectionMeta = seedingData.preProcessedData.textCollectionMeta,
-                purpose = TextCollectionMetaPurpose.test
-            )
 
-            # self.logger.info('get AdaBoost classifier')
-            #classifierMeta = self._classifierMetaRepository.Get(id = classifierMetaId)
-
+            self.logger.info('getting seeding-data-frame')
+            seedingDataFrame = self._seedingDataFrameRepository.Get()
+            
+            self.logger.info('getting classifier')
+            classifierMeta = self._classifierMetaRepository.Get()
+            
             self.logger.info('test classifier')
             classifierMeta = self.TestClassifier(classifierMeta, seedingDataFrame)
+            classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
         except Exception as exception:
             self.logger.error('Test Classifier failure: ' + str(exception))
@@ -138,8 +130,8 @@ class SeedingClassifierProcess(BaseProcess):
             return classifierMeta
 
     def TestClassifier(self, classifierMeta, seedingDataFrame):
-        classifier = classifierMeta.GetClassifier()
-        dataFrame = seedingDataFrame.GetDataFrame()
+        classifier = classifierMeta.classifier
+        dataFrame = seedingDataFrame.dataFrame
         expectedTargetClass = dataFrame[SeedAttributesNames.TARGET_CLASS]
         del dataFrame[SeedAttributesNames.TARGET_CLASS]
         testAttributes = dataFrame
@@ -152,16 +144,14 @@ class SeedingClassifierProcess(BaseProcess):
         report = classification_report(
             y_true = expectedPredictedDataFrame['expected'],
             y_pred = expectedPredictedDataFrame['predicted'])
-        print( report )
-        classifierMeta.SetPickleExpectedPredictedList(expectedPredictedDataFrame)
-        self._baseRepository.Insert(classifierMeta)
-        # self._classifierMetaRepository.UpdateByRawSql(classifierMeta)
+        self.logger.info('report: ' + str(report))
+        classifierMeta.report = report
+        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
+            appendToDefinition = {
+                'test-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
         return classifierMeta
     #end_region [Test Classifier]
 
-    _baseRepository = BaseRepository()
-    _seedingDataRepository = SeedingDataRepository()
-    _seedAttributesRepository = SeedAttributesRepository()
     _seedingDataFrameRepository = SeedingDataFrameRepository()
     _classifierMetaRepository = ClassifierMetaRepository()
 

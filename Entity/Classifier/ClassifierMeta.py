@@ -5,5 +5,5 @@ class ClassifierMeta():
         definitionDictionary):
         self.classifier = classifier
         self.definitionDictionary = definitionDictionary
-        self.seedingDataFrame = None
         self.expectedPredictedList = None
+        self.report = None

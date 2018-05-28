@@ -1,11 +1,7 @@
 from Process import _BaseProcess as BaseProcess
-from Process.Commom import _TextCollectionMetaCommom as TextCollectionMetaCommom
-from Repository import _BaseRepository as BaseRepository
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
-from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
-from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from Entity import _PlagiarismClass as PlagiarismClass
 from constant import SeedAttributesNames
 import pandas
