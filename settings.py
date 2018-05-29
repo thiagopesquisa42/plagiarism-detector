@@ -5,6 +5,8 @@ global currentSubFolder
 currentSubFolder = 'none'
 rootLocation = 'data'
 subFolderDefault = 'newFolder'
+TRAINING_SUBFOLDER = 'train'
+TESTING_SUBFOLDER = 'test'
 
 def SetRootLocation(rootLocationName):
     global rootLocation

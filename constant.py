@@ -48,21 +48,6 @@ class Threshold():
     SENTENCE_NUMBER_WORDS_TO_FUSE = 3
     DETECTION_MINIMUM_PERCENTUAL_INTERSECTION = 0.5
 
-class TextCollectionMeta():
-    ID_ONE_PERCENT_PAN_2014_TRAIN = 1
-    ID_ONE_PERCENT_PAN_2014_TEST = 2
-    ID_ONE_PERCENT_PAN_2013_TRAIN = 5
-    ID_ONE_PERCENT_PAN_2013_TEST = 4
-
-class PreProcessedData():
-    ID_CURRENT = 1
-
-class SeedingData():
-    class TestTrainPair():
-        CURRENT_TEST_ID = None
-        CURRENT_TRAIN_ID = 1
-    IDS = TestTrainPair
-
 class SeedAttributesNames():
     class Names():
         seedId = 'seedId'
@@ -110,3 +95,24 @@ class SeedAttributesNames():
 
     TARGET_CLASS = Names.plagiarismClass
 
+class PanFolders():
+    ROOT = 'C:\\Users\\thiagopesquisa42\\Desktop\\panDatabases'
+    FOLDER_2012 = os.path.join(ROOT, '2012')
+    FOLDER_2013_TEST1_MARCH = os.path.join(ROOT, '2013-test1-march')
+    FOLDER_2013_TEST2_JANUARY = os.path.join(ROOT, '2013-test2-january')
+    FOLDER_2013_TRAIN_JANUARY = os.path.join(ROOT, '2013-train-january')
+    FOLDER_2014 = os.path.join(ROOT, '2014')
+
+class PanDataBaseLocation():
+    class FullSamples():
+        FOLDER_PATH_2013_TEST2_JANUARY = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21')
+        FOLDER_PATH_2013_TRAIN_JANUARY = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21')
+
+    class SubSampled():
+        FOLDER_PATH_2013_TEST2_JANUARY_005_P = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21_20180526_194019_p5')
+        FOLDER_PATH_2013_TEST2_JANUARY_001_P = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21_20180520_235355_p1')
+        FOLDER_PATH_2013_TRAIN_JANUARY_005_P = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21_20180526_194057_p5')
+        FOLDER_PATH_2013_TRAIN_JANUARY_001_P = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21_20180520_235434_p1')
+    
+    fullSamples = FullSamples()
+    subSampled = SubSampled()
