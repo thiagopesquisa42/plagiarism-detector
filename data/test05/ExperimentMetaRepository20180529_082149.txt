@@ -1,0 +1,160 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+{'classifier-test-report': '''
+             precision    recall  f1-score   support
+
+      False       0.92      0.95      0.93      4104
+       True       0.94      0.92      0.93      4104
+
+avg / total       0.93      0.93      0.93      8208
+''',
+ 'classifier-definition': {
+    'type': 'emsemble estimator',
+    'name': 'Random Forest',
+    'details': 'default settings',
+    'baseEstimator': 'Decision Tree',
+    'baseEstimatorDefinition': {'details': 'default values'},
+    'numberEstimators': 100,
+    'train-seeding-data-frame-description': {
+        'summary': '''              cosine          dice isMaxCosine isMaxDice   lengthRatio  
+count   11393.000000  11393.000000       11393     11393  11393.000000   
+unique           NaN           NaN           2         2           NaN   
+top              NaN           NaN       False     False           NaN   
+freq             NaN           NaN       10407     10399           NaN   
+mean        0.220374      0.187263         NaN       NaN      1.364926   
+std         0.203827      0.191649         NaN       NaN      2.140625   
+min         0.000000      0.000000         NaN       NaN      0.014647   
+25%         0.089087      0.088889         NaN       NaN      0.545045   
+50%         0.162221      0.133333         NaN       NaN      0.929293   
+75%         0.279145      0.200000         NaN       NaN      1.513274   
+max         1.000000      1.000000         NaN       NaN    102.250000   
+
+        maxCosineDiff  maxCosineNeighbour   maxDiceDiff  maxDiceNeighbour  
+count    11393.000000        11393.000000  11393.000000      11393.000000   
+unique            NaN                 NaN           NaN               NaN   
+top               NaN                 NaN           NaN               NaN   
+freq              NaN                 NaN           NaN               NaN   
+mean         0.331017            0.606855      0.304895          0.529837   
+std          0.270492            0.266178      0.284549          0.303323   
+min          0.000000            0.018490      0.000000          0.057143   
+25%          0.119543            0.389249      0.089701          0.266667   
+50%          0.249137            0.563602      0.184615          0.400000   
+75%          0.514216            0.869048      0.488844          0.838710   
+max          1.000000            1.000000      1.000000          1.000000   
+
+        meanMaxCosineDiff  meanMaxDiceDiff plagiarismClass  
+count        11393.000000     11393.000000           11393   
+unique                NaN              NaN               2   
+top                   NaN              NaN            True   
+freq                  NaN              NaN            5697   
+mean             0.131892         0.076735             NaN   
+std              0.213063         0.199562             NaN   
+min             -0.877506        -0.904214             NaN   
+25%              0.065304         0.046083             NaN   
+50%              0.175938         0.116009             NaN   
+75%              0.257768         0.172002             NaN   
+max              0.541502         0.479345             NaN   
+
+        verticalCosineMaxDistance  verticalCosineMaxMeasure  
+count                11393.000000              11393.000000   
+unique                        NaN                       NaN   
+top                           NaN                       NaN   
+freq                          NaN                       NaN   
+mean                     0.321603                 -0.056059   
+std                      0.238488                  0.396448   
+min                      0.000000                 -1.000000   
+25%                      0.119565                 -0.330294   
+50%                      0.272535                 -0.065665   
+75%                      0.484375                  0.214113   
+max                      1.000000                  0.991477   
+
+        verticalDiceMaxDistance  verticalDiceMaxMeasure  
+count              11393.000000            11393.000000  
+unique                      NaN                     NaN  
+top                         NaN                     NaN  
+freq                        NaN                     NaN  
+mean                   0.317689               -0.071122  
+std                    0.238501                0.390844  
+min                    0.000000               -1.000000  
+25%                    0.116352               -0.340271  
+50%                    0.268548               -0.071071  
+75%                    0.469863                0.177561  
+max                    1.000000                1.000000  ''',
+        'binarizeTargetClass': 'chose class True or class False',
+        'balancing': 'classes balanced by sub-sampling of oversampled classes',
+        'removeAttributeNameList': ['seedId', 'percentualInDetection'],
+        'removeNoneRows': 'remove row with any None value',
+        },
+    'test-seeding-data-frame-description': {
+        'summary': '''             cosine         dice isMaxCosine isMaxDice  lengthRatio  
+count   8208.000000  8208.000000        8208      8208  8208.000000   
+unique          NaN          NaN           2         2          NaN   
+top             NaN          NaN       False     False          NaN   
+freq            NaN          NaN        7390      7360          NaN   
+mean       0.229582     0.198602         NaN       NaN     1.273680   
+std        0.213579     0.201258         NaN       NaN     1.506216   
+min        0.000000     0.000000         NaN       NaN     0.003234   
+25%        0.095346     0.095238         NaN       NaN     0.557815   
+50%        0.166667     0.137931         NaN       NaN     0.918033   
+75%        0.277350     0.210526         NaN       NaN     1.448783   
+max        1.000000     1.000000         NaN       NaN    50.347826   
+
+        maxCosineDiff  maxCosineNeighbour  maxDiceDiff  maxDiceNeighbour  
+count     8208.000000         8208.000000  8208.000000       8208.000000   
+unique            NaN                 NaN          NaN               NaN   
+top               NaN                 NaN          NaN               NaN   
+freq              NaN                 NaN          NaN               NaN   
+mean         0.324967            0.611747     0.299910          0.542681   
+std          0.250465            0.246128     0.263476          0.282189   
+min          0.000000            0.000000     0.000000          0.000000   
+25%          0.130293            0.408248     0.097222          0.296296   
+50%          0.270241            0.577920     0.205714          0.470588   
+75%          0.491459            0.824958     0.488889          0.800000   
+max          1.000000            1.000000     1.000000          1.000000   
+
+        meanMaxCosineDiff  meanMaxDiceDiff plagiarismClass  
+count         8208.000000      8208.000000            8208   
+unique                NaN              NaN               2   
+top                   NaN              NaN            True   
+freq                  NaN              NaN            4104   
+mean             0.128543         0.079162             NaN   
+std              0.226868         0.213104             NaN   
+min             -0.865945        -0.927802             NaN   
+25%              0.069750         0.053234             NaN   
+50%              0.188899         0.130900             NaN   
+75%              0.270924         0.194502             NaN   
+max              0.460685         0.415735             NaN   
+
+        verticalCosineMaxDistance  verticalCosineMaxMeasure  
+count                 8208.000000               8208.000000   
+unique                        NaN                       NaN   
+top                           NaN                       NaN   
+freq                          NaN                       NaN   
+mean                     0.338640                 -0.053372   
+std                      0.236473                  0.409587   
+min                      0.000601                 -1.000000   
+25%                      0.149445                 -0.338980   
+50%                      0.287748                 -0.076653   
+75%                      0.517769                  0.233852   
+max                      1.000000                  0.991150   
+
+        verticalDiceMaxDistance  verticalDiceMaxMeasure  
+count               8208.000000             8208.000000  
+unique                      NaN                     NaN  
+top                         NaN                     NaN  
+freq                        NaN                     NaN  
+mean                   0.337002               -0.052715  
+std                    0.233016                0.406327  
+min                    0.000000               -1.000000  
+25%                    0.147990               -0.342285  
+50%                    0.290264               -0.072129  
+75%                    0.509404                0.233766  
+max                    1.000000                1.000000  ''',
+        'binarizeTargetClass': 'chose class True or class False',
+        'balancing': 'classes balanced by sub-sampling of oversampled classes',
+        'removeAttributeNameList': ['seedId', 'percentualInDetection'],
+        'removeNoneRows': 'remove row with any None value',
+        },
+    }}
+
+			

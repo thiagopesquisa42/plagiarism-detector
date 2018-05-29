@@ -15,8 +15,8 @@ class BaseRepository(object):
         if(isinstance(BaseRepository.logger, logging.Logger)):
             return
         logFormat = util.LoggerUtil.GetLoggerFormat()
-        logger = logging.getLogger(name = LoggerConstant.Name.PROCESS)
-        fileHandler = logging.FileHandler(filename = LoggerConstant.File.PROCESS)
+        logger = logging.getLogger(name = LoggerConstant.Name.REPOSITORY)
+        fileHandler = logging.FileHandler(filename = LoggerConstant.File.REPOSITORY)
         formatter = logging.Formatter(logFormat)
         fileHandler.setFormatter(formatter)
         logger.addHandler(fileHandler) 
@@ -52,7 +52,7 @@ class BaseRepository(object):
         except Exception as exception:
             self.logger.info('failure when storing item, error ' + str(exception))
         else:
-            self.logger.info('item stored')
+            self.logger.info('item stored: ' + str(type(item)))
             return fileWriter.name
         
     def Get(self):
@@ -62,7 +62,7 @@ class BaseRepository(object):
         except Exception as exception:
             self.logger.info('failure when retrieving item, error ' + str(exception))
         else:
-            self.logger.info('item retrieved')
+            self.logger.info('item retrieved: ' + str(type(item)))
             return item
 
     def StoreAndGet(self, item):

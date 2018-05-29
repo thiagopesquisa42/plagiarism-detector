@@ -1,6 +1,6 @@
 import os
 
 global rootLocation
-rootLocation = os.path.join('data','train')
-# rootLocation = os.path.join('data','test')
+# rootLocation = os.path.join('data','train05')
+rootLocation = os.path.join('data','test05')
 # rootLocation = os.path.join('data','classifier')

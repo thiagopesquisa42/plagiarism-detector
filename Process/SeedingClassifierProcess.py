@@ -1,7 +1,9 @@
 from Process import _BaseProcess as BaseProcess
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
 from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRepository
+from Repository.Classifier import _ExperimentMetaRepository as ExperimentMetaRepository
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
+from Entity.Classifier import _ExperimentMeta as ExperimentMeta
 from constant import SeedAttributesNames
 import pandas
 from sklearn.tree import DecisionTreeClassifier
@@ -9,10 +11,6 @@ from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import classification_report
 
 class SeedingClassifierProcess(BaseProcess):
-
-    def Hello(self):
-        self.logger.info('Testing from SeedingClassifierProcess')
-        print ('Hello, I\'m the SeedingClassifierProcess')
 
     #region [Train Classifier]
     def TrainSeedClassifier(self):
@@ -144,16 +142,22 @@ class SeedingClassifierProcess(BaseProcess):
         report = classification_report(
             y_true = expectedPredictedDataFrame['expected'],
             y_pred = expectedPredictedDataFrame['predicted'])
-        self.logger.info('report: ' + str(report))
         classifierMeta.report = report
+        classifierMeta.expectedPredictedList = expectedPredictedDataFrame
         classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
             appendToDefinition = {
                 'test-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
+        self.SaveExperimentResults(classifierMeta)
         return classifierMeta
+    
+    def SaveExperimentResults(self, classifierMeta):
+        experimentMeta = ExperimentMeta(classifierMeta = classifierMeta)
+        self._experimentMetaRepository.StoreReport(report = experimentMeta.report)
     #end_region [Test Classifier]
 
     _seedingDataFrameRepository = SeedingDataFrameRepository()
     _classifierMetaRepository = ClassifierMetaRepository()
+    _experimentMetaRepository = ExperimentMetaRepository()
 
     def __init__(self):
         super().__init__()
