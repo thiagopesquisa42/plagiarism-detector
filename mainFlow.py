@@ -77,5 +77,5 @@ experimentName = 'experiment005p_tape001'
 SetExperimentName(experimentName)
 ProcessTrainData()
 ProcessTestData()
-TestingClassifier()
 TrainingClassifier()
+TestingClassifier()
