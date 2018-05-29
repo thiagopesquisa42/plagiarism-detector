@@ -327,8 +327,8 @@ class DataImportationProcess(BaseProcess):
         DataImportationProcess.RemoveFiles(
             filePathListOrSet = detectionFilePathList)
 
-    _textCollectionMetaRepository = TextCollectionMetaRepository()
-    _panRepository = PanRepository()
 
     def __init__(self):
+        self._textCollectionMetaRepository = TextCollectionMetaRepository()
+        self._panRepository = PanRepository()
         super().__init__()

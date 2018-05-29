@@ -3,11 +3,11 @@ from datetime import datetime
 import os
 
 class ExperimentMetaRepository(BaseRepository):
-    name = 'ExperimentMetaRepository'
+    name = 'ExperimentMeta'
 
     def GetReportUniqueName(self):
         dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
-        return os.path.join(self.rootLocation, self.name + dateTimeString + '.txt')
+        return os.path.join(self.GetPath(), self.name + dateTimeString + '.txt')
 
     def GetReportWriter(self):
         reportName = self.GetReportUniqueName()
@@ -25,5 +25,5 @@ class ExperimentMetaRepository(BaseRepository):
             return fileWriter.name
 
     def __init__(self):
+        self.subFolder = 'meta'
         super().__init__()
-        rootLocation = os.path.join(self.rootLocation, self.name)

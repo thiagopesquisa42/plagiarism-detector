@@ -155,9 +155,9 @@ class SeedingClassifierProcess(BaseProcess):
         self._experimentMetaRepository.StoreReport(report = experimentMeta.report)
     #end_region [Test Classifier]
 
-    _seedingDataFrameRepository = SeedingDataFrameRepository()
-    _classifierMetaRepository = ClassifierMetaRepository()
-    _experimentMetaRepository = ExperimentMetaRepository()
 
     def __init__(self):
+        self._seedingDataFrameRepository = SeedingDataFrameRepository()
+        self._classifierMetaRepository = ClassifierMetaRepository()
+        self._experimentMetaRepository = ExperimentMetaRepository()
         super().__init__()

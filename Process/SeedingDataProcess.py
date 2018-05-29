@@ -158,8 +158,7 @@ class SeedingDataProcess(BaseProcess):
         return seedingDataFrame
     #end_region [Alter Seeding DataFrame and store in new register]
 
-    _seedingDataRepository = SeedingDataRepository()
-    _seedingDataFrameRepository = SeedingDataFrameRepository()
-
     def __init__(self):
+        self._seedingDataRepository = SeedingDataRepository()
+        self._seedingDataFrameRepository = SeedingDataFrameRepository()
         super().__init__()

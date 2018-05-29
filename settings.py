@@ -1,6 +1,15 @@
 import os
 
 global rootLocation
-# rootLocation = os.path.join('data','train05')
-rootLocation = os.path.join('data','test05')
-# rootLocation = os.path.join('data','classifier')
+global currentSubFolder
+currentSubFolder = 'none'
+rootLocation = 'data'
+subFolderDefault = 'newFolder'
+
+def SetRootLocation(rootLocationName):
+    global rootLocation
+    rootLocation = os.path.join('data', rootLocationName)
+
+def SetCurrentSubFolder(subFolderName):
+    global currentSubFolder
+    currentSubFolder = subFolderName

@@ -6,9 +6,9 @@ import pickle
 import os
 
 class BaseRepository(object):
-    rootLocation = settings.rootLocation
     name = 'BaseRepository'
     logger = None
+    subFolder = settings.subFolderDefault
 
     @staticmethod
     def SetLogger():
@@ -26,16 +26,16 @@ class BaseRepository(object):
         logger.info("This log has the struct: " + infoLogStruct)
         BaseRepository.logger = logger
 
-    def CheckRootLocation(self):
-        if(not os.path.exists(self.rootLocation)):
-            os.makedirs(self.rootLocation)
-    
-    def SetRootLocation(self, newRootLocation):
-        self.rootLocation = newRootLocation
-        self.CheckRootLocation()
+    def GetPath(self):
+        return os.path.join(self.rootLocation, self.subFolder)
+
+    def CheckPath(self):
+        path = self.GetPath()
+        if(not os.path.exists(path)):
+            os.makedirs(path)
 
     def GetPickleName(self):
-        return os.path.join(self.rootLocation, self.name + '.pickle')
+        return os.path.join(self.GetPath(), self.name + '.pickle')
 
     def GetPickleFileReader(self):
         pickleName = self.GetPickleName()
@@ -71,6 +71,7 @@ class BaseRepository(object):
 
     def __init__(self):
         self.logger = BaseRepository.logger
-        self.CheckRootLocation()
+        self.rootLocation = settings.rootLocation
+        self.CheckPath()
 
 BaseRepository.SetLogger()

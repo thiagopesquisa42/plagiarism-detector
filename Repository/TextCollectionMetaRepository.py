@@ -1,10 +1,10 @@
-from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Repository import _BaseRepository as BaseRepository
+import settings
 import os
 
 class TextCollectionMetaRepository(BaseRepository):
-    name = 'TextCollectionMetaRepository'
+    name = 'TextCollectionMeta'
 
     def __init__(self):
+        self.subFolder = settings.currentSubFolder
         super().__init__()
-        rootLocation = os.path.join(self.rootLocation, self.name)

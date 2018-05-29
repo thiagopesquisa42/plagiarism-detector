@@ -2,8 +2,8 @@ from Repository import _BaseRepository as BaseRepository
 import os
 
 class ClassifierMetaRepository(BaseRepository):
-    name = 'ClassifierMetaRepository'
+    name = 'ClassifierMeta'
 
     def __init__(self):
+        self.subFolder = 'classifier'
         super().__init__()
-        rootLocation = os.path.join(self.rootLocation, self.name)

@@ -1,9 +1,10 @@
 from Repository import _BaseRepository as BaseRepository
+import settings
 import os
 
 class SeedingDataFrameRepository(BaseRepository):
-    name = 'SeedingDataFrameRepository'
+    name = 'SeedingDataFrame'
 
     def __init__(self):
+        self.subFolder = settings.currentSubFolder
         super().__init__()
-        rootLocation = os.path.join(self.rootLocation, self.name)
