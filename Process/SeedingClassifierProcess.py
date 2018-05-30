@@ -7,6 +7,7 @@ from Entity.Classifier import _ExperimentMeta as ExperimentMeta
 from constant import SeedAttributesNames
 import pandas
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import tree
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import classification_report
 
@@ -22,6 +23,8 @@ class SeedingClassifierProcess(BaseProcess):
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
+                # classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
+                # classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
                 classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
@@ -62,7 +65,8 @@ class SeedingClassifierProcess(BaseProcess):
             DecisionTreeClassifier(
                 splitter = definitionDictionary['baseEstimatorDefinition']['splitter'], 
                 max_depth = definitionDictionary['baseEstimatorDefinition']['max_depth'],
-                min_samples_leaf = definitionDictionary['baseEstimatorDefinition']['min_samples_leaf']),
+                min_samples_leaf = definitionDictionary['baseEstimatorDefinition']['min_samples_leaf']
+            ),
             algorithm = definitionDictionary['algorithm'],
             n_estimators = definitionDictionary['numberEstimators'])
         return (definitionDictionary, adaBoostClassifier)
@@ -97,10 +101,32 @@ class SeedingClassifierProcess(BaseProcess):
         del dataFrame[SeedAttributesNames.TARGET_CLASS]
         trainAttributes = dataFrame
         classifier.fit(X = trainAttributes, y = targetClass)
+        classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifier)
         classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
             appendToDefinition = {
                 'train-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
         return classifierMeta
+    
+    def GetGraphviz(classifier):
+        if(isinstance(classifier, DecisionTreeClassifier)):
+            return SeedingClassifierProcess.GetGraphvizFromDecisionTree(classifier)
+        if(isinstance(classifier, AdaBoostClassifier)):
+            return SeedingClassifierProcess.GetGraphvizListFromAdaBoost(classifier)
+
+    def GetGraphvizFromDecisionTree(decisionTreeClassifier):
+        return tree.export_graphviz(decisionTreeClassifier, out_file=None, filled=True, rounded=True,
+            special_characters=True)
+
+    def GetGraphvizListFromAdaBoost(adaBoostClassifier):
+        graphviz = {}
+        graphvizList = []
+        for estimator in adaBoostClassifier.estimators_:
+            if(isinstance(estimator, DecisionTreeClassifier)):
+                graphvizList.append(
+                    SeedingClassifierProcess.GetGraphvizFromDecisionTree(estimator))
+        graphviz['estimators'] = graphvizList
+        return graphviz
+
     #end_region [Train Classifier]
 
     def UpdateDescriptionAndClassifier(self, classifierMeta, classifier, appendToDefinition = None):

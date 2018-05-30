@@ -7,3 +7,4 @@ class ClassifierMeta():
         self.definitionDictionary = definitionDictionary
         self.expectedPredictedList = None
         self.report = None
+        self.graphviz = None

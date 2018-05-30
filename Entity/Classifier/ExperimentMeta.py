@@ -4,6 +4,7 @@ class ExperimentMeta():
         classifierMeta):
         report = {
             'classifier-test-report': classifierMeta.report,
-            'classifier-definition': classifierMeta.definitionDictionary
+            'classifier-definition': classifierMeta.definitionDictionary,
+            'graphviz': classifierMeta.graphviz
         }
         self.report = report

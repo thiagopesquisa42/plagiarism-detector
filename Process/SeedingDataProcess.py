@@ -136,14 +136,7 @@ class SeedingDataProcess(BaseProcess):
         else:
             self.logger.info('[Alter Seeding DataFrame and store in new register] finish')
             return seedingDataFrame
-
-    # def CloneSeedingDataFrame(self, seedingDataFrame):
-    #     previousDescription = seedingDataFrame.descriptionDictionary
-    #     seedingDataFrameClone = self.CreateSeedingDataFrame(dataFrame = seedingDataFrame.dataFrame)
-    #     previousDescription.update(seedingDataFrameClone.descriptionDictionary)
-    #     seedingDataFrameClone.descriptionDictionary = previousDescription
-    #     return seedingDataFrameClone
-
+    
     def BinarizeTargetClass(self, seedingDataFrame, classTrue = None, classFalse = None):
         if((classTrue is not None) and (classFalse is not None)):
             raise Exception(r"\
@@ -153,10 +146,45 @@ class SeedingDataProcess(BaseProcess):
         dataFrame = seedingDataFrame.dataFrame
         dataFrameBinaryPlagiarismClass = (dataFrame.plagiarismClass == classTrue) if classTrue is not None else (dataFrame.plagiarismClass != classFalse)
         dataFrame['plagiarismClass'] = dataFrameBinaryPlagiarismClass
+        chosenClass = classTrue or classFalse
         seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame, 
-            appendToDescription = {'binarizeTargetClass': 'chose class True or class False'})
+            appendToDescription = {
+                'binarizeTargetClass': str('class True' if classTrue else 'class False') + ': ' + str(chosenClass)})
         return seedingDataFrame
-   #end_region [Alter Seeding DataFrame and store in new register]
+    #end_region [Alter Seeding DataFrame and store in new register]
+
+    def CreateSeedingDataFrameFromSeedingDataSummaryDriven(self):
+        try:
+            self.logger.info('Create Seeding DataFrame from Seeding Data [Summary-Driven] started')
+            self.logger.info('getting seeding data')
+            seedingData = self._seedingDataRepository.Get()
+
+            self.logger.info('transform seeds attributes in DataFrame')
+            seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+
+            self.logger.info('binarize target classes')
+            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classTrue = PlagiarismClass.obfuscatedSummary)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+
+            self.logger.info('attributes resample class none')
+            seedingDataFrame = self.BalanceByResample(seedingDataFrame)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+ 
+            self.logger.info('attributes selection')
+            seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+
+            self.logger.info('attributes remove none rows')
+            seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+
+        except Exception as exception:
+            self.logger.exception('Create Seeding DataFrame from Seeding Data [Summary-Driven] failure: ' + str(exception))
+            raise exception
+        else:
+            self.logger.info('Create Seeding DataFrame from Seeding Data [Summary-Driven] finished')
+            return seedingDataFrame
 
     def __init__(self):
         self._seedingDataRepository = SeedingDataRepository()

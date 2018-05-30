@@ -21,11 +21,11 @@ def SetNewExperimentName(experimentName):
 def ProcessTrainData():
     settings.SetCurrentSubFolder(settings.TRAINING_SUBFOLDER)
     _dataImportationProcess = DataImportationProcess()
-    trainFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_001_P
+    trainFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_005_P
     trainTextCollectionMeta = TextCollectionMeta(
         sourceUrl = None,
         name = GetLastFolderName(trainFolderCompletePath),
-        description = 'treino, base pan 2013-jan 001%',
+        description = 'treino, base pan 2013-jan 005%',
         creationDate = '2013-01-21',
         textCollectionMetaPurpose = TextCollectionMetaPurpose.train)
     trainTextCollectionMeta = _dataImportationProcess.ImportFromPanFiles(
@@ -36,11 +36,11 @@ def ProcessTrainData():
 def ProcessTestData():
     settings.SetCurrentSubFolder(settings.TESTING_SUBFOLDER)
     _dataImportationProcess = DataImportationProcess()
-    testFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_001_P
+    testFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
     testTextCollectionMeta = TextCollectionMeta(
         sourceUrl = None,
         name = GetLastFolderName(testFolderCompletePath),
-        description = 'teste, base pan 2013-jan 001%',
+        description = 'teste, base pan 2013-jan 005%',
         creationDate = '2013-01-21',
         textCollectionMetaPurpose = TextCollectionMetaPurpose.test)
     testTextCollectionMeta = _dataImportationProcess.ImportFromPanFiles(
@@ -72,10 +72,21 @@ def TestingClassifier():
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTested = _seedingClassifierProcess.TestSeedClassifier()
 
-experimentName = 'experiment005p_tape001'
+def CreateSummaryDrivenDatFrame():
+    settings.SetCurrentSubFolder(settings.TRAINING_SUBFOLDER)
+    _seedingDataProcess = SeedingDataProcess()
+    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
+    settings.SetCurrentSubFolder(settings.TESTING_SUBFOLDER)
+    _seedingDataProcess = SeedingDataProcess()
+    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
+
+
+experimentName = 'experiment005p_tape003_summary'
+# experimentName = 'experiment005p_tape002'
 # SetNewExperimentName(experimentName)
 SetExperimentName(experimentName)
-ProcessTrainData()
-ProcessTestData()
+# CreateSummaryDrivenDatFrame()
+# ProcessTrainData()
+# ProcessTestData()
 TrainingClassifier()
 TestingClassifier()
