@@ -37,7 +37,7 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
         except Exception as exception:
-            self.logger.error('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
+            self.logger.exception('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Create Seeding DataFrame from Seeding Data finished')
@@ -131,7 +131,7 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)            
             
         except Exception as exception:
-            self.logger.error('[Alter Seeding DataFrame and store in new register] failure: ' + str(exception))
+            self.logger.exception('[Alter Seeding DataFrame and store in new register] failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('[Alter Seeding DataFrame and store in new register] finish')
@@ -156,7 +156,7 @@ class SeedingDataProcess(BaseProcess):
         seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame, 
             appendToDescription = {'binarizeTargetClass': 'chose class True or class False'})
         return seedingDataFrame
-    #end_region [Alter Seeding DataFrame and store in new register]
+   #end_region [Alter Seeding DataFrame and store in new register]
 
     def __init__(self):
         self._seedingDataRepository = SeedingDataRepository()
