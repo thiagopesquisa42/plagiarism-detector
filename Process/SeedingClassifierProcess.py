@@ -22,7 +22,7 @@ class SeedingClassifierProcess(BaseProcess):
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
             self.logger.info('train classifier')
@@ -30,7 +30,7 @@ class SeedingClassifierProcess(BaseProcess):
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
         except Exception as exception:
-            self.logger.error('Train Seed Classifier failure: ' + str(exception))
+            self.logger.exception('Train Seed Classifier failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Train Seed Classifier finished')
@@ -51,14 +51,18 @@ class SeedingClassifierProcess(BaseProcess):
             'details': '',
             'baseEstimator': 'Decision Tree Classifier',
             'baseEstimatorDefinition': {
-                'splitter': 'random'
+                'splitter': 'random',
+                'max_depth': 5,
+                'min_samples_leaf': 50
             },
             'algorithm': 'SAMME',
-            'numberEstimators': 100
+            'numberEstimators': 10
         }
         adaBoostClassifier = AdaBoostClassifier(
             DecisionTreeClassifier(
-                splitter = definitionDictionary['baseEstimatorDefinition']['splitter']),
+                splitter = definitionDictionary['baseEstimatorDefinition']['splitter'], 
+                max_depth = definitionDictionary['baseEstimatorDefinition']['max_depth'],
+                min_samples_leaf = definitionDictionary['baseEstimatorDefinition']['min_samples_leaf']),
             algorithm = definitionDictionary['algorithm'],
             n_estimators = definitionDictionary['numberEstimators'])
         return (definitionDictionary, adaBoostClassifier)
@@ -81,7 +85,7 @@ class SeedingClassifierProcess(BaseProcess):
             'baseEstimatorDefinition': {
                 'details': 'default values'
             },
-            'numberEstimators': 100
+            'numberEstimators': 10
         }
         randomForestClassifier = RandomForestClassifier(n_estimators = definitionDictionary['numberEstimators'])
         return (definitionDictionary, randomForestClassifier)
@@ -121,7 +125,7 @@ class SeedingClassifierProcess(BaseProcess):
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
         except Exception as exception:
-            self.logger.error('Test Classifier failure: ' + str(exception))
+            self.logger.exception('Test Classifier failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Test Classifier finished')

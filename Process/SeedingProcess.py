@@ -37,7 +37,7 @@ class SeedingProcess(BaseProcess):
             seedingData = self._seedingDataRepository.StoreAndGet(seedingData)
 
         except Exception as exception:
-            self.logger.info('Seeding Processing failure: ' + str(exception))
+            self.logger.exception('Seeding Processing failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('Seeding Processing finished')

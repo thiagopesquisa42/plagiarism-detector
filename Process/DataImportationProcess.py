@@ -49,7 +49,7 @@ class DataImportationProcess(BaseProcess):
             textCollectionMeta.detectionList = detectionList
             textCollectionMeta = self.SaveTextCollection(textCollectionMeta = textCollectionMeta)
         except Exception as exception:
-            self.logger.error('ImportFromPanFiles failure: ' + str(exception))
+            self.logger.exception('ImportFromPanFiles failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('ImportFromPanFiles finished')

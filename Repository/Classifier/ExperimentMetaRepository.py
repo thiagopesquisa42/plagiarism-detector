@@ -19,7 +19,8 @@ class ExperimentMetaRepository(BaseRepository):
             buffer = str(report)
             fileWriter.write(buffer)
         except Exception as exception:
-            self.logger.info('failure when storing item, error ' + str(exception))
+            self.logger.exception('failure when storing item, error ' + str(exception))
+            raise exception
         else:
             self.logger.info('item stored: ' + str(type(report)))
             return fileWriter.name

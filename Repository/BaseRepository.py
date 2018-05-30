@@ -50,7 +50,8 @@ class BaseRepository(object):
             fileWriter = self.GetPickleFileWriter()
             pickle.dump(item, fileWriter)
         except Exception as exception:
-            self.logger.info('failure when storing item, error ' + str(exception))
+            self.logger.exception('failure when storing item, error ' + str(exception))
+            raise exception
         else:
             self.logger.info('item stored: ' + str(type(item)))
             return fileWriter.name
@@ -60,7 +61,8 @@ class BaseRepository(object):
             fileReader = self.GetPickleFileReader()
             item = pickle.load(fileReader)
         except Exception as exception:
-            self.logger.info('failure when retrieving item, error ' + str(exception))
+            self.logger.exception('failure when retrieving item, error ' + str(exception))
+            raise exception
         else:
             self.logger.info('item retrieved: ' + str(type(item)))
             return item

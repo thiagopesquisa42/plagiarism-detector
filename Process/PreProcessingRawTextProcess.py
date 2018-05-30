@@ -58,7 +58,7 @@ class PreProcessingRawTextProcess(BaseProcess):
             preProcessedData = self._preProcessedDataRepository.StoreAndGet(preProcessedData)
             
         except Exception as exception:
-            self.logger.info('PreProcessing failure: ' + str(exception))
+            self.logger.exception('PreProcessing failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('PreProcessing finished')
