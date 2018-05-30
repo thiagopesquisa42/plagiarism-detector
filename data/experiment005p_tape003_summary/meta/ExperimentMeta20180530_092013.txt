@@ -1,0 +1,588 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+{'classifier-test-report': '''             precision    recall  f1-score   support
+
+      False       0.73      0.96      0.83       857
+       True       0.95      0.64      0.76       857
+
+avg / total       0.84      0.80      0.80      1714
+''',
+ 'classifier-definition': {
+    'type': 'estimator',
+    'name': 'Decision Tree',
+    'details': 'default values of sktlearn library',
+    'train-seeding-data-frame-description': {
+        'summary': '''             cosine         dice isMaxCosine isMaxDice  lengthRatio  
+count   3982.000000  3982.000000        3982      3982  3982.000000   
+unique          NaN          NaN           2         2          NaN   
+top             NaN          NaN       False     False          NaN   
+freq            NaN          NaN        3851      3835          NaN   
+mean       0.171456     0.137854         NaN       NaN     1.349396   
+std        0.119219     0.086066         NaN       NaN     1.862279   
+min        0.000000     0.000000         NaN       NaN     0.019912   
+25%        0.084459     0.086957         NaN       NaN     0.537153   
+50%        0.144338     0.124038         NaN       NaN     0.898908   
+75%        0.229982     0.171429         NaN       NaN     1.535895   
+max        1.000000     1.000000         NaN       NaN    50.095238   
+
+        maxCosineDiff  maxCosineNeighbour  maxDiceDiff  maxDiceNeighbour  
+count     3982.000000         3982.000000  3982.000000       3982.000000   
+unique            NaN                 NaN          NaN               NaN   
+top               NaN                 NaN          NaN               NaN   
+freq              NaN                 NaN          NaN               NaN   
+mean         0.282811            0.528821     0.250639          0.437351   
+std          0.201338            0.202145     0.205324          0.221025   
+min          0.000000            0.000000     0.000000          0.000000   
+25%          0.134327            0.377964     0.103554          0.272727   
+50%          0.235991            0.515385     0.186086          0.363636   
+75%          0.395870            0.640494     0.357020          0.571429   
+max          1.000000            1.000000     1.000000          1.000000   
+
+        meanMaxCosineDiff  meanMaxDiceDiff plagiarismClass  
+count         3982.000000      3982.000000            3982   
+unique                NaN              NaN               2   
+top                   NaN              NaN            True   
+freq                  NaN              NaN            1991   
+mean             0.170304         0.110010             NaN   
+std              0.124102         0.093146             NaN   
+min             -0.621340        -0.689175             NaN   
+25%              0.105262         0.068940             NaN   
+50%              0.190792         0.122576             NaN   
+75%              0.255295         0.165732             NaN   
+max              0.541502         0.479345             NaN   
+
+        verticalCosineMaxDistance  verticalCosineMaxMeasure  
+count                 3982.000000               3982.000000   
+unique                        NaN                       NaN   
+top                           NaN                       NaN   
+freq                          NaN                       NaN   
+mean                     0.343256                 -0.125725   
+std                      0.257617                  0.410378   
+min                      0.000000                 -1.000000   
+25%                      0.115775                 -0.418449   
+50%                      0.287791                 -0.119565   
+75%                      0.525817                  0.113354   
+max                      1.000000                  1.000000   
+
+        verticalDiceMaxDistance  verticalDiceMaxMeasure  
+count               3982.000000             3982.000000  
+unique                      NaN                     NaN  
+top                         NaN                     NaN  
+freq                        NaN                     NaN  
+mean                   0.339031               -0.143762  
+std                    0.263040                0.404336  
+min                    0.000000               -1.000000  
+25%                    0.111366               -0.418449  
+50%                    0.274986               -0.119565  
+75%                    0.504629                0.105458  
+max                    1.000000                1.000000  ''',
+        'binarizeTargetClass': 'class True: PlagiarismClass.obfuscatedSummary',
+        'balancing': 'classes balanced by sub-sampling of oversampled classes',
+        'removeAttributeNameList': ['seedId', 'percentualInDetection'],
+        'removeNoneRows': 'remove row with any None value',
+        },
+    'test-seeding-data-frame-description': {
+        'summary': '''             cosine         dice isMaxCosine isMaxDice  lengthRatio  
+count   1714.000000  1714.000000        1714      1714  1714.000000   
+unique          NaN          NaN           2         2          NaN   
+top             NaN          NaN       False     False          NaN   
+freq            NaN          NaN        1667      1662          NaN   
+mean       0.177354     0.149836         NaN       NaN     1.191444   
+std        0.115231     0.088667         NaN       NaN     1.271117   
+min        0.000000     0.000000         NaN       NaN     0.043841   
+25%        0.095566     0.095238         NaN       NaN     0.511152   
+50%        0.152721     0.133333         NaN       NaN     0.859514   
+75%        0.235231     0.187500         NaN       NaN     1.446972   
+max        0.872801     0.931507         NaN       NaN    23.250000   
+
+        maxCosineDiff  maxCosineNeighbour  maxDiceDiff  maxDiceNeighbour  
+count     1714.000000         1714.000000  1714.000000       1714.000000   
+unique            NaN                 NaN          NaN               NaN   
+top               NaN                 NaN          NaN               NaN   
+freq              NaN                 NaN          NaN               NaN   
+mean         0.278341            0.523643     0.239813          0.436808   
+std          0.164801            0.159822     0.161258          0.180427   
+min          0.000000            0.084515     0.000000          0.105263   
+25%          0.152913            0.408248     0.122571          0.300000   
+50%          0.265180            0.547723     0.206400          0.400000   
+75%          0.381056            0.618347     0.318182          0.600000   
+max          0.912294            1.000000     0.920000          1.000000   
+
+        meanMaxCosineDiff  meanMaxDiceDiff plagiarismClass  
+count         1714.000000      1714.000000            1714   
+unique                NaN              NaN               2   
+top                   NaN              NaN            True   
+freq                  NaN              NaN             857   
+mean             0.188227         0.127549             NaN   
+std              0.124688         0.098760             NaN   
+min             -0.748007        -0.803277             NaN   
+25%              0.122140         0.079032             NaN   
+50%              0.209092         0.136175             NaN   
+75%              0.276640         0.190871             NaN   
+max              0.442003         0.361169             NaN   
+
+        verticalCosineMaxDistance  verticalCosineMaxMeasure  
+count                 1714.000000               1714.000000   
+unique                        NaN                       NaN   
+top                           NaN                       NaN   
+freq                          NaN                       NaN   
+mean                     0.316597                 -0.122534   
+std                      0.234231                  0.374343   
+min                      0.000000                 -0.977778   
+25%                      0.131991                 -0.387894   
+50%                      0.252903                 -0.126208   
+75%                      0.459615                  0.138072   
+max                      1.000000                  1.000000   
+
+        verticalDiceMaxDistance  verticalDiceMaxMeasure  
+count               1714.000000             1714.000000  
+unique                      NaN                     NaN  
+top                         NaN                     NaN  
+freq                        NaN                     NaN  
+mean                   0.334151               -0.112642  
+std                    0.219000                0.383390  
+min                    0.000000               -0.951020  
+25%                    0.168372               -0.387894  
+50%                    0.298055               -0.131991  
+75%                    0.469030                0.180689  
+max                    0.958333                0.958333  ''',
+        'binarizeTargetClass': 'class True: PlagiarismClass.obfuscatedSummary',
+        'balancing': 'classes balanced by sub-sampling of oversampled classes',
+        'removeAttributeNameList': ['seedId', 'percentualInDetection'],
+        'removeNoneRows': 'remove row with any None value',
+        },
+    },
+        'graphviz': '''digraph Tree {
+node [shape=box] ;
+0 [label="X[8] <= 0.394\\ngini = 0.5\\nsamples = 3982\\nvalue = [1991, 1991]"] ;
+1 [label="X[7] <= 0.261\\ngini = 0.265\\nsamples = 2103\\nvalue = [1772, 331]"] ;
+0 -> 1 [labeldistance=2.5, labelangle=45, headlabel="True"] ;
+2 [label="X[10] <= -0.074\\ngini = 0.116\\nsamples = 1822\\nvalue = [1709, 113]"] ;
+1 -> 2 ;
+3 [label="X[13] <= 0.11\\ngini = 0.337\\nsamples = 28\\nvalue = [6, 22]"] ;
+2 -> 3 ;
+4 [label="X[6] <= 0.496\\ngini = 0.32\\nsamples = 5\\nvalue = [4, 1]"] ;
+3 -> 4 ;
+5 [label="gini = 0.0\\nsamples = 4\\nvalue = [4, 0]"] ;
+4 -> 5 ;
+6 [label="gini = 0.0\\nsamples = 1\\nvalue = [0, 1]"] ;
+4 -> 6 ;
+7 [label="X[11] <= 0.823\\ngini = 0.159\\nsamples = 23\\nvalue = [2, 21]"] ;
+3 -> 7 ;
+8 [label="X[4] <= 0.694\\ngini = 0.087\\nsamples = 22\\nvalue = [1, 21]"] ;
+7 -> 8 ;
+9 [label="X[14] <= -0.014\\ngini = 0.375\\nsamples = 4\\nvalue = [1, 3]"] ;
+8 -> 9 ;
+10 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+9 -> 10 ;
+11 [label="gini = 0.0\\nsamples = 3\\nvalue = [0, 3]"] ;
+9 -> 11 ;
+12 [label="gini = 0.0\\nsamples = 18\\nvalue = [0, 18]"] ;
+8 -> 12 ;
+13 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+7 -> 13 ;
+14 [label="X[12] <= -0.464\\ngini = 0.096\\nsamples = 1794\\nvalue = [1703, 91]"] ;
+2 -> 14 ;
+15 [label="X[11] <= 0.465\\ngini = 0.313\\nsamples = 396\\nvalue = [319, 77]"] ;
+14 -> 15 ;
+16 [label="gini = 0.0\\nsamples = 33\\nvalue = [0, 33]"] ;
+15 -> 16 ;
+17 [label="X[6] <= 0.462\\ngini = 0.213\\nsamples = 363\\nvalue = [319, 44]"] ;
+15 -> 17 ;
+18 [label="gini = 0.0\\nsamples = 229\\nvalue = [229, 0]"] ;
+17 -> 18 ;
+19 [label="X[6] <= 0.463\\ngini = 0.441\\nsamples = 134\\nvalue = [90, 44]"] ;
+17 -> 19 ;
+20 [label="gini = 0.0\\nsamples = 35\\nvalue = [0, 35]"] ;
+19 -> 20 ;
+21 [label="X[10] <= 0.092\\ngini = 0.165\\nsamples = 99\\nvalue = [90, 9]"] ;
+19 -> 21 ;
+22 [label="X[7] <= 0.106\\ngini = 0.476\\nsamples = 23\\nvalue = [14, 9]"] ;
+21 -> 22 ;
+23 [label="gini = 0.0\\nsamples = 12\\nvalue = [12, 0]"] ;
+22 -> 23 ;
+24 [label="X[4] <= 2.65\\ngini = 0.298\\nsamples = 11\\nvalue = [2, 9]"] ;
+22 -> 24 ;
+25 [label="gini = 0.0\\nsamples = 8\\nvalue = [0, 8]"] ;
+24 -> 25 ;
+26 [label="X[5] <= 0.237\\ngini = 0.444\\nsamples = 3\\nvalue = [2, 1]"] ;
+24 -> 26 ;
+27 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+26 -> 27 ;
+28 [label="gini = 0.0\\nsamples = 1\\nvalue = [0, 1]"] ;
+26 -> 28 ;
+29 [label="gini = 0.0\\nsamples = 76\\nvalue = [76, 0]"] ;
+21 -> 29 ;
+30 [label="X[7] <= 0.222\\ngini = 0.02\\nsamples = 1398\\nvalue = [1384, 14]"] ;
+14 -> 30 ;
+31 [label="X[10] <= -0.042\\ngini = 0.005\\nsamples = 1317\\nvalue = [1314, 3]"] ;
+30 -> 31 ;
+32 [label="X[4] <= 0.774\\ngini = 0.32\\nsamples = 5\\nvalue = [4, 1]"] ;
+31 -> 32 ;
+33 [label="gini = 0.0\\nsamples = 4\\nvalue = [4, 0]"] ;
+32 -> 33 ;
+34 [label="gini = 0.0\\nsamples = 1\\nvalue = [0, 1]"] ;
+32 -> 34 ;
+35 [label="X[10] <= 0.022\\ngini = 0.003\\nsamples = 1312\\nvalue = [1310, 2]"] ;
+31 -> 35 ;
+36 [label="X[6] <= 0.546\\ngini = 0.061\\nsamples = 63\\nvalue = [61, 2]"] ;
+35 -> 36 ;
+37 [label="gini = 0.0\\nsamples = 60\\nvalue = [60, 0]"] ;
+36 -> 37 ;
+38 [label="X[12] <= 0.12\\ngini = 0.444\\nsamples = 3\\nvalue = [1, 2]"] ;
+36 -> 38 ;
+39 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+38 -> 39 ;
+40 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+38 -> 40 ;
+41 [label="gini = 0.0\\nsamples = 1249\\nvalue = [1249, 0]"] ;
+35 -> 41 ;
+42 [label="X[10] <= 0.081\\ngini = 0.235\\nsamples = 81\\nvalue = [70, 11]"] ;
+30 -> 42 ;
+43 [label="X[8] <= 0.303\\ngini = 0.298\\nsamples = 11\\nvalue = [2, 9]"] ;
+42 -> 43 ;
+44 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+43 -> 44 ;
+45 [label="gini = 0.0\\nsamples = 9\\nvalue = [0, 9]"] ;
+43 -> 45 ;
+46 [label="X[10] <= 0.118\\ngini = 0.056\\nsamples = 70\\nvalue = [68, 2]"] ;
+42 -> 46 ;
+47 [label="X[13] <= 0.104\\ngini = 0.375\\nsamples = 8\\nvalue = [6, 2]"] ;
+46 -> 47 ;
+48 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+47 -> 48 ;
+49 [label="gini = 0.0\\nsamples = 6\\nvalue = [6, 0]"] ;
+47 -> 49 ;
+50 [label="gini = 0.0\\nsamples = 62\\nvalue = [62, 0]"] ;
+46 -> 50 ;
+51 [label="X[10] <= 0.207\\ngini = 0.348\\nsamples = 281\\nvalue = [63, 218]"] ;
+1 -> 51 ;
+52 [label="X[8] <= 0.277\\ngini = 0.228\\nsamples = 251\\nvalue = [33, 218]"] ;
+51 -> 52 ;
+53 [label="gini = 0.0\\nsamples = 14\\nvalue = [14, 0]"] ;
+52 -> 53 ;
+54 [label="X[4] <= 0.311\\ngini = 0.147\\nsamples = 237\\nvalue = [19, 218]"] ;
+52 -> 54 ;
+55 [label="gini = 0.0\\nsamples = 8\\nvalue = [8, 0]"] ;
+54 -> 55 ;
+56 [label="X[13] <= 0.076\\ngini = 0.091\\nsamples = 229\\nvalue = [11, 218]"] ;
+54 -> 56 ;
+57 [label="gini = 0.0\\nsamples = 3\\nvalue = [3, 0]"] ;
+56 -> 57 ;
+58 [label="X[13] <= 0.65\\ngini = 0.068\\nsamples = 226\\nvalue = [8, 218]"] ;
+56 -> 58 ;
+59 [label="X[8] <= 0.369\\ngini = 0.052\\nsamples = 224\\nvalue = [6, 218]"] ;
+58 -> 59 ;
+60 [label="X[8] <= 0.304\\ngini = 0.044\\nsamples = 223\\nvalue = [5, 218]"] ;
+59 -> 60 ;
+61 [label="X[12] <= -0.016\\ngini = 0.266\\nsamples = 19\\nvalue = [3, 16]"] ;
+60 -> 61 ;
+62 [label="gini = 0.0\\nsamples = 3\\nvalue = [3, 0]"] ;
+61 -> 62 ;
+63 [label="gini = 0.0\\nsamples = 16\\nvalue = [0, 16]"] ;
+61 -> 63 ;
+64 [label="X[10] <= 0.191\\ngini = 0.019\\nsamples = 204\\nvalue = [2, 202]"] ;
+60 -> 64 ;
+65 [label="X[6] <= 0.388\\ngini = 0.01\\nsamples = 200\\nvalue = [1, 199]"] ;
+64 -> 65 ;
+66 [label="X[14] <= -0.141\\ngini = 0.046\\nsamples = 42\\nvalue = [1, 41]"] ;
+65 -> 66 ;
+67 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+66 -> 67 ;
+68 [label="gini = 0.0\\nsamples = 41\\nvalue = [0, 41]"] ;
+66 -> 68 ;
+69 [label="gini = 0.0\\nsamples = 158\\nvalue = [0, 158]"] ;
+65 -> 69 ;
+70 [label="X[12] <= 0.093\\ngini = 0.375\\nsamples = 4\\nvalue = [1, 3]"] ;
+64 -> 70 ;
+71 [label="gini = 0.0\\nsamples = 3\\nvalue = [0, 3]"] ;
+70 -> 71 ;
+72 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+70 -> 72 ;
+73 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+59 -> 73 ;
+74 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+58 -> 74 ;
+75 [label="gini = 0.0\\nsamples = 30\\nvalue = [30, 0]"] ;
+51 -> 75 ;
+76 [label="X[12] <= 0.522\\ngini = 0.206\\nsamples = 1879\\nvalue = [219, 1660]"] ;
+0 -> 76 [labeldistance=2.5, labelangle=-45, headlabel="False"] ;
+77 [label="X[8] <= 0.449\\ngini = 0.189\\nsamples = 1856\\nvalue = [196, 1660]"] ;
+76 -> 77 ;
+78 [label="X[6] <= 0.573\\ngini = 0.412\\nsamples = 341\\nvalue = [99, 242]"] ;
+77 -> 78 ;
+79 [label="X[8] <= 0.434\\ngini = 0.361\\nsamples = 317\\nvalue = [75, 242]"] ;
+78 -> 79 ;
+80 [label="X[6] <= 0.405\\ngini = 0.325\\nsamples = 304\\nvalue = [62, 242]"] ;
+79 -> 80 ;
+81 [label="gini = 0.0\\nsamples = 9\\nvalue = [9, 0]"] ;
+80 -> 81 ;
+82 [label="X[14] <= 0.035\\ngini = 0.295\\nsamples = 295\\nvalue = [53, 242]"] ;
+80 -> 82 ;
+83 [label="X[11] <= 0.059\\ngini = 0.218\\nsamples = 249\\nvalue = [31, 218]"] ;
+82 -> 83 ;
+84 [label="gini = 0.0\\nsamples = 5\\nvalue = [5, 0]"] ;
+83 -> 84 ;
+85 [label="X[12] <= -0.643\\ngini = 0.19\\nsamples = 244\\nvalue = [26, 218]"] ;
+83 -> 85 ;
+86 [label="gini = 0.0\\nsamples = 4\\nvalue = [4, 0]"] ;
+85 -> 86 ;
+87 [label="X[0] <= 0.581\\ngini = 0.167\\nsamples = 240\\nvalue = [22, 218]"] ;
+85 -> 87 ;
+88 [label="X[10] <= 0.248\\ngini = 0.154\\nsamples = 238\\nvalue = [20, 218]"] ;
+87 -> 88 ;
+89 [label="X[7] <= 0.148\\ngini = 0.141\\nsamples = 236\\nvalue = [18, 218]"] ;
+88 -> 89 ;
+90 [label="X[10] <= 0.091\\ngini = 0.329\\nsamples = 53\\nvalue = [11, 42]"] ;
+89 -> 90 ;
+91 [label="X[11] <= 0.216\\ngini = 0.087\\nsamples = 44\\nvalue = [2, 42]"] ;
+90 -> 91 ;
+92 [label="X[13] <= 0.167\\ngini = 0.346\\nsamples = 9\\nvalue = [2, 7]"] ;
+91 -> 92 ;
+93 [label="gini = 0.0\\nsamples = 7\\nvalue = [0, 7]"] ;
+92 -> 93 ;
+94 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+92 -> 94 ;
+95 [label="gini = 0.0\\nsamples = 35\\nvalue = [0, 35]"] ;
+91 -> 95 ;
+96 [label="gini = 0.0\\nsamples = 9\\nvalue = [9, 0]"] ;
+90 -> 96 ;
+97 [label="X[7] <= 0.502\\ngini = 0.074\\nsamples = 183\\nvalue = [7, 176]"] ;
+89 -> 97 ;
+98 [label="X[1] <= 0.341\\ngini = 0.064\\nsamples = 182\\nvalue = [6, 176]"] ;
+97 -> 98 ;
+99 [label="X[10] <= 0.16\\ngini = 0.054\\nsamples = 181\\nvalue = [5, 176]"] ;
+98 -> 99 ;
+100 [label="X[5] <= 0.127\\ngini = 0.014\\nsamples = 143\\nvalue = [1, 142]"] ;
+99 -> 100 ;
+101 [label="X[13] <= 0.109\\ngini = 0.133\\nsamples = 14\\nvalue = [1, 13]"] ;
+100 -> 101 ;
+102 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+101 -> 102 ;
+103 [label="gini = 0.0\\nsamples = 13\\nvalue = [0, 13]"] ;
+101 -> 103 ;
+104 [label="gini = 0.0\\nsamples = 129\\nvalue = [0, 129]"] ;
+100 -> 104 ;
+105 [label="X[1] <= 0.085\\ngini = 0.188\\nsamples = 38\\nvalue = [4, 34]"] ;
+99 -> 105 ;
+106 [label="gini = 0.0\\nsamples = 34\\nvalue = [0, 34]"] ;
+105 -> 106 ;
+107 [label="gini = 0.0\\nsamples = 4\\nvalue = [4, 0]"] ;
+105 -> 107 ;
+108 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+98 -> 108 ;
+109 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+97 -> 109 ;
+110 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+88 -> 110 ;
+111 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+87 -> 111 ;
+112 [label="X[12] <= 0.465\\ngini = 0.499\\nsamples = 46\\nvalue = [22, 24]"] ;
+82 -> 112 ;
+113 [label="gini = 0.0\\nsamples = 21\\nvalue = [21, 0]"] ;
+112 -> 113 ;
+114 [label="X[12] <= 0.48\\ngini = 0.077\\nsamples = 25\\nvalue = [1, 24]"] ;
+112 -> 114 ;
+115 [label="gini = 0.0\\nsamples = 24\\nvalue = [0, 24]"] ;
+114 -> 115 ;
+116 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+114 -> 116 ;
+117 [label="gini = 0.0\\nsamples = 13\\nvalue = [13, 0]"] ;
+79 -> 117 ;
+118 [label="gini = 0.0\\nsamples = 24\\nvalue = [24, 0]"] ;
+78 -> 118 ;
+119 [label="X[9] <= 0.336\\ngini = 0.12\\nsamples = 1515\\nvalue = [97, 1418]"] ;
+77 -> 119 ;
+120 [label="X[13] <= 0.017\\ngini = 0.105\\nsamples = 1499\\nvalue = [83, 1416]"] ;
+119 -> 120 ;
+121 [label="gini = 0.0\\nsamples = 9\\nvalue = [9, 0]"] ;
+120 -> 121 ;
+122 [label="X[7] <= 0.148\\ngini = 0.094\\nsamples = 1490\\nvalue = [74, 1416]"] ;
+120 -> 122 ;
+123 [label="X[10] <= 0.079\\ngini = 0.251\\nsamples = 177\\nvalue = [26, 151]"] ;
+122 -> 123 ;
+124 [label="X[12] <= 0.023\\ngini = 0.074\\nsamples = 157\\nvalue = [6, 151]"] ;
+123 -> 124 ;
+125 [label="X[6] <= 0.492\\ngini = 0.031\\nsamples = 129\\nvalue = [2, 127]"] ;
+124 -> 125 ;
+126 [label="X[12] <= -0.148\\ngini = 0.219\\nsamples = 8\\nvalue = [1, 7]"] ;
+125 -> 126 ;
+127 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+126 -> 127 ;
+128 [label="gini = 0.0\\nsamples = 7\\nvalue = [0, 7]"] ;
+126 -> 128 ;
+129 [label="X[4] <= 0.396\\ngini = 0.016\\nsamples = 121\\nvalue = [1, 120]"] ;
+125 -> 129 ;
+130 [label="X[4] <= 0.38\\ngini = 0.198\\nsamples = 9\\nvalue = [1, 8]"] ;
+129 -> 130 ;
+131 [label="gini = 0.0\\nsamples = 8\\nvalue = [0, 8]"] ;
+130 -> 131 ;
+132 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+130 -> 132 ;
+133 [label="gini = 0.0\\nsamples = 112\\nvalue = [0, 112]"] ;
+129 -> 133 ;
+134 [label="X[10] <= 0.008\\ngini = 0.245\\nsamples = 28\\nvalue = [4, 24]"] ;
+124 -> 134 ;
+135 [label="gini = 0.0\\nsamples = 22\\nvalue = [0, 22]"] ;
+134 -> 135 ;
+136 [label="X[11] <= 0.442\\ngini = 0.444\\nsamples = 6\\nvalue = [4, 2]"] ;
+134 -> 136 ;
+137 [label="gini = 0.0\\nsamples = 4\\nvalue = [4, 0]"] ;
+136 -> 137 ;
+138 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+136 -> 138 ;
+139 [label="gini = 0.0\\nsamples = 20\\nvalue = [20, 0]"] ;
+123 -> 139 ;
+140 [label="X[10] <= 0.267\\ngini = 0.07\\nsamples = 1313\\nvalue = [48, 1265]"] ;
+122 -> 140 ;
+141 [label="X[6] <= 0.833\\ngini = 0.068\\nsamples = 1311\\nvalue = [46, 1265]"] ;
+140 -> 141 ;
+142 [label="X[4] <= 0.069\\ngini = 0.035\\nsamples = 1013\\nvalue = [18, 995]"] ;
+141 -> 142 ;
+143 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+142 -> 143 ;
+144 [label="X[10] <= 0.246\\ngini = 0.033\\nsamples = 1012\\nvalue = [17, 995]"] ;
+142 -> 144 ;
+145 [label="X[11] <= 0.245\\ngini = 0.031\\nsamples = 1010\\nvalue = [16, 994]"] ;
+144 -> 145 ;
+146 [label="X[7] <= 0.174\\ngini = 0.007\\nsamples = 575\\nvalue = [2, 573]"] ;
+145 -> 146 ;
+147 [label="X[7] <= 0.172\\ngini = 0.083\\nsamples = 23\\nvalue = [1, 22]"] ;
+146 -> 147 ;
+148 [label="gini = 0.0\\nsamples = 22\\nvalue = [0, 22]"] ;
+147 -> 148 ;
+149 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+147 -> 149 ;
+150 [label="X[8] <= 0.745\\ngini = 0.004\\nsamples = 552\\nvalue = [1, 551]"] ;
+146 -> 150 ;
+151 [label="gini = 0.0\\nsamples = 520\\nvalue = [0, 520]"] ;
+150 -> 151 ;
+152 [label="X[8] <= 0.8\\ngini = 0.061\\nsamples = 32\\nvalue = [1, 31]"] ;
+150 -> 152 ;
+153 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+152 -> 153 ;
+154 [label="gini = 0.0\\nsamples = 31\\nvalue = [0, 31]"] ;
+152 -> 154 ;
+155 [label="X[11] <= 0.256\\ngini = 0.062\\nsamples = 435\\nvalue = [14, 421]"] ;
+145 -> 155 ;
+156 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+155 -> 156 ;
+157 [label="X[10] <= 0.213\\ngini = 0.058\\nsamples = 434\\nvalue = [13, 421]"] ;
+155 -> 157 ;
+158 [label="X[4] <= 0.135\\ngini = 0.054\\nsamples = 433\\nvalue = [12, 421]"] ;
+157 -> 158 ;
+159 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+158 -> 159 ;
+160 [label="X[11] <= 0.372\\ngini = 0.05\\nsamples = 432\\nvalue = [11, 421]"] ;
+158 -> 160 ;
+161 [label="X[12] <= -0.01\\ngini = 0.201\\nsamples = 53\\nvalue = [6, 47]"] ;
+160 -> 161 ;
+162 [label="gini = 0.0\\nsamples = 5\\nvalue = [5, 0]"] ;
+161 -> 162 ;
+163 [label="X[8] <= 0.519\\ngini = 0.041\\nsamples = 48\\nvalue = [1, 47]"] ;
+161 -> 163 ;
+164 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+163 -> 164 ;
+165 [label="gini = 0.0\\nsamples = 47\\nvalue = [0, 47]"] ;
+163 -> 165 ;
+166 [label="X[6] <= 0.774\\ngini = 0.026\\nsamples = 379\\nvalue = [5, 374]"] ;
+160 -> 166 ;
+167 [label="X[9] <= 0.311\\ngini = 0.021\\nsamples = 378\\nvalue = [4, 374]"] ;
+166 -> 167 ;
+168 [label="X[1] <= 0.314\\ngini = 0.016\\nsamples = 375\\nvalue = [3, 372]"] ;
+167 -> 168 ;
+169 [label="X[7] <= 0.461\\ngini = 0.011\\nsamples = 371\\nvalue = [2, 369]"] ;
+168 -> 169 ;
+170 [label="gini = 0.0\\nsamples = 296\\nvalue = [0, 296]"] ;
+169 -> 170 ;
+171 [label="X[4] <= 0.419\\ngini = 0.052\\nsamples = 75\\nvalue = [2, 73]"] ;
+169 -> 171 ;
+172 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+171 -> 172 ;
+173 [label="X[5] <= 0.414\\ngini = 0.027\\nsamples = 74\\nvalue = [1, 73]"] ;
+171 -> 173 ;
+174 [label="X[6] <= 0.61\\ngini = 0.5\\nsamples = 2\\nvalue = [1, 1]"] ;
+173 -> 174 ;
+175 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+174 -> 175 ;
+176 [label="gini = 0.0\\nsamples = 1\\nvalue = [0, 1]"] ;
+174 -> 176 ;
+177 [label="gini = 0.0\\nsamples = 72\\nvalue = [0, 72]"] ;
+173 -> 177 ;
+178 [label="X[9] <= -0.038\\ngini = 0.375\\nsamples = 4\\nvalue = [1, 3]"] ;
+168 -> 178 ;
+179 [label="gini = 0.0\\nsamples = 3\\nvalue = [0, 3]"] ;
+178 -> 179 ;
+180 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+178 -> 180 ;
+181 [label="X[5] <= 0.679\\ngini = 0.444\\nsamples = 3\\nvalue = [1, 2]"] ;
+167 -> 181 ;
+182 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+181 -> 182 ;
+183 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+181 -> 183 ;
+184 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+166 -> 184 ;
+185 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+157 -> 185 ;
+186 [label="X[8] <= 0.572\\ngini = 0.5\\nsamples = 2\\nvalue = [1, 1]"] ;
+144 -> 186 ;
+187 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+186 -> 187 ;
+188 [label="gini = 0.0\\nsamples = 1\\nvalue = [0, 1]"] ;
+186 -> 188 ;
+189 [label="X[12] <= -0.027\\ngini = 0.17\\nsamples = 298\\nvalue = [28, 270]"] ;
+141 -> 189 ;
+190 [label="X[6] <= 0.867\\ngini = 0.117\\nsamples = 288\\nvalue = [18, 270]"] ;
+189 -> 190 ;
+191 [label="gini = 0.0\\nsamples = 3\\nvalue = [3, 0]"] ;
+190 -> 191 ;
+192 [label="X[7] <= 0.69\\ngini = 0.1\\nsamples = 285\\nvalue = [15, 270]"] ;
+190 -> 192 ;
+193 [label="X[4] <= 4.03\\ngini = 0.03\\nsamples = 199\\nvalue = [3, 196]"] ;
+192 -> 193 ;
+194 [label="X[6] <= 0.891\\ngini = 0.02\\nsamples = 196\\nvalue = [2, 194]"] ;
+193 -> 194 ;
+195 [label="X[14] <= -0.515\\ngini = 0.153\\nsamples = 24\\nvalue = [2, 22]"] ;
+194 -> 195 ;
+196 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+195 -> 196 ;
+197 [label="gini = 0.0\\nsamples = 22\\nvalue = [0, 22]"] ;
+195 -> 197 ;
+198 [label="gini = 0.0\\nsamples = 172\\nvalue = [0, 172]"] ;
+194 -> 198 ;
+199 [label="X[10] <= 0.134\\ngini = 0.444\\nsamples = 3\\nvalue = [1, 2]"] ;
+193 -> 199 ;
+200 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+199 -> 200 ;
+201 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+199 -> 201 ;
+202 [label="X[13] <= 0.296\\ngini = 0.24\\nsamples = 86\\nvalue = [12, 74]"] ;
+192 -> 202 ;
+203 [label="X[14] <= -0.253\\ngini = 0.026\\nsamples = 75\\nvalue = [1, 74]"] ;
+202 -> 203 ;
+204 [label="gini = 0.0\\nsamples = 74\\nvalue = [0, 74]"] ;
+203 -> 204 ;
+205 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+203 -> 205 ;
+206 [label="gini = 0.0\\nsamples = 11\\nvalue = [11, 0]"] ;
+202 -> 206 ;
+207 [label="gini = 0.0\\nsamples = 10\\nvalue = [10, 0]"] ;
+189 -> 207 ;
+208 [label="gini = 0.0\\nsamples = 2\\nvalue = [2, 0]"] ;
+140 -> 208 ;
+209 [label="X[1] <= 0.009\\ngini = 0.219\\nsamples = 16\\nvalue = [14, 2]"] ;
+119 -> 209 ;
+210 [label="X[13] <= 0.173\\ngini = 0.444\\nsamples = 3\\nvalue = [1, 2]"] ;
+209 -> 210 ;
+211 [label="gini = 0.0\\nsamples = 1\\nvalue = [1, 0]"] ;
+210 -> 211 ;
+212 [label="gini = 0.0\\nsamples = 2\\nvalue = [0, 2]"] ;
+210 -> 212 ;
+213 [label="gini = 0.0\\nsamples = 13\\nvalue = [13, 0]"] ;
+209 -> 213 ;
+214 [label="gini = 0.0\\nsamples = 23\\nvalue = [23, 0]"] ;
+76 -> 214 ;
+}'''}
+
+			
