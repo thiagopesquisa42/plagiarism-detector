@@ -5,8 +5,9 @@ class ClassifierMeta():
         definitionDictionary):
         self.classifier = classifier
         self.definitionDictionary = definitionDictionary
-        self.summaryTestData = None
         self.summaryTrainData = None
+        self.attributesReport = None
+        self.summaryTestData = None
         self.expectedPredictedList = None
         self.report = None
         self.graphviz = None

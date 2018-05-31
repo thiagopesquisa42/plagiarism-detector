@@ -42,6 +42,7 @@ class SeedingClassifierProcess(BaseProcess):
     def CreateClassifierMeta(self, classifierSetterMethod):
         self.logger.info('classifier: ' + str(classifierSetterMethod.__name__))
         definitionDictionary, classifier = classifierSetterMethod()
+        definitionDictionary['classifierSettingsSummary'] = str(classifier)
         classifierMeta = ClassifierMeta(
             classifier = classifier,
             definitionDictionary = definitionDictionary)
@@ -101,29 +102,81 @@ class SeedingClassifierProcess(BaseProcess):
         del dataFrame[SeedAttributesNames.TARGET_CLASS]
         trainAttributes = dataFrame
         classifier.fit(X = trainAttributes, y = targetClass)
+        classifierMeta.attributesReport = SeedingClassifierProcess.GetAttributesReport(classifier)
         classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifier)
         classifierMeta.summaryTrainData = seedingDataFrame.descriptionDictionary
         classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier)
         return classifierMeta
+
+    def GetAttributesReport(classifier):
+        if(isinstance(classifier, DecisionTreeClassifier)):
+            return SeedingClassifierProcess.GetAttributesFromDecisionTree(classifier)
+        if(isinstance(classifier, RandomForestClassifier)):
+            return SeedingClassifierProcess.GetAttributesFromRandomForest(classifier)
+        if(isinstance(classifier, AdaBoostClassifier)):
+            return SeedingClassifierProcess.GetAttributesFromAdaBoost(classifier)
+        return None
+    
+    def GetAttributesFromDecisionTree(decisionTreeClassifier):
+        return {
+            'feature_importances_': str(decisionTreeClassifier.feature_importances_),
+            'max_features_': str(decisionTreeClassifier.max_features_),
+            'classes_': str(decisionTreeClassifier.classes_),
+            'n_classes_': str(decisionTreeClassifier.n_classes_),
+            'n_features_': str(decisionTreeClassifier.n_features_),
+            'n_outputs_': str(decisionTreeClassifier.n_outputs_)
+        }
+    
+    def GetAttributesFromRandomForest(randomForestClassifier):
+        return {
+            'estimators_': [ 
+                SeedingClassifierProcess.GetAttributesFromDecisionTree(decisionTreeClassifier)
+                for decisionTreeClassifier in randomForestClassifier.estimators_],
+            'classes_': str(randomForestClassifier.classes_),
+            'n_classes_': str(randomForestClassifier.n_classes_),
+            'n_features_': str(randomForestClassifier.n_features_),
+            'n_outputs_': str(randomForestClassifier.n_outputs_),
+            'feature_importances_': str(randomForestClassifier.feature_importances_)
+        }
+
+    def GetAttributesFromAdaBoost(adaBoostClassifier):
+        return {
+            'estimators_': [ 
+                SeedingClassifierProcess.GetAttributesReport(estimator)
+                for estimator in adaBoostClassifier.estimators_],
+            'classes_': str(adaBoostClassifier.classes_),
+            'n_classes_': str(adaBoostClassifier.n_classes_),
+            'estimator_weights_': str(adaBoostClassifier.estimator_weights_),
+            'estimator_errors_': str(adaBoostClassifier.estimator_errors_),
+            'feature_importances_': str(adaBoostClassifier.feature_importances_)
+        }
     
     def GetGraphviz(classifier):
         if(isinstance(classifier, DecisionTreeClassifier)):
             return SeedingClassifierProcess.GetGraphvizFromDecisionTree(classifier)
+        if(isinstance(classifier, RandomForestClassifier)):
+            return SeedingClassifierProcess.GetGraphvizListFromRandomForest(classifier)
         if(isinstance(classifier, AdaBoostClassifier)):
             return SeedingClassifierProcess.GetGraphvizListFromAdaBoost(classifier)
+        return None
 
     def GetGraphvizFromDecisionTree(decisionTreeClassifier):
         return tree.export_graphviz(decisionTreeClassifier, out_file=None, filled=True, rounded=True,
             special_characters=True)
+        
+    def GetGraphvizListFromRandomForest(randomForestClassifier):
+        graphviz = []
+        for decisionTree in randomForestClassifier.estimators_:
+            graphviz.append(
+                SeedingClassifierProcess.GetGraphvizFromDecisionTree(decisionTree))
+        return graphviz
 
     def GetGraphvizListFromAdaBoost(adaBoostClassifier):
         graphviz = []
         for estimator in adaBoostClassifier.estimators_:
-            if(isinstance(estimator, DecisionTreeClassifier)):
-                graphviz.append(
-                    SeedingClassifierProcess.GetGraphvizFromDecisionTree(estimator))
+            graphviz.append(
+                SeedingClassifierProcess.GetGraphviz(estimator))
         return graphviz
-
     #end_region [Train Classifier]
 
     def UpdateDescriptionAndClassifier(self, classifierMeta, classifier, appendToDefinition = None):

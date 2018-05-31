@@ -7,7 +7,8 @@ class ResultsExport():
             FileMeta(content = classifierMeta.definitionDictionary, prefix = 'classifier', suffix = '.configuration'),
             FileMeta(content = classifierMeta.graphviz, prefix = 'graphviz', suffix = '.dot'),
             FileMeta(content = classifierMeta.summaryTrainData, prefix = 'trainData', suffix = '.summary'),
-            FileMeta(content = classifierMeta.summaryTestData, prefix = 'testData', suffix = '.summary')]
+            FileMeta(content = classifierMeta.summaryTestData, prefix = 'testData', suffix = '.summary'),
+            FileMeta(content = classifierMeta.attributesReport, prefix = 'classifierAttributes', suffix = '.report')]
         self.fileMetaList = fileMetaList
 
 class FileMeta():
