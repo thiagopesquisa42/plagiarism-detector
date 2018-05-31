@@ -1,6 +1,3 @@
-from Entity.Util import EntityBase
-_EntityBase = EntityBase.EntityBase
-
 from Entity.Util import Enumerables
 _RawTextType = Enumerables.RawTextType
 _PlagiarismObfuscation = Enumerables.PlagiarismObfuscation
