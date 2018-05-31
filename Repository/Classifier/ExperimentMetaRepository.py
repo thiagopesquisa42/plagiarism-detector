@@ -1,9 +1,9 @@
 from Repository import _BaseRepository as BaseRepository
+from constant import Contexts
 from datetime import datetime
 import os
 
 class ExperimentMetaRepository(BaseRepository):
-    name = 'ExperimentMeta'
 
     def GetReportUniqueName(self):
         dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
@@ -22,9 +22,9 @@ class ExperimentMetaRepository(BaseRepository):
             self.logger.exception('failure when storing item, error ' + str(exception))
             raise exception
         else:
-            self.logger.info('item stored: ' + str(type(report)))
+            itemMessage = str(type(report)) + ' fileName: ' + str(fileWriter.name)
+            self.logger.info('item stored: ' + itemMessage)
             return fileWriter.name
 
     def __init__(self):
-        self.subFolder = 'meta'
-        super().__init__()
+        super().__init__(context = Contexts.META, name = 'ExperimentMeta')

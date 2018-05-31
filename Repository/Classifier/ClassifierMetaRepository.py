@@ -1,9 +1,6 @@
 from Repository import _BaseRepository as BaseRepository
-import os
+from constant import Contexts
 
 class ClassifierMetaRepository(BaseRepository):
-    name = 'ClassifierMeta'
-
     def __init__(self):
-        self.subFolder = 'classifier'
-        super().__init__()
+        super().__init__(context = Contexts.CLASSIFIER, name = 'ClassifierMeta')

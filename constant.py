@@ -1,4 +1,5 @@
 import os
+import enum
 
 class LoggerConstant():
     class Name():
@@ -116,3 +117,18 @@ class PanDataBaseLocation():
     
     fullSamples = FullSamples()
     subSampled = SubSampled()
+
+class ContextDefaultFolders():
+    class Experiment():
+        class Data():
+            TRAINING_SUBFOLDER = 'train'
+            TESTING_SUBFOLDER = 'test'
+            CLASSIFIER_SUBFOLDER = 'classifier'
+            META_SUBFOLDER = 'meta'
+    ROOT_FOLDER = 'data'
+
+class Contexts(enum.Enum):
+    TRAIN = 1000
+    TEST = 2000
+    CLASSIFIER = 3000
+    META = 4000

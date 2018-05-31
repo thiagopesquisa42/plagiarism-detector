@@ -1,14 +1,12 @@
 from Util import _LoggerUtil as LoggerUtil
-from constant import LoggerConstant
-import settings
+from Util import  _ContextManager as ContextManager
+from constant import LoggerConstant, Contexts
 import logging
 import pickle
 import os
 
 class BaseRepository(object):
-    name = 'BaseRepository'
     logger = None
-    subFolder = settings.subFolderDefault
 
     @staticmethod
     def SetLogger():
@@ -27,7 +25,7 @@ class BaseRepository(object):
         BaseRepository.logger = logger
 
     def GetPath(self):
-        return os.path.join(self.rootLocation, self.subFolder)
+        return ContextManager.GetContextLocation(self.context)
 
     def CheckPath(self):
         path = self.GetPath()
@@ -71,9 +69,10 @@ class BaseRepository(object):
         self.Store(item)
         return self.Get()
 
-    def __init__(self):
+    def __init__(self, context, name):
+        self.context = context
+        self.name = name
         self.logger = BaseRepository.logger
-        self.rootLocation = settings.rootLocation
         self.CheckPath()
 
 BaseRepository.SetLogger()

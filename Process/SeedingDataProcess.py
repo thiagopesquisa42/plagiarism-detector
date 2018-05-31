@@ -186,7 +186,7 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('Create Seeding DataFrame from Seeding Data [Summary-Driven] finished')
             return seedingDataFrame
 
-    def __init__(self):
-        self._seedingDataRepository = SeedingDataRepository()
-        self._seedingDataFrameRepository = SeedingDataFrameRepository()
+    def __init__(self, context):
+        self._seedingDataRepository = SeedingDataRepository(context)
+        self._seedingDataFrameRepository = SeedingDataFrameRepository(context)
         super().__init__()

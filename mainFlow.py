@@ -1,5 +1,6 @@
 from Util import _LoggerUtil as LoggerUtil
-from constant import PanDataBaseLocation
+from Util import _ContextManager as ContextManager
+from constant import PanDataBaseLocation, Contexts
 from Entity import _TextCollectionMeta as TextCollectionMeta
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Process import _DataImportationProcess as DataImportationProcess
@@ -7,86 +8,62 @@ from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
 from Process import _SeedingProcess as SeedingProcess
 from Process import _SeedingDataProcess as SeedingDataProcess
 from Process import _SeedingClassifierProcess as SeedingClassifierProcess
-import settings
 import os
 
-def SetExperimentName(experimentName):
-    settings.SetRootLocation(experimentName)
-
-def SetNewExperimentName(experimentName):
-    SetExperimentName(experimentName)
-    if(os.path.exists(settings.rootLocation)):
-        raise Exception('There are a experiment with same name already.')
-
 def ProcessTrainData():
-    settings.SetCurrentSubFolder(settings.TRAINING_SUBFOLDER)
-    _dataImportationProcess = DataImportationProcess()
-    trainFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_005_P
-    trainTextCollectionMeta = TextCollectionMeta(
-        sourceUrl = None,
-        name = GetLastFolderName(trainFolderCompletePath),
-        description = 'treino, base pan 2013-jan 005%',
-        creationDate = '2013-01-21',
-        textCollectionMetaPurpose = TextCollectionMetaPurpose.train)
-    trainTextCollectionMeta = _dataImportationProcess.ImportFromPanFiles(
-        textCollectionMeta = trainTextCollectionMeta, 
-        folderCompletePath = trainFolderCompletePath)
-    CommomProcessing()
+    ImportTrainDataBase()
+    CommomProcessing(context = Contexts.TRAIN)
 
 def ProcessTestData():
-    settings.SetCurrentSubFolder(settings.TESTING_SUBFOLDER)
-    _dataImportationProcess = DataImportationProcess()
-    testFolderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
-    testTextCollectionMeta = TextCollectionMeta(
-        sourceUrl = None,
-        name = GetLastFolderName(testFolderCompletePath),
+    ImportTestDataBase()
+    CommomProcessing(context = Contexts.TEST)
+
+def ImportTrainDataBase():
+    _dataImportationProcess = DataImportationProcess(context = Contexts.TRAIN)
+    trainTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_005_P, 
+        description = 'treino, base pan 2013-jan 005%',
+        originalCreationDate = '2013-01-21')
+
+def ImportTestDataBase():
+    _dataImportationProcess = DataImportationProcess(context = Contexts.TEST)
+    testTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P, 
         description = 'teste, base pan 2013-jan 005%',
-        creationDate = '2013-01-21',
-        textCollectionMetaPurpose = TextCollectionMetaPurpose.test)
-    testTextCollectionMeta = _dataImportationProcess.ImportFromPanFiles(
-        textCollectionMeta = testTextCollectionMeta, 
-        folderCompletePath = testFolderCompletePath)
-    CommomProcessing()
+        originalCreationDate = '2013-01-21')
 
-def GetLastFolderName(folderPath = ''):
-    path, folder = os.path.split(folderPath)
-    if(folder == ''):
-        path, folder = os.path.split(path)
-    return folder
-
-def CommomProcessing():
-    _preProcessingRawTextProcess = PreProcessingRawTextProcess()
+def CommomProcessing(context):
+    _preProcessingRawTextProcess = PreProcessingRawTextProcess(context = context)
     preProcessedData = _preProcessingRawTextProcess.PreProcessing()
-    _seedingProcess = SeedingProcess()
+    _seedingProcess = SeedingProcess(context = context)
     preProcessedData = _seedingProcess.SeedingProcessing()
-    _seedingDataProcess = SeedingDataProcess()
+    _seedingDataProcess = SeedingDataProcess(context = context)
     dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingData()
 
+def CreateSummaryDrivenDataFrame():
+    _seedingDataProcess = SeedingDataProcess(context = Contexts.TRAIN)
+    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
+    _seedingDataProcess = SeedingDataProcess(context = Contexts.TEST)
+    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
+
 def TrainingClassifier():
-    settings.SetCurrentSubFolder(settings.TRAINING_SUBFOLDER)
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTrained = _seedingClassifierProcess.TrainSeedClassifier()
 
 def TestingClassifier():
-    settings.SetCurrentSubFolder(settings.TESTING_SUBFOLDER)
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTested = _seedingClassifierProcess.TestSeedClassifier()
 
-def CreateSummaryDrivenDatFrame():
-    settings.SetCurrentSubFolder(settings.TRAINING_SUBFOLDER)
-    _seedingDataProcess = SeedingDataProcess()
-    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
-    settings.SetCurrentSubFolder(settings.TESTING_SUBFOLDER)
-    _seedingDataProcess = SeedingDataProcess()
-    dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
+def Main():
+    # experimentName = 'experiment005p_tape003_summary'
+    # experimentName = 'experiment005p_tape002'
+    experimentName = 'experiment005p_tape001'
+    # ContextManager.InitExperiment(experimentUniqueName = experimentName)
+    ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
+    # CreateSummaryDrivenDatFrame()
+    # ProcessTrainData()
+    ProcessTestData()
+    TrainingClassifier()
+    TestingClassifier()
 
-
-# experimentName = 'experiment005p_tape003_summary'
-experimentName = 'experiment005p_tape002'
-# SetNewExperimentName(experimentName)
-SetExperimentName(experimentName)
-# CreateSummaryDrivenDatFrame()
-# ProcessTrainData()
-# ProcessTestData()
-TrainingClassifier()
-TestingClassifier()
+Main()

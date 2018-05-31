@@ -11,10 +11,3 @@ class TextCollectionMetaCommom(object):
         if(textCollectionMeta.purpose != purpose):
             errorMessage = " wrong purpose detected, please send a text-collection-meta with a " + purpose.name + "purpose"
             raise Exception(errorMessage)
-    
-    @staticmethod
-    def Hello(self):
-        print ('Hello, I\'m the TextCollectionMetaCommom')
-
-    # _sampleRepository = SampleRepository()
-

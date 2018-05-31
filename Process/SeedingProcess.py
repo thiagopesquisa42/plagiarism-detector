@@ -354,8 +354,7 @@ class SeedingProcess(BaseProcess):
         return seedList
     #end_region [Calculate attributes over seeds candidates]
     
-
-    def __init__(self):
-        self._seedingDataRepository = SeedingDataRepository()
-        self._preProcessedDataRepository = PreProcessedDataRepository()
+    def __init__(self, context):
+        self._seedingDataRepository = SeedingDataRepository(context)
+        self._preProcessedDataRepository = PreProcessedDataRepository(context)
         super().__init__()

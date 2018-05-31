@@ -4,7 +4,7 @@ from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRep
 from Repository.Classifier import _ExperimentMetaRepository as ExperimentMetaRepository
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from Entity.Classifier import _ExperimentMeta as ExperimentMeta
-from constant import SeedAttributesNames
+from constant import SeedAttributesNames, Contexts
 import pandas
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
@@ -19,7 +19,7 @@ class SeedingClassifierProcess(BaseProcess):
             self.logger.info('Train Seed Classifier started')
             
             self.logger.info('getting seeding-data-frame')
-            seedingDataFrame = self._seedingDataFrameRepository.Get()
+            seedingDataFrame = self._trainingSeedingDataFrameRepository.Get()
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
@@ -141,7 +141,7 @@ class SeedingClassifierProcess(BaseProcess):
             self.logger.info('Test Classifier started')
 
             self.logger.info('getting seeding-data-frame')
-            seedingDataFrame = self._seedingDataFrameRepository.Get()
+            seedingDataFrame = self._testingSeedingDataFrameRepository.Get()
             
             self.logger.info('getting classifier')
             classifierMeta = self._classifierMetaRepository.Get()
@@ -187,7 +187,8 @@ class SeedingClassifierProcess(BaseProcess):
 
 
     def __init__(self):
-        self._seedingDataFrameRepository = SeedingDataFrameRepository()
+        self._trainingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TRAIN)
+        self._testingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TEST)
         self._classifierMetaRepository = ClassifierMetaRepository()
         self._experimentMetaRepository = ExperimentMetaRepository()
         super().__init__()

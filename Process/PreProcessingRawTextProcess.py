@@ -306,8 +306,7 @@ class PreProcessingRawTextProcess(BaseProcess):
         return bagOfWords
     #end_region [stem words in bag-of-words]
 
-
-    def __init__(self):
-        self._textCollectionMetaRepository = TextCollectionMetaRepository()
-        self._preProcessedDataRepository = PreProcessedDataRepository()
+    def __init__(self, context):
+        self._textCollectionMetaRepository = TextCollectionMetaRepository(context)
+        self._preProcessedDataRepository = PreProcessedDataRepository(context)
         super().__init__()

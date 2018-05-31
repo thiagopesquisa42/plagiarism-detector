@@ -13,13 +13,38 @@ from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Repository import _TextCollectionMetaRepository as TextCollectionMetaRepository
 from Repository import _PanRepository as PanRepository
 from Process import _BaseProcess as BaseProcess
-from Process.Commom import _TextCollectionMetaCommom as TextCollectionMetaCommom
 import os
 import random
 from distutils.dir_util import copy_tree
 from datetime import datetime
 
 class DataImportationProcess(BaseProcess):
+
+    def ImportTrainDataBaseFromPanFiles(self, folderCompletePath, description, 
+        originalCreationDate):
+        trainTextCollectionMeta = TextCollectionMeta(
+            sourceUrl = None,
+            name = DataImportationProcess.GetTuple_Path_LastFolderName(folderCompletePath)[1],
+            description = description,
+            creationDate = originalCreationDate,
+            textCollectionMetaPurpose = TextCollectionMetaPurpose.train)
+        trainTextCollectionMeta = self.ImportFromPanFiles(
+            textCollectionMeta = trainTextCollectionMeta, 
+            folderCompletePath = folderCompletePath)
+        return trainTextCollectionMeta
+
+    def ImportTestDataBaseFromPanFiles(self, folderCompletePath, description, 
+        originalCreationDate):
+        testTextCollectionMeta = TextCollectionMeta(
+            sourceUrl = None,
+            name = DataImportationProcess.GetTuple_Path_LastFolderName(folderCompletePath)[1],
+            description = description,
+            creationDate = originalCreationDate,
+            textCollectionMetaPurpose = TextCollectionMetaPurpose.test)
+        testTextCollectionMeta = self.ImportFromPanFiles(
+            textCollectionMeta = testTextCollectionMeta, 
+            folderCompletePath = folderCompletePath)
+        return testTextCollectionMeta
 
     def ImportFromPanFiles(self, textCollectionMeta, folderCompletePath):
         try:
@@ -327,8 +352,7 @@ class DataImportationProcess(BaseProcess):
         DataImportationProcess.RemoveFiles(
             filePathListOrSet = detectionFilePathList)
 
-
-    def __init__(self):
-        self._textCollectionMetaRepository = TextCollectionMetaRepository()
+    def __init__(self, context):
+        self._textCollectionMetaRepository = TextCollectionMetaRepository(context)
         self._panRepository = PanRepository()
         super().__init__()
