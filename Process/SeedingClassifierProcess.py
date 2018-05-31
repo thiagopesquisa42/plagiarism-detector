@@ -59,7 +59,7 @@ class SeedingClassifierProcess(BaseProcess):
                 'min_samples_leaf': 50
             },
             'algorithm': 'SAMME',
-            'numberEstimators': 10
+            'numberEstimators': 20
         }
         adaBoostClassifier = AdaBoostClassifier(
             DecisionTreeClassifier(

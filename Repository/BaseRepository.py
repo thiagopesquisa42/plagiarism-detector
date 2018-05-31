@@ -1,6 +1,6 @@
+from Util import _LoggerUtil as LoggerUtil
 from constant import LoggerConstant
 import settings
-import util
 import logging
 import pickle
 import os
@@ -14,7 +14,7 @@ class BaseRepository(object):
     def SetLogger():
         if(isinstance(BaseRepository.logger, logging.Logger)):
             return
-        logFormat = util.LoggerUtil.GetLoggerFormat()
+        logFormat = LoggerUtil.GetLoggerFormat()
         logger = logging.getLogger(name = LoggerConstant.Name.REPOSITORY)
         fileHandler = logging.FileHandler(filename = LoggerConstant.File.REPOSITORY)
         formatter = logging.Formatter(logFormat)

@@ -1,4 +1,4 @@
-import util
+from Util import _LoggerUtil as LoggerUtil
 from constant  import PanDataBaseLocation
 from Process import _DataImportationProcess as DataImportationProcess
 _dataImportationProcess = DataImportationProcess()

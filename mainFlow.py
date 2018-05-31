@@ -1,4 +1,4 @@
-import util
+from Util import _LoggerUtil as LoggerUtil
 from constant import PanDataBaseLocation
 from Entity import _TextCollectionMeta as TextCollectionMeta
 from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
@@ -81,8 +81,8 @@ def CreateSummaryDrivenDatFrame():
     dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
 
 
-experimentName = 'experiment005p_tape003_summary'
-# experimentName = 'experiment005p_tape002'
+# experimentName = 'experiment005p_tape003_summary'
+experimentName = 'experiment005p_tape002'
 # SetNewExperimentName(experimentName)
 SetExperimentName(experimentName)
 # CreateSummaryDrivenDatFrame()
