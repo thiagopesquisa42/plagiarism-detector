@@ -2,5 +2,5 @@ from Repository.Classifier import SeedingDataFrameRepository
 _SeedingDataFrameRepository = SeedingDataFrameRepository.SeedingDataFrameRepository
 from Repository.Classifier import ClassifierMetaRepository
 _ClassifierMetaRepository = ClassifierMetaRepository.ClassifierMetaRepository
-from Repository.Classifier import ExperimentMetaRepository
-_ExperimentMetaRepository = ExperimentMetaRepository.ExperimentMetaRepository
+from Repository.Classifier import ResultsExportRepository
+_ResultsExportRepository = ResultsExportRepository.ResultsExportRepository

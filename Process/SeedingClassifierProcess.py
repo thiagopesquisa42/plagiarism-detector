@@ -1,9 +1,9 @@
 from Process import _BaseProcess as BaseProcess
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
 from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRepository
-from Repository.Classifier import _ExperimentMetaRepository as ExperimentMetaRepository
+from Repository.Classifier import _ResultsExportRepository as ResultsExportRepository
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
-from Entity.Classifier import _ExperimentMeta as ExperimentMeta
+from Entity.Classifier import _ResultsExport as ResultsExport
 from constant import SeedAttributesNames, Contexts
 import pandas
 from sklearn.tree import DecisionTreeClassifier
@@ -102,9 +102,8 @@ class SeedingClassifierProcess(BaseProcess):
         trainAttributes = dataFrame
         classifier.fit(X = trainAttributes, y = targetClass)
         classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifier)
-        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
-            appendToDefinition = {
-                'train-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
+        classifierMeta.summaryTrainData = seedingDataFrame.descriptionDictionary
+        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier)
         return classifierMeta
     
     def GetGraphviz(classifier):
@@ -118,13 +117,11 @@ class SeedingClassifierProcess(BaseProcess):
             special_characters=True)
 
     def GetGraphvizListFromAdaBoost(adaBoostClassifier):
-        graphviz = {}
-        graphvizList = []
+        graphviz = []
         for estimator in adaBoostClassifier.estimators_:
             if(isinstance(estimator, DecisionTreeClassifier)):
-                graphvizList.append(
+                graphviz.append(
                     SeedingClassifierProcess.GetGraphvizFromDecisionTree(estimator))
-        graphviz['estimators'] = graphvizList
         return graphviz
 
     #end_region [Train Classifier]
@@ -174,15 +171,14 @@ class SeedingClassifierProcess(BaseProcess):
             y_pred = expectedPredictedDataFrame['predicted'])
         classifierMeta.report = report
         classifierMeta.expectedPredictedList = expectedPredictedDataFrame
-        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier, 
-            appendToDefinition = {
-                'test-seeding-data-frame-description': seedingDataFrame.descriptionDictionary})
-        self.SaveExperimentResults(classifierMeta)
+        classifierMeta.summaryTestData = seedingDataFrame.descriptionDictionary
+        classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier)
+        self.ExportExperimentResults(classifierMeta)
         return classifierMeta
     
-    def SaveExperimentResults(self, classifierMeta):
-        experimentMeta = ExperimentMeta(classifierMeta = classifierMeta)
-        self._experimentMetaRepository.StoreReport(report = experimentMeta.report)
+    def ExportExperimentResults(self, classifierMeta):
+        resultsExport = ResultsExport(classifierMeta = classifierMeta)
+        self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
     #end_region [Test Classifier]
 
 
@@ -190,5 +186,5 @@ class SeedingClassifierProcess(BaseProcess):
         self._trainingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TRAIN)
         self._testingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TEST)
         self._classifierMetaRepository = ClassifierMetaRepository()
-        self._experimentMetaRepository = ExperimentMetaRepository()
+        self._resultsExportRepository = ResultsExportRepository()
         super().__init__()
