@@ -97,11 +97,10 @@ class SeedingClassifierProcess(BaseProcess):
 
     def TrainClassifier(self, classifierMeta, seedingDataFrame):
         classifier = classifierMeta.classifier
-        dataFrame = seedingDataFrame.dataFrame
-        targetClass = dataFrame[SeedAttributesNames.TARGET_CLASS]
-        del dataFrame[SeedAttributesNames.TARGET_CLASS]
-        trainAttributes = dataFrame
-        classifier.fit(X = trainAttributes, y = targetClass)
+        attributesDataFrame = seedingDataFrame.dataFrame[SeedAttributesNames.ATTRIBUTES]
+        targetClass = seedingDataFrame.dataFrame[SeedAttributesNames.TARGET_CLASS]
+        classifier.fit(X = attributesDataFrame, y = targetClass)
+        
         classifierMeta.attributesReport = SeedingClassifierProcess.GetAttributesReport(classifier)
         classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifier)
         classifierMeta.summaryTrainData = seedingDataFrame.descriptionDictionary
@@ -209,31 +208,36 @@ class SeedingClassifierProcess(BaseProcess):
 
     def TestClassifier(self, classifierMeta, seedingDataFrame):
         classifier = classifierMeta.classifier
-        dataFrame = seedingDataFrame.dataFrame
-        expectedTargetClass = dataFrame[SeedAttributesNames.TARGET_CLASS]
-        del dataFrame[SeedAttributesNames.TARGET_CLASS]
-        testAttributes = dataFrame
-        predictionList = classifier.predict(X = testAttributes)
+        attributesDataFrame = seedingDataFrame.dataFrame[SeedAttributesNames.ATTRIBUTES]
+        classifierPrediction = pandas.DataFrame(data = classifier.predict(X = attributesDataFrame),
+            columns = ['classifierPrediction'])
         
-        expectedPredictedDataFrame = pandas.DataFrame()
-        expectedPredictedDataFrame['expected'] = expectedTargetClass
-        expectedPredictedDataFrame['predicted'] = predictionList
-
+        expectedTargetClass = seedingDataFrame.dataFrame[SeedAttributesNames.TARGET_CLASS]
         report = classification_report(
-            y_true = expectedPredictedDataFrame['expected'],
-            y_pred = expectedPredictedDataFrame['predicted'])
+            y_true = expectedTargetClass,
+            y_pred = classifierPrediction)
         classifierMeta.report = report
-        classifierMeta.expectedPredictedList = expectedPredictedDataFrame
+        classifierMeta.metaDataFrame = SeedingClassifierProcess.GetMetaDataFrame(
+            expectedTargetClass, classifierPrediction, seedingDataFrame.dataFrame)
         classifierMeta.summaryTestData = seedingDataFrame.descriptionDictionary
         classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier)
         self.ExportExperimentResults(classifierMeta)
         return classifierMeta
     
+    def GetMetaDataFrame(expectedTargetClass, classifierPrediction, dataFrame):
+        metaColumns = [
+            columnName 
+            for columnName in SeedAttributesNames.META 
+            if(columnName in dataFrame.columns)]
+        metaDataFrame = pandas.concat(
+            [expectedTargetClass, classifierPrediction, dataFrame[metaColumns]],
+            axis = 'columns')
+        return metaDataFrame
+    
     def ExportExperimentResults(self, classifierMeta):
         resultsExport = ResultsExport(classifierMeta = classifierMeta)
         self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
     #end_region [Test Classifier]
-
 
     def __init__(self):
         self._trainingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TRAIN)

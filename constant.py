@@ -51,7 +51,6 @@ class Threshold():
 
 class SeedAttributesNames():
     class Names():
-        seedId = 'seedId'
         plagiarismClass = 'plagiarismClass'
         percentualInDetection = 'percentualInDetection'
         cosine = 'cosine'
@@ -69,11 +68,10 @@ class SeedAttributesNames():
         verticalDiceMaxDistance = 'verticalDiceMaxDistance'
         verticalDiceMaxMeasure = 'verticalDiceMaxMeasure'
         lengthRatio = 'lengthRatio'
+        metaSeed = 'metaSeed'
+        metaRawTextPair = 'metaRawTextPair'
 
     ATTRIBUTES = [
-        Names.seedId,
-        Names.plagiarismClass,
-        Names.percentualInDetection,
         Names.cosine,
         Names.dice,
         Names.isMaxCosine,
@@ -91,10 +89,13 @@ class SeedAttributesNames():
         Names.lengthRatio]
     
     REMOVE_LIST = [
-        Names.seedId,
         Names.percentualInDetection]
 
     TARGET_CLASS = Names.plagiarismClass
+
+    META = [
+        Names.metaSeed,
+        Names.metaRawTextPair]
 
 class PanFolders():
     ROOT = 'C:\\Users\\thiagopesquisa42\\Desktop\\panDatabases'

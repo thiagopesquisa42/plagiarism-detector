@@ -8,6 +8,6 @@ class ClassifierMeta():
         self.summaryTrainData = None
         self.attributesReport = None
         self.summaryTestData = None
-        self.expectedPredictedList = None
+        self.metaDataFrame = None
         self.report = None
         self.graphviz = None
