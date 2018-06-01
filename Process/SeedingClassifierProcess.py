@@ -210,7 +210,7 @@ class SeedingClassifierProcess(BaseProcess):
         classifier = classifierMeta.classifier
         attributesDataFrame = seedingDataFrame.dataFrame[SeedAttributesNames.ATTRIBUTES]
         classifierPrediction = pandas.DataFrame(data = classifier.predict(X = attributesDataFrame),
-            columns = ['classifierPrediction'])
+            columns = ['classifierPrediction'], index = seedingDataFrame.dataFrame.index)
         
         expectedTargetClass = seedingDataFrame.dataFrame[SeedAttributesNames.TARGET_CLASS]
         report = classification_report(

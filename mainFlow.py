@@ -1,8 +1,6 @@
 from Util import _LoggerUtil as LoggerUtil
 from Util import _ContextManager as ContextManager
 from constant import PanDataBaseLocation, Contexts
-from Entity import _TextCollectionMeta as TextCollectionMeta
-from Entity import _TextCollectionMetaPurpose as TextCollectionMetaPurpose
 from Process import _DataImportationProcess as DataImportationProcess
 from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
 from Process import _SeedingProcess as SeedingProcess
@@ -55,9 +53,8 @@ def TestingClassifier():
     classifierMetaTested = _seedingClassifierProcess.TestSeedClassifier()
 
 def Main():
-    # experimentName = 'experiment005p_tape003_summary'
-    # experimentName = 'experiment005p_tape002'
-    experimentName = 'experiment005p_tape001'
+    # experimentName = 'experiment005p_tape001'
+    experimentName = 'experiment005p_tape002'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # CreateSummaryDrivenDatFrame()

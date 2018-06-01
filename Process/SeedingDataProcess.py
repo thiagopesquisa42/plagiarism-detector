@@ -24,7 +24,6 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
             self.logger.info('attributes resample class none')
-            # seedingDataFrame = self.Resample(seedingDataFrame, classToResample = 'none', numberOfSamples = 1000)
             seedingDataFrame = self.BalanceByResample(seedingDataFrame)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
  
@@ -46,7 +45,14 @@ class SeedingDataProcess(BaseProcess):
     def TransformSeedAttributesInSeedingDataFrame(self, seedingData):
         seedAttributesList = []
         for seedListPerRawTextPair in seedingData.listOfSeedListPerRawTextPair:
-            seedAttributesList.extend([seed.attributes.__dict__ for seed in seedListPerRawTextPair.seedList])
+            seedAttributesList.extend([[seed.attributes.__dict__, seed, seedListPerRawTextPair.rawTextPair] for seed in seedListPerRawTextPair.seedList])
+        for seedAttributes, seed, rawTextPair in seedAttributesList:
+            seedAttributes.update({   
+                SeedAttributesNames.Names.metaSeed: seed,
+                SeedAttributesNames.Names.metaRawTextPair: rawTextPair})
+        seedAttributesList = [
+            seedAttributes 
+            for seedAttributes, seed, rawTextPair in seedAttributesList]
         dataFrame = pandas.DataFrame.from_records(data = seedAttributesList)
         seedingDataFrame = self.CreateSeedingDataFrame(dataFrame)
         return seedingDataFrame
@@ -83,9 +89,13 @@ class SeedingDataProcess(BaseProcess):
     
     def RemoveNoneValues(self, seedingDataFrame):
         dataFrame = seedingDataFrame.dataFrame
-        dataFrame = dataFrame.dropna(axis='index', how='any')
+        columns = [
+            column
+            for column in dataFrame.columns
+            if(not column in SeedAttributesNames.META)]
+        dataFrame = dataFrame.dropna(axis='index', how='any', subset = columns)
         seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame,
-            appendToDescription = {'removeNoneRows': 'remove row with any None value'})
+            appendToDescription = {'removeNoneRows': 'remove row with None value at these columns ' + str(columns)})
         return seedingDataFrame
     
     def BalanceByResample(self, seedingDataFrame):

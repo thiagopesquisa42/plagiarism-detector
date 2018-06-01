@@ -52,7 +52,6 @@ class Threshold():
 class SeedAttributesNames():
     class Names():
         plagiarismClass = 'plagiarismClass'
-        percentualInDetection = 'percentualInDetection'
         cosine = 'cosine'
         dice = 'dice'
         isMaxCosine = 'isMaxCosine'
@@ -89,7 +88,8 @@ class SeedAttributesNames():
         Names.lengthRatio]
     
     REMOVE_LIST = [
-        Names.percentualInDetection]
+        'percentualInDetection'
+    ]
 
     TARGET_CLASS = Names.plagiarismClass
 

@@ -2,7 +2,6 @@
 class SeedAttributes():
     def __init__(self):
         self.plagiarismClass             = None
-        self.percentualInDetection       = None
         
         self.cosine                      = None
         self.dice                        = None
