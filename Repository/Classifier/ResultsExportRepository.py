@@ -11,15 +11,20 @@ class ResultsExportRepository(BaseRepository):
             tupleList_FileName_Content = self.GetTupleList_FileName_Content_FromFileMetaList(
                 fileMetaList = resultsExport.fileMetaList)
             folderPath = self.GetUniqueFolderPath()
+            bytesLength = 0
             for fileName, content in tupleList_FileName_Content:
                 fileWriter = self.GetReportWriter(folderPath, fileName)
                 stringContent = ResultsExportRepository.CastContentToString(content)
                 fileWriter.write(stringContent)
+                fileWriter.close()
+                bytesLength += os.path.getsize(fileWriter.name)
         except Exception as exception:
             self.logger.exception('failure when storing item, error ' + str(exception))
             raise exception
         else:
-            self.logger.info('item stored: ' + str(type(resultsExport)))
+            storedLength = BaseRepository.HumanizeBytes(bytes = bytesLength)
+            self.logger.info('item stored: ' + str(type(resultsExport)) +\
+            ' ' + storedLength)
 
     def GetReportWriter(self, folder, fileName):
         filePath = os.path.join(folder, fileName)

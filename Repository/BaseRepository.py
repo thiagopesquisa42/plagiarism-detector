@@ -51,7 +51,10 @@ class BaseRepository(object):
             self.logger.exception('failure when storing item, error ' + str(exception))
             raise exception
         else:
-            self.logger.info('item stored: ' + str(type(item)))
+            fileWriter.close()
+            storedLength = BaseRepository.HumanizeBytes(bytes = os.path.getsize(fileWriter.name))
+            self.logger.info('item stored: ' + str(type(item)) +\
+            ' ' + storedLength + ' ' + fileWriter.name)
             return fileWriter.name
         
     def Get(self):
@@ -62,12 +65,35 @@ class BaseRepository(object):
             self.logger.exception('failure when retrieving item, error ' + str(exception))
             raise exception
         else:
-            self.logger.info('item retrieved: ' + str(type(item)))
+            readLength = BaseRepository.HumanizeBytes(bytes = os.path.getsize(fileReader.name))
+            self.logger.info(
+                'item retrieved: ' + str(type(item)) +\
+                ' ' + readLength + ' ' + fileReader.name)
             return item
 
     def StoreAndGet(self, item):
         self.Store(item)
         return self.Get()
+
+    def HumanizeBytes(bytes, precision=1):
+        abbreviations = [
+            (1 << 50, 'PB'),
+            (1 << 40, 'TB'),
+            (1 << 30, 'GB'),
+            (1 << 20, 'MB'),
+            (1 << 10, 'kB'),
+            (2, 'bytes'),
+            (1, 'byte')
+        ]
+        for factor, suffix in abbreviations:
+            if bytes >= factor:
+                break
+        else:
+            factor = 1
+            suffix = 'byte'
+        stringFormatter = '{:0.0'+str(precision)+'f}'
+        bytesShift = bytes / factor
+        return stringFormatter.format(bytesShift) + ' ' + suffix
 
     def __init__(self, context, name):
         self.context = context
