@@ -19,15 +19,15 @@ def ProcessTestData():
 def ImportTrainDataBase():
     _dataImportationProcess = DataImportationProcess(context = Contexts.TRAIN)
     trainTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
-        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_005_P, 
-        description = 'treino, base pan 2013-jan 005%',
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_020_P, 
+        description = 'treino, base pan 2013-jan 020%',
         originalCreationDate = '2013-01-21')
 
 def ImportTestDataBase():
     _dataImportationProcess = DataImportationProcess(context = Contexts.TEST)
     testTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
-        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P, 
-        description = 'teste, base pan 2013-jan 005%',
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P, 
+        description = 'teste, base pan 2013-jan 020%',
         originalCreationDate = '2013-01-21')
 
 def CommomProcessing(context):
@@ -55,6 +55,7 @@ def TestingClassifier():
 def Main():
     # experimentName = 'experiment005p_tape001'
     experimentName = 'experiment005p_tape002'
+    # experimentName = 'experiment020p_tape003'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # CreateSummaryDrivenDatFrame()
@@ -62,5 +63,7 @@ def Main():
     # ProcessTestData()
     TrainingClassifier()
     TestingClassifier()
+    # _seedingClassifierProcess = SeedingClassifierProcess()
+    # _seedingClassifierProcess.ExportClassifierGraphviz()
 
 Main()

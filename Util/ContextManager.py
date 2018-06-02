@@ -18,11 +18,22 @@ class ContextManager():
             raise Exception('There is an experiment with the same name previously.')
 
     def ContinueExperiment(experimentUniqueName):
+        ContextManager._ConfirmContinueExperiment(experimentUniqueName)
         ContextManager._SetExperimentLocation(experimentUniqueName)
         experimentLocation = ContextManager._GetExperimentLocation()
         if(not os.path.exists(experimentLocation)):
             raise Exception('This experiment doesn\'t exist: ' + str(experimentLocation))
         return ContextManager._GetExperimentLocation()
+
+    def _ConfirmContinueExperiment(experimentUniqueName):
+        print('''
+ *** Please, confirm that you want to continue a experiment. ***
+     This can result in loss of data by overwritting old files.
+     To confirm write the complete name of the experiment''')
+        commitRequest = input('(' + experimentUniqueName + '): ')
+        if(str(commitRequest) != experimentUniqueName):
+            print('Experiment name doesn\'t match, please try again')
+            exit(-1)
 
     def _SetExperimentLocation(experimentUniqueName):
         global experimentLocation
@@ -47,6 +58,8 @@ class ContextManager():
             return ContextDefaultFolders.Experiment.Data.CLASSIFIER_SUBFOLDER
         if(context == Contexts.META):
             return ContextDefaultFolders.Experiment.Data.META_SUBFOLDER
+        if(context == Contexts.PAN_FORMAT_DETECTIONS):
+            return ContextDefaultFolders.Experiment.Data.PAN_FORMAT_DETECTIONS_SUBFOLDER
         raise Exception('unknown context!')
 
     def _GetContextLocationBySubFolder(subFolderName):

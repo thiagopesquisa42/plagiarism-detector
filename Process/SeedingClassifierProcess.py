@@ -23,9 +23,9 @@ class SeedingClassifierProcess(BaseProcess):
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
-                # classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
                 # classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
-                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+                # classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
             self.logger.info('train classifier')
@@ -148,7 +148,7 @@ class SeedingClassifierProcess(BaseProcess):
             'estimator_weights_': str(adaBoostClassifier.estimator_weights_),
             'estimator_errors_': str(adaBoostClassifier.estimator_errors_),
             'feature_importances_': str(adaBoostClassifier.feature_importances_)
-        }
+        }        
     
     def GetGraphviz(classifier):
         if(isinstance(classifier, DecisionTreeClassifier)):
@@ -161,7 +161,9 @@ class SeedingClassifierProcess(BaseProcess):
 
     def GetGraphvizFromDecisionTree(decisionTreeClassifier):
         return tree.export_graphviz(decisionTreeClassifier, out_file=None, filled=True, rounded=True,
-            special_characters=True)
+            special_characters=True, 
+            class_names = list(map(lambda _class: str(_class),decisionTreeClassifier.classes_)), 
+            feature_names = SeedAttributesNames.ATTRIBUTES, leaves_parallel = True)
         
     def GetGraphvizListFromRandomForest(randomForestClassifier):
         graphviz = []
@@ -238,6 +240,11 @@ class SeedingClassifierProcess(BaseProcess):
         resultsExport = ResultsExport(classifierMeta = classifierMeta)
         self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
     #end_region [Test Classifier]
+
+    def ExportClassifierGraphviz(self):
+        classifierMeta = self._classifierMetaRepository.Get()
+        classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifierMeta.classifier)
+        self.ExportExperimentResults(classifierMeta)
 
     def __init__(self):
         self._trainingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TRAIN)

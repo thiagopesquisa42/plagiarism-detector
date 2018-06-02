@@ -111,8 +111,10 @@ class PanDataBaseLocation():
         FOLDER_PATH_2013_TRAIN_JANUARY = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21')
 
     class SubSampled():
+        FOLDER_PATH_2013_TEST2_JANUARY_020_P = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21_20180511_223813_p20')
         FOLDER_PATH_2013_TEST2_JANUARY_005_P = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21_20180526_194019_p5')
         FOLDER_PATH_2013_TEST2_JANUARY_001_P = os.path.join(PanFolders.FOLDER_2013_TEST2_JANUARY, 'pan13-text-alignment-test-corpus2-2013-01-21_20180520_235355_p1')
+        FOLDER_PATH_2013_TRAIN_JANUARY_020_P = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21_20180511_223848_p20')
         FOLDER_PATH_2013_TRAIN_JANUARY_005_P = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21_20180526_194057_p5')
         FOLDER_PATH_2013_TRAIN_JANUARY_001_P = os.path.join(PanFolders.FOLDER_2013_TRAIN_JANUARY, 'pan13-text-alignment-training-corpus-2013-01-21_20180520_235434_p1')
     
@@ -126,6 +128,7 @@ class ContextDefaultFolders():
             TESTING_SUBFOLDER = 'test'
             CLASSIFIER_SUBFOLDER = 'classifier'
             META_SUBFOLDER = 'meta'
+            PAN_FORMAT_DETECTIONS_SUBFOLDER = 'panDetections'
     ROOT_FOLDER = 'data'
 
 class Contexts(enum.Enum):
@@ -133,3 +136,4 @@ class Contexts(enum.Enum):
     TEST = 2000
     CLASSIFIER = 3000
     META = 4000
+    PAN_FORMAT_DETECTIONS = 5000
