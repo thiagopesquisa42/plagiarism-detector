@@ -18,6 +18,8 @@ from Entity.RawDataBase import Pan
 _PanFolderStructure = Pan.PanFolderStructure
 _PanDetectionXmlStructure = Pan.PanDetectionXmlStructure
 _PanDetectionXmlPlain = Pan.PanDetectionXmlPlain
+from Entity.RawDataBase import DetectionListFromRawTextPair
+_DetectionListFromRawTextPair = DetectionListFromRawTextPair.DetectionListFromRawTextPair
 
 from Entity.PreProcessing import PreProcessStep
 _PreProcessStep = PreProcessStep.PreProcessStep

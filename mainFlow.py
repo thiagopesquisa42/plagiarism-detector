@@ -6,6 +6,7 @@ from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
 from Process import _SeedingProcess as SeedingProcess
 from Process import _SeedingDataProcess as SeedingDataProcess
 from Process import _SeedingClassifierProcess as SeedingClassifierProcess
+from Process import _PanExportProcess as PanExportProcess
 import os
 
 def ProcessTrainData():
@@ -19,15 +20,23 @@ def ProcessTestData():
 def ImportTrainDataBase():
     _dataImportationProcess = DataImportationProcess(context = Contexts.TRAIN)
     trainTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
-        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_020_P, 
-        description = 'treino, base pan 2013-jan 020%',
+        # folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_020_P, 
+        # description = 'treino, base pan 2013-jan 020%',
+        # folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_001_P, 
+        # description = 'treino, base pan 2013-jan 001%',
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TRAIN_JANUARY_005_P, 
+        description = 'treino, base pan 2013-jan 005%',
         originalCreationDate = '2013-01-21')
 
 def ImportTestDataBase():
     _dataImportationProcess = DataImportationProcess(context = Contexts.TEST)
     testTextCollectionMeta = _dataImportationProcess.ImportTrainDataBaseFromPanFiles(
-        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P, 
-        description = 'teste, base pan 2013-jan 020%',
+        # folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P, 
+        # description = 'teste, base pan 2013-jan 020%',
+        # folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_001_P, 
+        # description = 'teste, base pan 2013-jan 001%',
+        folderCompletePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P, 
+        description = 'teste, base pan 2013-jan 005%',
         originalCreationDate = '2013-01-21')
 
 def CommomProcessing(context):
@@ -52,18 +61,26 @@ def TestingClassifier():
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTested = _seedingClassifierProcess.TestSeedClassifier()
 
+def ExportDetectionToPan():
+    _panExportProcess = PanExportProcess()
+    _panExportProcess.ExportPanFormattedDetections()
+
 def Main():
     # experimentName = 'experiment005p_tape001'
-    experimentName = 'experiment005p_tape002'
+    # experimentName = 'experiment005p_tape002'
     # experimentName = 'experiment020p_tape003'
-    # ContextManager.InitExperiment(experimentUniqueName = experimentName)
+    # experimentName = 'experiment001p_tape004'
+    experimentName = 'experiment005p_tape005'
+    #ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # CreateSummaryDrivenDatFrame()
     # ProcessTrainData()
     # ProcessTestData()
-    TrainingClassifier()
-    TestingClassifier()
+    # TrainingClassifier()
+    # TestingClassifier()
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
+    ExportDetectionToPan()
+
 
 Main()

@@ -10,3 +10,5 @@ from Process import SeedingClassifierProcess
 _SeedingClassifierProcess = SeedingClassifierProcess.SeedingClassifierProcess
 from Process import SeedingDataProcess
 _SeedingDataProcess = SeedingDataProcess.SeedingDataProcess
+from Process import PanExportProcess
+_PanExportProcess = PanExportProcess.PanExportProcess

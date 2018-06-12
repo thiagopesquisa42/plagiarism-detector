@@ -9,3 +9,5 @@ class RawText():
         self._type = _type
         self.textCollectionMeta = textCollectionMeta
 
+    def GetRawTextNumber(self):
+        return self.fileName.split('.')[0].split('document')[1]

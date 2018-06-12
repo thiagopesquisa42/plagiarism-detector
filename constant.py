@@ -121,6 +121,10 @@ class PanDataBaseLocation():
     fullSamples = FullSamples()
     subSampled = SubSampled()
 
+class PanSettings():
+    detectionName = 'detected-plagiarism'
+    _type = 'artificial'
+
 class ContextDefaultFolders():
     class Experiment():
         class Data():
