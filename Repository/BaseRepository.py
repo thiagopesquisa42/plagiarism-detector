@@ -3,6 +3,7 @@ from Util import  _ContextManager as ContextManager
 from constant import LoggerConstant, Contexts
 import logging
 import pickle
+from datetime import datetime
 import os
 
 class BaseRepository(object):
@@ -94,6 +95,12 @@ class BaseRepository(object):
         stringFormatter = '{:0.0'+str(precision)+'f}'
         bytesShift = bytes / factor
         return stringFormatter.format(bytesShift) + ' ' + suffix
+    
+    def GetUniqueFolderPath(self):
+        dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
+        folderPath = os.path.join(self.GetPath(), self.name + dateTimeString)
+        os.makedirs(folderPath, exist_ok=True)
+        return folderPath
 
     def __init__(self, context, name):
         self.context = context

@@ -1,6 +1,5 @@
 from Repository import _BaseRepository as BaseRepository
 from constant import Contexts
-from datetime import datetime
 import os
 import json
 
@@ -69,12 +68,6 @@ class ResultsExportRepository(BaseRepository):
         return [
             prefix + stringFormatter.format(index) + suffix
             for index in range(1, 1 + quantity)]
-    
-    def GetUniqueFolderPath(self):
-        dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
-        folderPath = os.path.join(self.GetPath(), self.name + dateTimeString)
-        os.makedirs(folderPath, exist_ok=True)
-        return folderPath
     
     def __init__(self):
         super().__init__(context = Contexts.META, name = 'ResultsExport')

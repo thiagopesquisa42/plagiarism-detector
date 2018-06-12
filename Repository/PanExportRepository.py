@@ -5,11 +5,31 @@ from xml.dom import minidom
 import os
 
 class PanExportRepository(BaseRepository):
+
+    def StoreMultipleXml(self, detectionGroupOfListFromRawTextPair):
+        try:
+            uniqueFolderPath = self.GetUniqueFolderPath()
+            bytesLength = 0
+            for detectionListFromRawTextPair in detectionGroupOfListFromRawTextPair:
+                xmlFileContent = PanExportRepository.CastDetectionListToPanFormat(
+                    detectionListFromRawTextPair)
+                fileWriter = self.GetXmlFileWriter(detectionListFromRawTextPair.rawTextPair, uniqueFolderPath)
+                fileWriter.write(xmlFileContent)
+                fileWriter.close()
+                bytesLength += os.path.getsize(fileWriter.name)
+        except Exception as exception:
+            self.logger.exception('failure when storing item, error ' + str(exception))
+            raise exception
+        else:
+            storedLength = BaseRepository.HumanizeBytes(bytes = bytesLength)
+            self.logger.info('item stored: ' + '.xml files' +\
+            ' ' + storedLength  + ' at folder ' + uniqueFolderPath)
+
     def StoreXml(self, detectionListFromRawTextPair):
         try:
             xmlFileContent = PanExportRepository.CastDetectionListToPanFormat(
                 detectionListFromRawTextPair)
-            fileWriter = self.GetXmlFileWriter(detectionListFromRawTextPair.rawTextPair)
+            fileWriter = self.GetXmlFileWriter(detectionListFromRawTextPair.rawTextPair, self.GetPath())
             fileWriter.write(xmlFileContent)
         except Exception as exception:
             self.logger.exception('failure when storing item, error ' + str(exception))
@@ -46,14 +66,15 @@ class PanExportRepository(BaseRepository):
             documentRoot.appendChild(feature)
         return document.toprettyxml()
     
-    def GetXmlFileWriter(self, rawTextPair):
+    def GetXmlFileWriter(self, rawTextPair, folderPath):
         xmlFileName = self.GetXmlFileName(rawTextPair)
-        return open(xmlFileName, 'w')
+        xmlFilePath = os.path.join(folderPath, xmlFileName)
+        return open(xmlFilePath, 'w')
 
     def GetXmlFileName(self, rawTextPair):
         suspiciousName = rawTextPair.suspiciousRawText.fileName.split('.')[0]
         sourceName = rawTextPair.sourceRawText.fileName.split('.')[0]
-        return os.path.join(self.GetPath(), suspiciousName + '-' + sourceName + '.xml')
+        return suspiciousName + '-' + sourceName + '.xml'
 
     def __init__(self):
         super().__init__(context = Contexts.PAN_FORMAT_DETECTIONS, name = 'PanExport')

@@ -27,7 +27,7 @@ class PanExportProcess(BaseProcess):
             detectionGroups = self.CastToDetectionGroupsByRawTextPair(groupedByRawTextPairMetaDataFrame)
 
             self.logger.info('exporting groups')
-            self.StoreDetectionGroupsByRawTextPair(detectionGroups)
+            self._panExportRepository.StoreMultipleXml(detectionGroups)
 
         except Exception as exception:
             self.logger.exception('[Export Pan Formatted Detections] failure: ' + str(exception))
