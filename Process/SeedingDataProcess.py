@@ -3,8 +3,9 @@ from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
 from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
 from Entity import _PlagiarismClass as PlagiarismClass
-from constant import SeedAttributesNames
+from constant import SeedAttributesNames, Contexts
 import pandas
+from imblearn.combine import SMOTEENN
 
 class SeedingDataProcess(BaseProcess):
 
@@ -22,10 +23,6 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('binarize target classes')
             seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
-
-            self.logger.info('attributes resample class none')
-            seedingDataFrame = self.BalanceByResample(seedingDataFrame)
-            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
  
             self.logger.info('attributes selection')
             seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
@@ -34,6 +31,15 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('attributes remove none rows')
             seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+
+            if(self._context == Contexts.TRAIN):
+                self.logger.info('remove meta columns')
+                seedingDataFrame = self.RemoveMetaColumnsInDataFrame(seedingDataFrame)
+                
+                self.logger.info('attributes resample classes, only at train')
+                seedingDataFrame = self.BalanceByResample(seedingDataFrame)
+                # seedingDataFrame = self.BalanceBySmoteEnn(seedingDataFrame)
+                seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
         except Exception as exception:
             self.logger.exception('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
@@ -87,6 +93,16 @@ class SeedingDataProcess(BaseProcess):
             appendToDescription = {'removeAttributeNameList': removeAttributeNameList})
         return seedingDataFrame
     
+    def RemoveMetaColumnsInDataFrame(self, seedingDataFrame):
+        dataFrame = seedingDataFrame.dataFrame
+        removeAttributeNameList = SeedAttributesNames.META
+        for attributeName in removeAttributeNameList:
+            if attributeName in dataFrame.columns:
+                del dataFrame[attributeName]
+        seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame,
+            appendToDescription = {'removed meta columns': removeAttributeNameList})
+        return seedingDataFrame
+
     def RemoveNoneValues(self, seedingDataFrame):
         dataFrame = seedingDataFrame.dataFrame
         columns = [
@@ -97,7 +113,24 @@ class SeedingDataProcess(BaseProcess):
         seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame,
             appendToDescription = {'removeNoneRows': 'remove row with None value at these columns ' + str(columns)})
         return seedingDataFrame
+    #end_region [Create Seeding DataFrame from Seeding Data started]
     
+    #region [Imbalanced Learning Methods]
+    def BalanceBySmoteEnn(self, seedingDataFrame):
+        dataFrame = seedingDataFrame.dataFrame
+        balancer = SMOTEENN()
+        X_resampled, y_resampled = balancer.fit_sample(
+            X = dataFrame[SeedAttributesNames.ATTRIBUTES], 
+            y = dataFrame[SeedAttributesNames.TARGET_CLASS])
+        balancedDataFrame = pandas.concat(
+            objs = [
+                pandas.DataFrame(data = X_resampled, columns = SeedAttributesNames.ATTRIBUTES), 
+                pandas.DataFrame(data = y_resampled, columns=[SeedAttributesNames.TARGET_CLASS])], 
+            axis='columns')
+        seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, balancedDataFrame,
+                appendToDescription = {'balancing': 'classes balanced by combination of SMOTE and ENN'})
+        return seedingDataFrame
+
     def BalanceByResample(self, seedingDataFrame):
         dataFrame = seedingDataFrame.dataFrame
         classesLengths = dataFrame.plagiarismClass.value_counts()
@@ -128,7 +161,7 @@ class SeedingDataProcess(BaseProcess):
                 'resampling': 'arbitrary resample of class ' + str(classToResample),
                 'numberOfSamplesInResampling': numberOfSamples})
         return seedingDataFrame
-    #end_region [Create Seeding DataFrame from Seeding Data started]
+    #end_region [Imbalanced Learning Methods]
 
     #region [Alter Seeding DataFrame and store in new register]
     def AlterSeedingData(self):
@@ -197,6 +230,7 @@ class SeedingDataProcess(BaseProcess):
             return seedingDataFrame
 
     def __init__(self, context):
+        self._context = context
         self._seedingDataRepository = SeedingDataRepository(context)
         self._seedingDataFrameRepository = SeedingDataFrameRepository(context)
         super().__init__()

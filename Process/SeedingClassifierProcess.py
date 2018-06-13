@@ -23,9 +23,9 @@ class SeedingClassifierProcess(BaseProcess):
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
-                classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
+                # classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
                 # classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
-                # classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
             self.logger.info('train classifier')

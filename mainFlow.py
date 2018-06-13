@@ -10,11 +10,11 @@ from Process import _PanExportProcess as PanExportProcess
 import os
 
 def ProcessTrainData():
-    ImportTrainDataBase()
+    # ImportTrainDataBase()
     CommomProcessing(context = Contexts.TRAIN)
 
 def ProcessTestData():
-    ImportTestDataBase()
+    # ImportTestDataBase()
     CommomProcessing(context = Contexts.TEST)
 
 def ImportTrainDataBase():
@@ -40,10 +40,10 @@ def ImportTestDataBase():
         originalCreationDate = '2013-01-21')
 
 def CommomProcessing(context):
-    _preProcessingRawTextProcess = PreProcessingRawTextProcess(context = context)
-    preProcessedData = _preProcessingRawTextProcess.PreProcessing()
-    _seedingProcess = SeedingProcess(context = context)
-    preProcessedData = _seedingProcess.SeedingProcessing()
+    # _preProcessingRawTextProcess = PreProcessingRawTextProcess(context = context)
+    # preProcessedData = _preProcessingRawTextProcess.PreProcessing()
+    # _seedingProcess = SeedingProcess(context = context)
+    # preProcessedData = _seedingProcess.SeedingProcessing()
     _seedingDataProcess = SeedingDataProcess(context = context)
     dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingData()
 
@@ -70,14 +70,18 @@ def Main():
     # experimentName = 'experiment005p_tape002'
     # experimentName = 'experiment020p_tape003'
     # experimentName = 'experiment001p_tape004'
-    experimentName = 'experiment005p_tape005'
-    #ContextManager.InitExperiment(experimentUniqueName = experimentName)
+    # experimentName = 'experiment005p_tape005'
+    experimentName = 'experiment005p_tape006_iblrn'
+    # experimentName = 'experiment005p_tape007_noiblrnMyApproache'
+    # experimentName = 'experiment005p_tape008_noiblrnMyApproache'
+    # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
-    # CreateSummaryDrivenDatFrame()
     # ProcessTrainData()
     # ProcessTestData()
-    # TrainingClassifier()
-    # TestingClassifier()
+    TrainingClassifier()
+    TestingClassifier()
+    
+    # CreateSummaryDrivenDatFrame()
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
     ExportDetectionToPan()
