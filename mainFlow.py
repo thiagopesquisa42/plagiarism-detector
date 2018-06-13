@@ -65,26 +65,31 @@ def ExportDetectionToPan():
     _panExportProcess = PanExportProcess()
     _panExportProcess.ExportPanFormattedDetections()
 
+def GenerateIdealClassifier():
+    _seedingDataProcess = SeedingDataProcess(context = Contexts.TEST)
+    _seedingDataProcess.ExportIdealClassifier()
+
 def Main():
     # experimentName = 'experiment005p_tape001'
     # experimentName = 'experiment005p_tape002'
     # experimentName = 'experiment020p_tape003'
     # experimentName = 'experiment001p_tape004'
     # experimentName = 'experiment005p_tape005'
-    experimentName = 'experiment005p_tape006_iblrn'
+    # experimentName = 'experiment005p_tape006_iblrn'
     # experimentName = 'experiment005p_tape007_noiblrnMyApproache'
     # experimentName = 'experiment005p_tape008_noiblrnMyApproache'
+    experimentName = 'experiment005p_tape009_idealClassifier'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
-    # ProcessTestData()
-    TrainingClassifier()
-    TestingClassifier()
+    ProcessTestData()
+    # TrainingClassifier()
+    # TestingClassifier()
     
     # CreateSummaryDrivenDatFrame()
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
+    GenerateIdealClassifier()
     ExportDetectionToPan()
-
 
 Main()

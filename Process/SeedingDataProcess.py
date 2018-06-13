@@ -1,7 +1,10 @@
 from Process import _BaseProcess as BaseProcess
+from Process import _SeedingClassifierProcess as SeedingClassifierProcess
 from Repository.Seeding import _SeedingDataRepository as SeedingDataRepository
 from Repository.Classifier import _SeedingDataFrameRepository as SeedingDataFrameRepository
+from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRepository
 from Entity.Classifier import _SeedingDataFrame as SeedingDataFrame
+from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from Entity import _PlagiarismClass as PlagiarismClass
 from constant import SeedAttributesNames, Contexts
 import pandas
@@ -20,26 +23,26 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            self.logger.info('binarize target classes')
-            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none)
-            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            # self.logger.info('binarize target classes')
+            # seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none)
+            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
  
-            self.logger.info('attributes selection')
-            seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
-            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            # self.logger.info('attributes selection')
+            # seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
+            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            self.logger.info('attributes remove none rows')
-            seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
-            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            # self.logger.info('attributes remove none rows')
+            # seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
+            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            if(self._context == Contexts.TRAIN):
-                self.logger.info('remove meta columns')
-                seedingDataFrame = self.RemoveMetaColumnsInDataFrame(seedingDataFrame)
+            # if(self._context == Contexts.TRAIN):
+            #     self.logger.info('remove meta columns')
+            #     seedingDataFrame = self.RemoveMetaColumnsInDataFrame(seedingDataFrame)
                 
-                self.logger.info('attributes resample classes, only at train')
-                seedingDataFrame = self.BalanceByResample(seedingDataFrame)
-                # seedingDataFrame = self.BalanceBySmoteEnn(seedingDataFrame)
-                seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            #     self.logger.info('attributes resample classes, only at train')
+            #     seedingDataFrame = self.BalanceByResample(seedingDataFrame)
+            #     # seedingDataFrame = self.BalanceBySmoteEnn(seedingDataFrame)
+            #     seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
         except Exception as exception:
             self.logger.exception('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
@@ -229,8 +232,31 @@ class SeedingDataProcess(BaseProcess):
             self.logger.info('Create Seeding DataFrame from Seeding Data [Summary-Driven] finished')
             return seedingDataFrame
 
+    def ExportIdealClassifier(self):
+        try:
+            self.logger.info('[Export ideal classifier] started')          
+            seedingDataFrame = self._seedingDataFrameRepository.Get()
+            classifierMeta = ClassifierMeta(None, {})
+            classifierPrediction = pandas.DataFrame(
+                data = seedingDataFrame.dataFrame[SeedAttributesNames.TARGET_CLASS].values,
+                columns = ['classifierPrediction'], 
+                index = seedingDataFrame.dataFrame.index)
+            classifierMeta.metaDataFrame = SeedingClassifierProcess.GetMetaDataFrame(
+                expectedTargetClass = seedingDataFrame.dataFrame[SeedAttributesNames.TARGET_CLASS], 
+                classifierPrediction = classifierPrediction, 
+                dataFrame = seedingDataFrame.dataFrame)
+            classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
+        except Exception as exception:
+            self.logger.info('[Export ideal classifier] failure: ' + str(exception))
+            raise exception
+        else:
+            self.logger.info('[Export ideal classifier] finished')
+            return classifierMeta
+
     def __init__(self, context):
         self._context = context
         self._seedingDataRepository = SeedingDataRepository(context)
         self._seedingDataFrameRepository = SeedingDataFrameRepository(context)
+        self._classifierMetaRepository = ClassifierMetaRepository()
+        self._seedingClassifierProcess = SeedingClassifierProcess()
         super().__init__()
