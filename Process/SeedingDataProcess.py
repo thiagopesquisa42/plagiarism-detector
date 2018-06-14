@@ -9,6 +9,7 @@ from Entity import _PlagiarismClass as PlagiarismClass
 from constant import SeedAttributesNames, Contexts
 import pandas
 from imblearn.combine import SMOTEENN
+#from imblearn.under_sampling import RandomUnderSampler
 
 class SeedingDataProcess(BaseProcess):
 
@@ -23,26 +24,28 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            # self.logger.info('binarize target classes')
-            # seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none)
-            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            self.logger.info('binarize target classes')
+            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classFalse = PlagiarismClass.none)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
  
-            # self.logger.info('attributes selection')
-            # seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
-            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            self.logger.info('attributes selection')
+            seedingDataFrame = self.SelectColumnsInDataFrame(seedingDataFrame)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            # self.logger.info('attributes remove none rows')
-            # seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
-            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            self.logger.info('attributes remove none rows')
+            seedingDataFrame = self.RemoveNoneValues(seedingDataFrame)
+            seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
             # if(self._context == Contexts.TRAIN):
-            #     self.logger.info('remove meta columns')
-            #     seedingDataFrame = self.RemoveMetaColumnsInDataFrame(seedingDataFrame)
+            if(True):
+                # self.logger.info('remove meta columns')
+                # seedingDataFrame = self.RemoveMetaColumnsInDataFrame(seedingDataFrame)
                 
-            #     self.logger.info('attributes resample classes, only at train')
-            #     seedingDataFrame = self.BalanceByResample(seedingDataFrame)
-            #     # seedingDataFrame = self.BalanceBySmoteEnn(seedingDataFrame)
-            #     seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+                # self.logger.info('attributes resample classes, only at train')
+                self.logger.info('attributes resample classes')
+                seedingDataFrame = self.BalanceByResample(seedingDataFrame)
+                # seedingDataFrame = self.BalanceBySmoteEnn(seedingDataFrame)
+                seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
         except Exception as exception:
             self.logger.exception('Create Seeding DataFrame from Seeding Data failure: ' + str(exception))
@@ -209,8 +212,12 @@ class SeedingDataProcess(BaseProcess):
             seedingDataFrame = self.TransformSeedAttributesInSeedingDataFrame(seedingData)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
-            self.logger.info('binarize target classes')
-            seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classTrue = PlagiarismClass.obfuscatedSummary)
+            # self.logger.info('binarize target classes')
+            # seedingDataFrame = self.BinarizeTargetClass(seedingDataFrame, classTrue = PlagiarismClass.obfuscatedSummary)
+            # seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
+            
+            self.logger.info('convert enum to string')
+            seedingDataFrame = self.ConvertEnumToString(seedingDataFrame)
             seedingDataFrame = self._seedingDataFrameRepository.StoreAndGet(seedingDataFrame)
 
             self.logger.info('attributes resample class none')
@@ -252,6 +259,16 @@ class SeedingDataProcess(BaseProcess):
         else:
             self.logger.info('[Export ideal classifier] finished')
             return classifierMeta
+    
+    def ConvertEnumToString(self, seedingDataFrame):
+        def EnumToString(enumValue):
+            return enumValue.name
+        dataFrame = seedingDataFrame.dataFrame
+        dataFrame.plagiarismClass = dataFrame.plagiarismClass.apply(EnumToString)
+        seedingDataFrame = self.UpdateDescriptionAndDataFrame(seedingDataFrame, dataFrame, 
+            appendToDescription = {
+                'convert-enum-classes-to-string': True})
+        return seedingDataFrame
 
     def __init__(self, context):
         self._context = context

@@ -40,7 +40,7 @@ class PanExportProcess(BaseProcess):
         if(classes == 2):
             metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction == True)]
         else:
-            metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction != PlagiarismClass.none)]
+            metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction != PlagiarismClass.none.name)]
         return metaDataFrame
     
     def GroupByRawTextPair(self, metaDataFrame):
@@ -68,7 +68,7 @@ class PanExportProcess(BaseProcess):
             rawTextSourceLocation = seed.sourceSentence.rawTextExcerptLocation,
             textCollectionMeta = None,
             rawTextPair = rawTextPair)
-
+    
     def StoreDetectionGroupsByRawTextPair(self, detectionGroupsByRawTextPair):
         for detectionListFromRawTextPair in detectionGroupsByRawTextPair:
             self._panExportRepository.StoreXml(detectionListFromRawTextPair = detectionListFromRawTextPair)

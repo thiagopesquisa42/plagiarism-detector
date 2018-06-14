@@ -141,3 +141,8 @@ class Contexts(enum.Enum):
     CLASSIFIER = 3000
     META = 4000
     PAN_FORMAT_DETECTIONS = 5000
+
+class ClassifiersNickNames(enum.Enum):
+    DECISION_TREE = 1000
+    RANDOM_FOREST = 2000
+    ADABOOST_DECISION_TREE = 3000

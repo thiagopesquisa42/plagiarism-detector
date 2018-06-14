@@ -4,7 +4,7 @@ from Repository.Classifier import _ClassifierMetaRepository as ClassifierMetaRep
 from Repository.Classifier import _ResultsExportRepository as ResultsExportRepository
 from Entity.Classifier import _ClassifierMeta as ClassifierMeta
 from Entity.Classifier import _ResultsExport as ResultsExport
-from constant import SeedAttributesNames, Contexts
+from constant import SeedAttributesNames, Contexts, ClassifiersNickNames
 import pandas
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
@@ -14,7 +14,7 @@ from sklearn.metrics import classification_report
 class SeedingClassifierProcess(BaseProcess):
 
     #region [Train Classifier]
-    def TrainSeedClassifier(self):
+    def TrainSeedClassifier(self, classifierNickname):
         try:
             self.logger.info('Train Seed Classifier started')
             
@@ -23,9 +23,7 @@ class SeedingClassifierProcess(BaseProcess):
             
             self.logger.info('setup classifier')
             classifierMeta = self.CreateClassifierMeta(
-                # classifierSetterMethod = SeedingClassifierProcess.SetupDecisionTreeClassifier)
-                # classifierSetterMethod = SeedingClassifierProcess.SetupRandomForestClassifier)
-                classifierSetterMethod = SeedingClassifierProcess.SetupAdaboostClassifier)
+                classifierSetterMethod = SeedingClassifierProcess.SelectClassifierSetup(classifierNickname))
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
             self.logger.info('train classifier')
@@ -47,6 +45,15 @@ class SeedingClassifierProcess(BaseProcess):
             classifier = classifier,
             definitionDictionary = definitionDictionary)
         return classifierMeta
+
+    def SelectClassifierSetup(classifierNickname):
+        if(classifierNickname == ClassifiersNickNames.DECISION_TREE):
+            return SeedingClassifierProcess.SetupDecisionTreeClassifier
+        if(classifierNickname == ClassifiersNickNames.RANDOM_FOREST):
+            return SeedingClassifierProcess.SetupRandomForestClassifier
+        if(classifierNickname == ClassifiersNickNames.ADABOOST_DECISION_TREE):
+            return SeedingClassifierProcess.SetupAdaboostClassifier
+        return None
 
     def SetupAdaboostClassifier():
         definitionDictionary = {

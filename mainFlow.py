@@ -1,6 +1,6 @@
 from Util import _LoggerUtil as LoggerUtil
 from Util import _ContextManager as ContextManager
-from constant import PanDataBaseLocation, Contexts
+from constant import PanDataBaseLocation, Contexts, ClassifiersNickNames
 from Process import _DataImportationProcess as DataImportationProcess
 from Process import _PreProcessingRawTextProcess as PreProcessingRawTextProcess
 from Process import _SeedingProcess as SeedingProcess
@@ -53,9 +53,9 @@ def CreateSummaryDrivenDataFrame():
     _seedingDataProcess = SeedingDataProcess(context = Contexts.TEST)
     dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingDataSummaryDriven()
 
-def TrainingClassifier():
+def TrainingClassifier(classifierNickName):
     _seedingClassifierProcess = SeedingClassifierProcess()
-    classifierMetaTrained = _seedingClassifierProcess.TrainSeedClassifier()
+    classifierMetaTrained = _seedingClassifierProcess.TrainSeedClassifier(classifierNickName)
 
 def TestingClassifier():
     _seedingClassifierProcess = SeedingClassifierProcess()
@@ -72,24 +72,31 @@ def GenerateIdealClassifier():
 def Main():
     # experimentName = 'experiment005p_tape001'
     # experimentName = 'experiment005p_tape002'
-    # experimentName = 'experiment020p_tape003'
+    # experimentName = 'experiment020p_tape003_binario_randomSample'
     # experimentName = 'experiment001p_tape004'
-    # experimentName = 'experiment005p_tape005'
-    # experimentName = 'experiment005p_tape006_iblrn'
-    # experimentName = 'experiment005p_tape007_noiblrnMyApproache'
-    # experimentName = 'experiment005p_tape008_noiblrnMyApproache'
-    experimentName = 'experiment005p_tape009_idealClassifier'
+    # experimentName = 'experiment005p_tape005_randomSample'
+    # experimentName = 'experiment005p_tape006_iblrn_trainOnly'
+    # experimentName = 'experiment005p_tape007_noiblrnMyApproache_trainOnly'
+    # experimentName = 'experiment005p_tape008_noiblrnMyApproache_trainOnly'
+    # experimentName = 'experiment005p_tape009_idealClassifier'
+    # experimentName = 'experiment005p_tape010_iblrn'
+    # experimentName = 'experiment005p_tape011_multiClass_randomSample'
+    experimentName = 'experiment005p_tape012_contagem_base_dados'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
     ProcessTestData()
-    # TrainingClassifier()
-    # TestingClassifier()
-    
-    # CreateSummaryDrivenDatFrame()
+    # CreateSummaryDrivenDataFrame()
+    classifierList = [
+        ClassifiersNickNames.DECISION_TREE]#,
+        # ClassifiersNickNames.RANDOM_FOREST,
+        # ClassifiersNickNames.ADABOOST_DECISION_TREE]
+    for classifierNickName in classifierList:
+        TrainingClassifier(classifierNickName)
+        TestingClassifier()
+        ExportDetectionToPan()
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
-    GenerateIdealClassifier()
-    ExportDetectionToPan()
+    # GenerateIdealClassifier()
 
 Main()
