@@ -74,23 +74,23 @@ def Main():
     # experimentName = 'experiment005p_tape002'
     # experimentName = 'experiment020p_tape003_binario_randomSample'
     # experimentName = 'experiment001p_tape004'
-    # experimentName = 'experiment005p_tape005_randomSample'
+    experimentName = 'experiment005p_tape005_randomSample'
     # experimentName = 'experiment005p_tape006_iblrn_trainOnly'
     # experimentName = 'experiment005p_tape007_noiblrnMyApproache_trainOnly'
     # experimentName = 'experiment005p_tape008_noiblrnMyApproache_trainOnly'
     # experimentName = 'experiment005p_tape009_idealClassifier'
     # experimentName = 'experiment005p_tape010_iblrn'
     # experimentName = 'experiment005p_tape011_multiClass_randomSample'
-    experimentName = 'experiment005p_tape012_contagem_base_dados'
+    # experimentName = 'experiment005p_tape012_contagem_base_dados'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
-    ProcessTestData()
+    # ProcessTestData()
     # CreateSummaryDrivenDataFrame()
     classifierList = [
-        ClassifiersNickNames.DECISION_TREE]#,
-        # ClassifiersNickNames.RANDOM_FOREST,
-        # ClassifiersNickNames.ADABOOST_DECISION_TREE]
+        ClassifiersNickNames.DECISION_TREE,
+        ClassifiersNickNames.RANDOM_FOREST,
+        ClassifiersNickNames.ADABOOST_DECISION_TREE]
     for classifierNickName in classifierList:
         TrainingClassifier(classifierNickName)
         TestingClassifier()

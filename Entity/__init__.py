@@ -23,3 +23,6 @@ _DetectionListFromRawTextPair = DetectionListFromRawTextPair.DetectionListFromRa
 
 from Entity.PreProcessing import PreProcessStep
 _PreProcessStep = PreProcessStep.PreProcessStep
+
+from Entity.Util import Location
+_Location = Location.Location
