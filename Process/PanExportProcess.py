@@ -22,19 +22,25 @@ class PanExportProcess(BaseProcess):
             metaDataFrame = classifierMeta.metaDataFrame
 
             self.logger.info('removing not detections')
-            metaDataFrame = self.RemoveNotDetections(metaDataFrame)      
+            metaDataFrame = self.RemoveNotDetections(metaDataFrame)
 
-            self.logger.info('grouping by raw-text-pair')
-            groupedByRawTextPairMetaDataFrame = self.GroupByRawTextPair(metaDataFrame)
-            
-            self.logger.info('cast to detection groups')
-            detectionGroups = self.CastToDetectionGroupsByRawTextPair(groupedByRawTextPairMetaDataFrame)
+            classes = self.GetDetectionClasses(metaDataFrame)
+            for thisClass in classes:
+                self.logger.info('keeping only one class')
+                thisMetaDataFrame = self.RemoveAllExceptThisClass(metaDataFrame, thisClass)
 
-            self.logger.info('fuse adjacent detections per raw text pair')
-            detectionGroups = self.FuseAdjacentDetectionPerRawTextPair(detectionGroups)
+                self.logger.info('grouping by raw-text-pair')
+                groupedByRawTextPairMetaDataFrame = self.GroupByRawTextPair(thisMetaDataFrame)
+                
+                self.logger.info('cast to detection groups')
+                detectionGroups = self.CastToDetectionGroupsByRawTextPair(groupedByRawTextPairMetaDataFrame)
 
-            self.logger.info('exporting groups')
-            self._panExportRepository.StoreMultipleXml(detectionGroups)
+                self.logger.info('fuse adjacent detections per raw text pair')
+                detectionGroups = self.FuseAdjacentDetectionPerRawTextPair(detectionGroups)
+
+                self.logger.info('exporting groups')
+                folderNickName = str(classifierMeta.GetName()) + '_US_' + str(thisClass)
+                self._panExportRepository.StoreMultipleXml(detectionGroups, folderNickName)
 
         except Exception as exception:
             self.logger.exception('[Export Pan Formatted Detections] failure: ' + str(exception))
@@ -42,12 +48,22 @@ class PanExportProcess(BaseProcess):
         else:
             self.logger.info('[Export Pan Formatted Detections] finished')
     
+    def GetDetectionClasses(self, metaDataFrame):
+        classes = metaDataFrame.plagiarismClass.unique()
+        classes = list(filter(lambda c: c not in [False, PlagiarismClass.none, PlagiarismClass.none.name], classes))
+        return classes
+
+    def RemoveAllExceptThisClass(self, metaDataFrame, thisClass):
+        _metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction == thisClass)]
+        return _metaDataFrame
+
     def RemoveNotDetections(self, metaDataFrame):
-        classes = len(metaDataFrame.plagiarismClass.unique())
-        if(classes == 2):
+        classes = metaDataFrame.plagiarismClass.unique()
+        if(len(classes) == 2):
             metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction == True)]
         else:
-            metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction != PlagiarismClass.none.name)]
+            noneClass = PlagiarismClass.none if(PlagiarismClass.none in classes) else PlagiarismClass.none.name
+            metaDataFrame = metaDataFrame[(metaDataFrame.classifierPrediction != noneClass)]
         return metaDataFrame
     
     def GroupByRawTextPair(self, metaDataFrame):

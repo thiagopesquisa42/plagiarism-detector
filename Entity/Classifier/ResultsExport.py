@@ -10,6 +10,7 @@ class ResultsExport():
             FileMeta(content = classifierMeta.summaryTestData, prefix = 'testData', suffix = '.summary'),
             FileMeta(content = classifierMeta.attributesReport, prefix = 'classifierAttributes', suffix = '.report')]
         self.fileMetaList = fileMetaList
+        self.nickname = classifierMeta.GetName()
 
 class FileMeta():
     def __init__(self, content, prefix, suffix = '.txt'):

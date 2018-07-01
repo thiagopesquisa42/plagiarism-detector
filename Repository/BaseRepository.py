@@ -96,9 +96,11 @@ class BaseRepository(object):
         bytesShift = bytes / factor
         return stringFormatter.format(bytesShift) + ' ' + suffix
     
-    def GetUniqueFolderPath(self):
+    def GetUniqueFolderPath(self, nickname = None):
+        if(nickname is None):
+            nickname = ''
         dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
-        folderPath = os.path.join(self.GetPath(), self.name + dateTimeString)
+        folderPath = os.path.join(self.GetPath(), self.name + dateTimeString + nickname)
         os.makedirs(folderPath, exist_ok=True)
         return folderPath
 

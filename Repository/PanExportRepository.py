@@ -6,9 +6,9 @@ import os
 
 class PanExportRepository(BaseRepository):
 
-    def StoreMultipleXml(self, detectionGroupOfListFromRawTextPair):
+    def StoreMultipleXml(self, detectionGroupOfListFromRawTextPair, folderNickname):
         try:
-            uniqueFolderPath = self.GetUniqueFolderPath()
+            uniqueFolderPath = self.GetUniqueFolderPath(folderNickname)
             bytesLength = 0
             for detectionListFromRawTextPair in detectionGroupOfListFromRawTextPair:
                 xmlFileContent = PanExportRepository.CastDetectionListToPanFormat(

@@ -9,7 +9,7 @@ class ResultsExportRepository(BaseRepository):
         try:
             tupleList_FileName_Content = self.GetTupleList_FileName_Content_FromFileMetaList(
                 fileMetaList = resultsExport.fileMetaList)
-            folderPath = self.GetUniqueFolderPath()
+            folderPath = self.GetUniqueFolderPath(resultsExport.nickname)
             bytesLength = 0
             for fileName, content in tupleList_FileName_Content:
                 fileWriter = self.GetReportWriter(folderPath, fileName)

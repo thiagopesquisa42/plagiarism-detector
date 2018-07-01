@@ -10,6 +10,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
 from sklearn.metrics import classification_report
+from sklearn.grid_search import GridSearchCV
 
 class SeedingClassifierProcess(BaseProcess):
 
@@ -243,7 +244,9 @@ class SeedingClassifierProcess(BaseProcess):
             axis = 'columns')
         return metaDataFrame
     
-    def ExportExperimentResults(self, classifierMeta):
+    def ExportExperimentResults(self, classifierMeta = None):
+        if classifierMeta is None:
+            classifierMeta = self._classifierMetaRepository.Get()            
         resultsExport = ResultsExport(classifierMeta = classifierMeta)
         self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
     #end_region [Test Classifier]
@@ -252,6 +255,21 @@ class SeedingClassifierProcess(BaseProcess):
         classifierMeta = self._classifierMetaRepository.Get()
         classifierMeta.graphviz = SeedingClassifierProcess.GetGraphviz(classifierMeta.classifier)
         self.ExportExperimentResults(classifierMeta)
+
+    def GridSearchAdaBoostDecisionTree(self):
+        parameterGrid = {
+            "base_estimator__criterion" : ["gini", "entropy"],
+            "base_estimator__splitter" :   ["best", "random"],
+            "base_estimator__max_depth" :   list(range(0, 16, 1))[1:],
+            "n_estimators": list(range(0, 101, 10))[1:]}
+
+
+        DTC = DecisionTreeClassifier(random_state = 11, max_features = "auto", class_weight = "auto",max_depth = None)
+
+        ABC = AdaBoostClassifier(base_estimator = DTC)
+
+        # run grid search
+        grid_search_ABC = GridSearchCV(ABC, parameterGrid=parameterGrid, scoring = 'roc_auc')
 
     def __init__(self):
         self._trainingSeedingDataFrameRepository = SeedingDataFrameRepository(context = Contexts.TRAIN)
