@@ -63,7 +63,7 @@ def TestingClassifier():
 
 def ExportDetectionToPan():
     _panExportProcess = PanExportProcess()
-    _panExportProcess.ExportPanFormattedDetections()
+    return _panExportProcess.ExportPanFormattedDetections()
 
 def GenerateIdealClassifier():
     _seedingDataProcess = SeedingDataProcess(context = Contexts.TEST)
@@ -82,8 +82,11 @@ def Main():
     # experimentName = 'experiment005p_tape008_noiblrnMyApproache_trainOnly'
     # experimentName = 'experiment005p_tape009_idealClassifier'
     # experimentName = 'experiment005p_tape010_iblrn'
-    experimentName = 'experiment005p_tape011_multiClass_randomSample'
+    # experimentName = 'experiment005p_tape011_multiClass_randomSample'
     # experimentName = 'experiment005p_tape012_contagem_base_dados'
+    # experimentName = 'experiment005p_tape005_randomSample_for30times'
+    experimentName = 'experiment005p_tape011_multiClass_randomSample_for30times'
+    # experimentName = 'experiment020p_tape003_binario_randomSample_for30times'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
@@ -96,7 +99,8 @@ def Main():
     for classifierNickName in classifierList:
         TrainingClassifier(classifierNickName)
         TestingClassifier()
-        ExportDetectionToPan()
+        folderPathList = ExportDetectionToPan()
+        
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
     # GenerateIdealClassifier()

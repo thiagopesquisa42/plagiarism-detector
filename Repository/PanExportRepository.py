@@ -24,6 +24,7 @@ class PanExportRepository(BaseRepository):
             storedLength = BaseRepository.HumanizeBytes(bytes = bytesLength)
             self.logger.info('item stored: ' + '.xml files' +\
             ' ' + storedLength  + ' at folder ' + uniqueFolderPath)
+            return uniqueFolderPath
 
     def StoreXml(self, detectionListFromRawTextPair):
         try:

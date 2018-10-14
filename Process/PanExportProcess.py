@@ -25,6 +25,7 @@ class PanExportProcess(BaseProcess):
             metaDataFrame = self.RemoveNotDetections(metaDataFrame)
 
             classes = self.GetDetectionClasses(metaDataFrame)
+            folderPathList = []
             for thisClass in classes:
                 self.logger.info('keeping only one class')
                 thisMetaDataFrame = self.RemoveAllExceptThisClass(metaDataFrame, thisClass)
@@ -40,13 +41,15 @@ class PanExportProcess(BaseProcess):
 
                 self.logger.info('exporting groups')
                 folderNickName = str(classifierMeta.GetName()) + '_US_' + str(thisClass)
-                self._panExportRepository.StoreMultipleXml(detectionGroups, folderNickName)
+                folderPath = self._panExportRepository.StoreMultipleXml(detectionGroups, folderNickName)
+                folderPathList.append(folderPath)
 
         except Exception as exception:
             self.logger.exception('[Export Pan Formatted Detections] failure: ' + str(exception))
             raise exception
         else:
             self.logger.info('[Export Pan Formatted Detections] finished')
+            return folderPathList
     
     def GetDetectionClasses(self, metaDataFrame):
         classes = metaDataFrame.plagiarismClass.unique()
