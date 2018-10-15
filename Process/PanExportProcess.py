@@ -36,8 +36,8 @@ class PanExportProcess(BaseProcess):
                 self.logger.info('cast to detection groups')
                 detectionGroups = self.CastToDetectionGroupsByRawTextPair(groupedByRawTextPairMetaDataFrame)
 
-                self.logger.info('fuse adjacent detections per raw text pair')
-                detectionGroups = self.FuseAdjacentDetectionPerRawTextPair(detectionGroups)
+                # self.logger.info('fuse adjacent detections per raw text pair')
+                # detectionGroups = self.FuseAdjacentDetectionPerRawTextPair(detectionGroups)
 
                 self.logger.info('exporting groups')
                 folderNickName = str(classifierMeta.GetName()) + '_US_' + str(thisClass)

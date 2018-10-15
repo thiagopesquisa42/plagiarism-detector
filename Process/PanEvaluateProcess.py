@@ -22,6 +22,7 @@ class PanEvaluateProcess(BaseProcess):
     
     def CalculatePanEvaluation(self, folderPath_Class_TupleList):
         currentWorkingDirectory = os.getcwd()
+        # plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
         plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P
         panReportList = []
         for panDetectionFolderPath, _class in folderPath_Class_TupleList:
