@@ -24,6 +24,7 @@ class ResultsExportRepository(BaseRepository):
             storedLength = BaseRepository.HumanizeBytes(bytes = bytesLength)
             self.logger.info('item stored: ' + str(type(resultsExport)) +\
             ' ' + storedLength)
+            return folderPath
 
     def GetReportWriter(self, folder, fileName):
         filePath = os.path.join(folder, fileName)

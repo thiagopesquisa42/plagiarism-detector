@@ -9,7 +9,7 @@ import pandas
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import tree
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from sklearn.metrics import classification_report
+from sklearn.metrics import classification_report, precision_recall_fscore_support
 from sklearn.grid_search import GridSearchCV
 
 class SeedingClassifierProcess(BaseProcess):
@@ -206,7 +206,7 @@ class SeedingClassifierProcess(BaseProcess):
             classifierMeta = self._classifierMetaRepository.Get()
             
             self.logger.info('test classifier')
-            classifierMeta = self.TestClassifier(classifierMeta, seedingDataFrame)
+            classifierMeta, reportList = self.TestClassifier(classifierMeta, seedingDataFrame)
             classifierMeta = self._classifierMetaRepository.StoreAndGet(classifierMeta)
 
         except Exception as exception:
@@ -214,7 +214,7 @@ class SeedingClassifierProcess(BaseProcess):
             raise exception
         else:
             self.logger.info('Test Classifier finished')
-            return classifierMeta
+            return reportList
 
     def TestClassifier(self, classifierMeta, seedingDataFrame):
         classifier = classifierMeta.classifier
@@ -226,14 +226,29 @@ class SeedingClassifierProcess(BaseProcess):
         report = classification_report(
             y_true = expectedTargetClass,
             y_pred = classifierPrediction)
+        reportList = self.ConvertClassificationReportToList(report)
         classifierMeta.report = report
         classifierMeta.metaDataFrame = SeedingClassifierProcess.GetMetaDataFrame(
             expectedTargetClass, classifierPrediction, seedingDataFrame.dataFrame)
         classifierMeta.summaryTestData = seedingDataFrame.descriptionDictionary
         classifierMeta = self.UpdateDescriptionAndClassifier(classifierMeta, classifier)
-        self.ExportExperimentResults(classifierMeta)
-        return classifierMeta
-    
+        folderPath = self.ExportExperimentResults(classifierMeta)
+        return classifierMeta, reportList
+
+    def ConvertClassificationReportToList(self, report):
+        reportData = []
+        lines = report.split('\n')
+        for line in lines[2:-3]:
+            row = {}
+            rowData = line.split()
+            row['class'] = rowData[0]
+            row['precision'] = float(rowData[1])
+            row['recall'] = float(rowData[2])
+            row['f1Score'] = float(rowData[3])
+            row['support'] = float(rowData[4])
+            reportData.append(row)
+        return reportData
+
     def GetMetaDataFrame(expectedTargetClass, classifierPrediction, dataFrame):
         metaColumns = [
             columnName 
@@ -248,7 +263,8 @@ class SeedingClassifierProcess(BaseProcess):
         if classifierMeta is None:
             classifierMeta = self._classifierMetaRepository.Get()            
         resultsExport = ResultsExport(classifierMeta = classifierMeta)
-        self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
+        folderPath = self._resultsExportRepository.StoreReport(resultsExport = resultsExport)
+        return folderPath
     #end_region [Test Classifier]
 
     def ExportClassifierGraphviz(self):

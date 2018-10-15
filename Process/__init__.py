@@ -12,3 +12,5 @@ from Process import SeedingDataProcess
 _SeedingDataProcess = SeedingDataProcess.SeedingDataProcess
 from Process import PanExportProcess
 _PanExportProcess = PanExportProcess.PanExportProcess
+from Process import PanEvaluateProcess
+_PanEvaluateProcess = PanEvaluateProcess.PanEvaluateProcess

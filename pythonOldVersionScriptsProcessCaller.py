@@ -3,9 +3,9 @@ import subprocess
 import os
 
 def callOldProcess(
-	pathToOldPythonCore = r"C:\Users\thiagopesquisa42\Anaconda3\envs\py27\python.exe",
 	pathToScript = "pythonOldExample.py",
-	argumentList = ['Mr', 'Thiago Pesquisa 42']):
+	argumentList = ['Mr', 'Thiago Pesquisa 42'],
+	pathToOldPythonCore = r"C:\Users\thiagopesquisa42\Anaconda3\envs\py27\python.exe"):
 	commandLine_PythonOld_Arguments = [pathToOldPythonCore, pathToScript] + argumentList
 	process = subprocess.Popen(
 		commandLine_PythonOld_Arguments, 

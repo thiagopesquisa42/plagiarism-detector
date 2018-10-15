@@ -7,6 +7,7 @@ from Process import _SeedingProcess as SeedingProcess
 from Process import _SeedingDataProcess as SeedingDataProcess
 from Process import _SeedingClassifierProcess as SeedingClassifierProcess
 from Process import _PanExportProcess as PanExportProcess
+from Process import _PanEvaluateProcess as PanEvaluateProcess
 import os
 
 def ProcessTrainData():
@@ -40,10 +41,10 @@ def ImportTestDataBase():
         originalCreationDate = '2013-01-21')
 
 def CommomProcessing(context):
-    # _preProcessingRawTextProcess = PreProcessingRawTextProcess(context = context)
-    # preProcessedData = _preProcessingRawTextProcess.PreProcessing()
-    # _seedingProcess = SeedingProcess(context = context)
-    # preProcessedData = _seedingProcess.SeedingProcessing()
+    _preProcessingRawTextProcess = PreProcessingRawTextProcess(context = context)
+    preProcessedData = _preProcessingRawTextProcess.PreProcessing()
+    _seedingProcess = SeedingProcess(context = context)
+    preProcessedData = _seedingProcess.SeedingProcessing()
     _seedingDataProcess = SeedingDataProcess(context = context)
     dataFrame = _seedingDataProcess.CreateSeedingDataFrameFromSeedingData()
 
@@ -59,7 +60,8 @@ def TrainingClassifier(classifierNickName):
 
 def TestingClassifier():
     _seedingClassifierProcess = SeedingClassifierProcess()
-    classifierMetaTested = _seedingClassifierProcess.TestSeedClassifier()
+    reportList = _seedingClassifierProcess.TestSeedClassifier()
+    return reportList
 
 def ExportDetectionToPan():
     _panExportProcess = PanExportProcess()
@@ -70,6 +72,35 @@ def GenerateIdealClassifier():
     _seedingDataProcess.ExportIdealClassifier()
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTested = _seedingClassifierProcess.ExportExperimentResults()
+
+def PanEvaluation(folderPath_Class_TupleList):
+    _panEvaluateProcess = PanEvaluateProcess()
+    panReportList = _panEvaluateProcess.EvaluateAndStore(folderPath_Class_TupleList)
+    return panReportList
+
+def ConvertReportsToFlatRow(reportList, panReportList, getHeaderOnly = False):
+    rowReport = []
+    for report in reportList:
+        rowReport.extend(
+            [value if (not getHeaderOnly) else key 
+                for key, value in report.items()]
+        )
+        rowReport.append(' _ ')
+    for panReport in panReportList:
+        rowReport.extend(
+            [value if (not getHeaderOnly) else key
+                for key, value in panReport['metrics'].items()]
+        )
+        rowReport.append(' _ ')
+    return rowReport
+
+def SaveReportFlatMatrix(reportFlatMatrix, classifierNickName):
+    import pandas
+    from datetime import datetime
+    dataFrameReport = pandas.DataFrame(reportFlatMatrix[1:], columns=reportFlatMatrix[0])
+    dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S_%f')
+    fileName = 'data\\reportFull-' + classifierNickName + '-' + dateTimeString + '.csv'
+    dataFrameReport.to_csv(fileName, sep=',', encoding='utf-8')
 
 def Main():
     # experimentName = 'experiment005p_tape001'
@@ -85,8 +116,8 @@ def Main():
     # experimentName = 'experiment005p_tape011_multiClass_randomSample'
     # experimentName = 'experiment005p_tape012_contagem_base_dados'
     # experimentName = 'experiment005p_tape005_randomSample_for30times'
-    experimentName = 'experiment005p_tape011_multiClass_randomSample_for30times'
-    # experimentName = 'experiment020p_tape003_binario_randomSample_for30times'
+    # experimentName = 'experiment005p_tape011_multiClass_randomSample_for30times'
+    experimentName = 'experiment020p_tape003_binario_randomSample_for30times'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
@@ -96,11 +127,27 @@ def Main():
         ClassifiersNickNames.DECISION_TREE,
         ClassifiersNickNames.RANDOM_FOREST,
         ClassifiersNickNames.ADABOOST_DECISION_TREE]
+    
     for classifierNickName in classifierList:
-        TrainingClassifier(classifierNickName)
-        TestingClassifier()
-        folderPathList = ExportDetectionToPan()
-        
+        print(classifierNickName.name, 'started')
+        reportFlatMatrix = []
+        headerOk = False
+        times = 30
+        for i in range(times):    
+            print(i, 'started')
+            TrainingClassifier(classifierNickName)
+            reportList = TestingClassifier()
+            folderPath_Class_TupleList = ExportDetectionToPan()
+            panReportList = PanEvaluation(folderPath_Class_TupleList)
+            reportFlatRow = ConvertReportsToFlatRow(reportList, panReportList)
+            reportFlatMatrix.append(reportFlatRow)
+            if(not headerOk):
+                reportFlatRowHeader = ConvertReportsToFlatRow(reportList, panReportList, getHeaderOnly = True)
+                reportFlatMatrix.insert(0, reportFlatRowHeader)
+                headerOk = True
+            print(i, 'finished')            
+        SaveReportFlatMatrix(reportFlatMatrix, classifierNickName.name)
+
     # _seedingClassifierProcess = SeedingClassifierProcess()
     # _seedingClassifierProcess.ExportClassifierGraphviz()
     # GenerateIdealClassifier()

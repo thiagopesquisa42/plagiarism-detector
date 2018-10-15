@@ -19,3 +19,5 @@ _PanRepository = PanRepository.PanRepository
 # _OptimizationTestRepository = OptimizationTestRepository.OptimizationTestRepository
 from Repository import PanExportRepository
 _PanExportRepository = PanExportRepository.PanExportRepository
+from Repository import PanEvaluateRepository
+_PanEvaluateRepository = PanEvaluateRepository.PanEvaluateRepository

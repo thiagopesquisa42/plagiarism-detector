@@ -125,6 +125,10 @@ class PanSettings():
     detectionName = 'detected-plagiarism'
     _type = 'artificial'
 
+class SupportScripts():
+    ROOT_FOLDER = 'support'
+    FOLDER_PATH_PAN_OFFICIAL_METRIC_SCRIPT = os.path.join(ROOT_FOLDER, 'pan09-plagiarism-detection-performance-measures.py')
+
 class ContextDefaultFolders():
     class Experiment():
         class Data():

@@ -490,7 +490,10 @@ def main(micro_averaged, plag_path, plag_tag_name, det_path, det_tag_name):
     print 'Recall', rec
     print 'Precision', prec 
     print 'Granularity', gran
-
+    #[Append by thiagopesquisa42@gmail.com] - Added output of cases and detections quatities
+    print 'Cases', len(cases)
+    print 'Detections', len(detections)
+    #[End append by thiagopesquisa42@gmail.com]
 
 if __name__ == '__main__':   
     main(*parse_options())
