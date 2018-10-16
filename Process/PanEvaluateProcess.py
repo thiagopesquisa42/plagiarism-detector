@@ -5,13 +5,15 @@ from Process import _BaseProcess as BaseProcess
 from Repository import _PanEvaluateRepository as PanEvaluateRepository
 from constant import PanDataBaseLocation, SupportScripts
 from pythonOldVersionScriptsProcessCaller import callOldProcess
+from distutils.dir_util import copy_tree
+from datetime import datetime
 import os
 
 class PanEvaluateProcess(BaseProcess):
-    def EvaluateAndStore(self, folderPath_Class_TupleList):
+    def EvaluateAndStore(self, folderPath_Class_TupleList, algorithmNickName):
         try:
             self.logger.info('[PanEvaluateProcess] started')
-            panReportList = self.CalculatePanEvaluation(folderPath_Class_TupleList)
+            panReportList = self.CalculatePanEvaluation(folderPath_Class_TupleList, algorithmNickName)
             reportFileName = self._panEvaluateRepository.StorePanReport(panReportList)
         except Exception as exception:
             self.logger.exception('[PanEvaluateProcess] failure: ' + str(exception))
@@ -20,10 +22,10 @@ class PanEvaluateProcess(BaseProcess):
             self.logger.info('[PanEvaluateProcess] finished')
             return panReportList
     
-    def CalculatePanEvaluation(self, folderPath_Class_TupleList):
+    def CalculatePanEvaluation(self, folderPath_Class_TupleList, algorithmNickName):
         currentWorkingDirectory = os.getcwd()
-        # plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
-        plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P
+        plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
+        # plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P
         panReportList = []
         for panDetectionFolderPath, _class in folderPath_Class_TupleList:
             pathToScript = os.path.join(currentWorkingDirectory, SupportScripts.FOLDER_PATH_PAN_OFFICIAL_METRIC_SCRIPT) 
@@ -43,7 +45,51 @@ class PanEvaluateProcess(BaseProcess):
 
             panReport = PanEvaluateProcess.ConvertPanEvaluationOutputToDictionary(panReportRaw, _class)
             panReportList.append(panReport)
+        if(len(folderPath_Class_TupleList) > 1):
+            panReport = self.CalculatePanEvaluationTotal(folderPath_Class_TupleList, newFolderNickName = algorithmNickName)
+            panReportList.append(panReport)
         return panReportList
+
+    def CalculatePanEvaluationTotal(self, folderPath_Class_TupleList, newFolderNickName):
+        tempFolderRootPath = self.CopyPanExportedFilesToTempFolder(folderPath_Class_TupleList, newFolderNickName)
+        currentWorkingDirectory = os.getcwd()
+        plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_005_P
+        # plagiarismPanDatabasePath = PanDataBaseLocation.subSampled.FOLDER_PATH_2013_TEST2_JANUARY_020_P
+        panReportList = []
+        pathToScript = os.path.join(currentWorkingDirectory, SupportScripts.FOLDER_PATH_PAN_OFFICIAL_METRIC_SCRIPT) 
+        argumentList = [
+            '--plag-path',
+            plagiarismPanDatabasePath,
+            '--det-path',
+            os.path.join(currentWorkingDirectory, tempFolderRootPath)]
+        self.logger.info('old process called: ' + pathToScript + ','.join(argumentList))
+        panReportRaw = callOldProcess(
+            pathToScript = pathToScript,
+            argumentList = argumentList)
+        panReport = PanEvaluateProcess.ConvertPanEvaluationOutputToDictionary(panReportRaw, 'plagiarism')
+        return panReport
+
+    def CopyPanExportedFilesToTempFolder(self, folderPath_Class_TupleList, newFolderNickName):
+        if(newFolderNickName is None):
+            newFolderNickName = ""
+        dateTimeString = datetime.now().strftime('%Y%m%d_%H%M%S')
+        tempFolderRootPath =\
+            os.path.join('data','temp',
+                newFolderNickName + dateTimeString)
+        if(not os.path.exists(tempFolderRootPath)):
+            os.makedirs(tempFolderRootPath)
+        for panDetectionFolderPath, _class in folderPath_Class_TupleList:
+            panDetectionFolder = os.path.basename(os.path.normpath(panDetectionFolderPath))
+            tempFolderCompletePath = os.path.join(tempFolderRootPath, panDetectionFolder)
+            if(not os.path.exists(tempFolderCompletePath)):
+                os.makedirs(tempFolderCompletePath)
+            self.CopyEntireFolder(panDetectionFolderPath, tempFolderCompletePath)
+        return tempFolderRootPath
+
+    def CopyEntireFolder(self, folder, newFolderPath):
+        # External source code from here: https://stackoverflow.com/questions/15034151/copy-directory-contents-into-a-directory-with-python
+        copy_tree(src = folder, dst = newFolderPath, 
+            preserve_mode = True, preserve_times = True, preserve_symlinks = True)
 
     def ConvertPlagiarismClassToDetectionFolderName(plagiarismClass):
         if(plagiarismClass in [PlagiarismClass.direct, PlagiarismClass.direct.name]):

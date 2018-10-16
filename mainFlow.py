@@ -73,9 +73,9 @@ def GenerateIdealClassifier():
     _seedingClassifierProcess = SeedingClassifierProcess()
     classifierMetaTested = _seedingClassifierProcess.ExportExperimentResults()
 
-def PanEvaluation(folderPath_Class_TupleList):
+def PanEvaluation(folderPath_Class_TupleList, algorithmNickName):
     _panEvaluateProcess = PanEvaluateProcess()
-    panReportList = _panEvaluateProcess.EvaluateAndStore(folderPath_Class_TupleList)
+    panReportList = _panEvaluateProcess.EvaluateAndStore(folderPath_Class_TupleList, algorithmNickName)
     return panReportList
 
 def ConvertReportsToFlatRow(reportList, panReportList, getHeaderOnly = False):
@@ -116,8 +116,8 @@ def Main():
     # experimentName = 'experiment005p_tape011_multiClass_randomSample'
     # experimentName = 'experiment005p_tape012_contagem_base_dados'
     # experimentName = 'experiment005p_tape005_randomSample_for30times'
-    # experimentName = 'experiment005p_tape011_multiClass_randomSample_for30times'
-    experimentName = 'experiment020p_tape003_binario_randomSample_for30times'
+    experimentName = 'experiment005p_tape011_multiClass_randomSample_for30times'
+    # experimentName = 'experiment020p_tape003_binario_randomSample_for30times'
     # ContextManager.InitExperiment(experimentUniqueName = experimentName)
     ContextManager.ContinueExperiment(experimentUniqueName = experimentName)
     # ProcessTrainData()
@@ -138,7 +138,7 @@ def Main():
             TrainingClassifier(classifierNickName)
             reportList = TestingClassifier()
             folderPath_Class_TupleList = ExportDetectionToPan()
-            panReportList = PanEvaluation(folderPath_Class_TupleList)
+            panReportList = PanEvaluation(folderPath_Class_TupleList, classifierNickName.name)
             reportFlatRow = ConvertReportsToFlatRow(reportList, panReportList)
             reportFlatMatrix.append(reportFlatRow)
             if(not headerOk):
